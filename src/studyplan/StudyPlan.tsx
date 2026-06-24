@@ -1,14 +1,29 @@
-import React, { useState } from 'react'
-import { CheckCircle2, Circle, Award, Play, Check } from 'lucide-react'
+import React, { useState, useMemo } from 'react'
+import { Link } from 'react-router-dom'
+import { CheckCircle2, Circle, Award, Play, Check, Bookmark, ChevronDown } from 'lucide-react'
 import { useAppState } from '../context/AppStateContext'
 import { studyPlanData } from '../data/studyPlanData'
+import { questionData } from '../data/questionBankData'
+import { csharpDiagrams } from '../data/csharpDiagrams'
 
 export const StudyPlan: React.FC = () => {
-  const { completedDays, toggleDayCompleted, notes, saveNote } = useAppState()
+  const {
+    completedDays,
+    toggleDayCompleted,
+    notes,
+    saveNote,
+    completedQuestions,
+    bookmarkedQuestions,
+    toggleQuestionCompleted,
+    toggleQuestionBookmarked
+  } = useAppState()
+
   const [selectedDayId, setSelectedDayId] = useState('day-1')
   const [activeTab, setActiveTab] = useState<'overview' | 'exercises' | 'coding' | 'questions' | 'notes'>('overview')
   const [codeRunOutput, setCodeRunOutput] = useState<string | null>(null)
   const [isRunningCode, setIsRunningCode] = useState(false)
+
+  const [expandedQuestions, setExpandedQuestions] = useState<Record<string, boolean>>({})
 
   const selectedDay = studyPlanData.find((d) => d.id === selectedDayId) || studyPlanData[0]
   const isCompleted = completedDays.includes(selectedDay.id)
@@ -19,6 +34,40 @@ export const StudyPlan: React.FC = () => {
     setNoteText(notes[selectedDay.id] || '')
     setCodeRunOutput(null)
   }, [selectedDay.id, notes])
+
+  const getCategoryForDay = (dayId: string): string => {
+    switch (dayId) {
+      case 'day-1': return 'C#'
+      case 'day-2': return 'ASP.NET Core'
+      case 'day-3': return 'Entity Framework'
+      case 'day-4': return 'SQL Server'
+      case 'day-5': return 'React'
+      case 'day-6': return 'Azure'
+      case 'day-7': return 'System Design'
+      case 'day-8': return 'Behavioral'
+      case 'day-9': return 'Behavioral'
+      default: return 'All'
+    }
+  }
+
+  const matchedCategory = getCategoryForDay(selectedDay.id)
+
+  const getLevelColor = (level: string) => {
+    if (level === 'Beginner') return { bg: 'var(--success-light)', color: 'var(--success)' }
+    if (level === 'Intermediate') return { bg: 'var(--warning-light)', color: 'var(--warning)' }
+    return { bg: 'var(--danger-light)', color: 'var(--danger)' }
+  }
+
+  const dayQuestions = useMemo(() => {
+    if (matchedCategory === 'All') {
+      return questionData.filter((q) => bookmarkedQuestions.includes(q.id))
+    }
+    return questionData.filter((q) => q.category === matchedCategory)
+  }, [matchedCategory, bookmarkedQuestions])
+
+  const toggleQuestionExpanded = (id: string) => {
+    setExpandedQuestions((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
 
   const handleSaveNotes = () => {
     saveNote(selectedDay.id, noteText)
@@ -218,16 +267,150 @@ export const StudyPlan: React.FC = () => {
             )}
 
             {activeTab === 'questions' && (
-              <div className="space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: 'var(--text-secondary)' }}>Expected Interview Scenarios</h3>
-                {selectedDay.interviewQuestions.map((q, i) => (
-                  <div key={i} className="p-4 rounded-lg border animate-slide-up" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
-                    <div className="text-sm md:text-base font-bold" style={{ color: 'var(--text-primary)' }}>{q}</div>
-                    <div className="text-xs md:text-sm mt-1.5 leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>
-                      Practice verbalizing structural explanations, highlighting low-level implications or performance thresholds.
-                    </div>
+              <div className="space-y-6 animate-fade-in">
+                {/* Expected Scenarios */}
+                <div className="space-y-3.5">
+                  <h3 className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: 'var(--text-secondary)' }}>Expected Interview Scenarios</h3>
+                  <div className="grid grid-cols-1 gap-3.5">
+                    {selectedDay.interviewQuestions.map((q, i) => (
+                      <div key={i} className="p-4 rounded-lg border" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
+                        <div className="text-sm md:text-base font-bold" style={{ color: 'var(--text-primary)' }}>{q}</div>
+                        <div className="text-xs md:text-sm mt-1.5 leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>
+                          Practice verbalizing structural explanations, highlighting low-level implications or performance thresholds.
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+
+                {/* Question Bank Integration */}
+                <div className="space-y-4 pt-5 border-t border-dashed" style={{ borderColor: 'var(--border)' }}>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
+                      {matchedCategory === 'All' ? 'Your Bookmarked Questions' : `Practice Questions (${matchedCategory})`}
+                    </h3>
+                    {matchedCategory !== 'All' && (
+                      <Link
+                        to={`/questions`}
+                        onClick={() => {
+                          // Note: Category selection is stored in app context or URL in the future if applicable,
+                          // but navigating directly to the Question Bank is a clean link.
+                        }}
+                        className="text-xs md:text-sm font-bold transition-all hover:opacity-75"
+                        style={{ color: 'var(--primary)' }}
+                      >
+                        Browse all in Question Bank →
+                      </Link>
+                    )}
+                  </div>
+
+                  {dayQuestions.length === 0 ? (
+                    <div className="text-center py-8 text-xs md:text-sm italic" style={{ color: 'var(--text-tertiary)' }}>
+                      {matchedCategory === 'All' ? 'No bookmarked questions for revision yet. Save some bookmarks to study them here!' : 'No matching questions found.'}
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {dayQuestions.map((q) => {
+                        const isCompleted = completedQuestions.includes(q.id)
+                        const isBookmarked = bookmarkedQuestions.includes(q.id)
+                        const isExpanded = !!expandedQuestions[q.id]
+                        const levelStyle = getLevelColor(q.level)
+
+                        return (
+                          <div
+                            key={q.id}
+                            className="p-5 rounded-xl border transition-all"
+                            style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border-light)' }}
+                          >
+                            <div className="flex items-start justify-between gap-3 mb-3">
+                              <div className="min-w-0 flex-1">
+                                <div className="flex flex-wrap items-center gap-2 mb-2">
+                                  <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--primary)' }}>{q.category}</span>
+                                  <span className="text-xs font-semibold px-2 py-0.5 rounded-md" style={{ background: levelStyle.bg, color: levelStyle.color }}>{q.level}</span>
+                                  {isCompleted && (
+                                    <span className="text-xs font-semibold px-2 py-0.5 rounded-md" style={{ background: 'var(--success-light)', color: 'var(--success)' }}>✓ Done</span>
+                                  )}
+                                </div>
+                                <h4 className="text-sm md:text-base font-bold leading-snug" style={{ color: 'var(--text-primary)' }}>{q.question}</h4>
+                              </div>
+
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <button
+                                  onClick={() => toggleQuestionCompleted(q.id)}
+                                  className="p-1.5 rounded-lg border bg-white dark:bg-slate-800 transition-all hover:scale-105"
+                                  style={{ borderColor: 'var(--border)' }}
+                                  title={isCompleted ? 'Mark Incomplete' : 'Mark Complete'}
+                                >
+                                  {isCompleted ? <CheckCircle2 size={16} className="text-[var(--success)]" /> : <Circle size={16} className="text-[var(--text-tertiary)]" />}
+                                </button>
+                                <button
+                                  onClick={() => toggleQuestionBookmarked(q.id)}
+                                  className="p-1.5 rounded-lg border bg-white dark:bg-slate-800 transition-all hover:scale-105"
+                                  style={{ borderColor: 'var(--border)' }}
+                                  title={isBookmarked ? 'Remove Bookmark' : 'Bookmark Question'}
+                                >
+                                  <Bookmark size={16} className={isBookmarked ? 'text-[var(--warning)] fill-current' : 'text-[var(--text-tertiary)]'} />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Answer is rendered simultaneously */}
+                            <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--border-light)' }}>
+                              <div className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>Model Answer</div>
+                              <div className="p-4 rounded-lg whitespace-pre-wrap text-sm leading-relaxed bg-white dark:bg-slate-900 border" style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-light)' }}>
+                                {q.answer}
+                              </div>
+                            </div>
+
+                            {/* Visual concept diagram if mapped */}
+                            {csharpDiagrams[q.id] && (
+                              <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--border-light)' }}>
+                                <div className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: 'var(--text-tertiary)' }}>Visual Concept Diagram</div>
+                                <div
+                                  className="diagram-container p-4 rounded-xl border flex justify-center items-center overflow-x-auto bg-white dark:bg-slate-900/40"
+                                  style={{ borderColor: 'var(--border-light)' }}
+                                  dangerouslySetInnerHTML={{ __html: csharpDiagrams[q.id] }}
+                                />
+                              </div>
+                            )}
+
+                            {/* In-line Toggle for Notes */}
+                            {(q.explanation || q.realWorldExample) && (
+                              <div className="mt-3 flex justify-end">
+                                <button
+                                  onClick={() => toggleQuestionExpanded(q.id)}
+                                  className="text-xs font-bold flex items-center gap-1 hover:opacity-80 transition-opacity"
+                                  style={{ color: 'var(--primary)' }}
+                                >
+                                  {isExpanded ? 'Hide Technical Notes' : 'Show Technical Notes'}
+                                  <ChevronDown size={12} className={`transform transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                                </button>
+                              </div>
+                            )}
+
+                            {/* Inline Collapsible Notes Panel */}
+                            {isExpanded && (
+                              <div className="mt-3 pt-3 border-t border-dashed space-y-3" style={{ borderColor: 'var(--border-light)' }}>
+                                {q.explanation && (
+                                  <div>
+                                    <div className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>Technical Notes</div>
+                                    <p className="text-xs md:text-sm" style={{ color: 'var(--text-secondary)' }}>{q.explanation}</p>
+                                  </div>
+                                )}
+                                {q.realWorldExample && (
+                                  <div className="p-3.5 rounded-lg border bg-white/50 dark:bg-slate-900/50" style={{ borderColor: 'var(--border-light)' }}>
+                                    <div className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: 'var(--primary)' }}>Real-World Scenario</div>
+                                    <p className="text-xs md:text-sm" style={{ color: 'var(--text-secondary)' }}>{q.realWorldExample}</p>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 

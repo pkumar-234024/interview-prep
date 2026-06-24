@@ -3,6 +3,7 @@ import { Bookmark, CheckCircle2, Circle, Search, Filter, ChevronDown, BookOpen }
 import { useAppState } from '../context/AppStateContext'
 import { questionData } from '../data/questionBankData'
 import { motion, AnimatePresence } from 'framer-motion'
+import { csharpDiagrams } from '../data/csharpDiagrams'
 
 export const QuestionBank: React.FC = () => {
   const {
@@ -353,6 +354,18 @@ export const QuestionBank: React.FC = () => {
                       {q.answer}
                     </div>
                   </div>
+
+                  {/* Visual concept diagram if mapped */}
+                  {csharpDiagrams[q.id] && (
+                    <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--border-light)' }}>
+                      <div className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: 'var(--text-tertiary)' }}>Visual Concept Diagram</div>
+                      <div
+                        className="diagram-container p-4 rounded-xl border flex justify-center items-center overflow-x-auto bg-white dark:bg-slate-900/40"
+                        style={{ borderColor: 'var(--border-light)' }}
+                        dangerouslySetInnerHTML={{ __html: csharpDiagrams[q.id] }}
+                      />
+                    </div>
+                  )}
 
                   {/* Inline Footer + Collapsible Explanation Toggle */}
                   <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pt-2">

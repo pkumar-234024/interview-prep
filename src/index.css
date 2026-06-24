@@ -182,3 +182,18 @@ body {
   background-color: var(--primary-light);
   color: var(--text-primary);
 }
+
+/* ═══════════════════════════════════════════════
+   DIAGRAM VISIBILITY & RESPONSIVENESS
+   ═══════════════════════════════════════════════ */
+
+.diagram-container {
+  width: 100%;
+}
+
+.diagram-container svg {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 620px;
+  display: block;
+}
