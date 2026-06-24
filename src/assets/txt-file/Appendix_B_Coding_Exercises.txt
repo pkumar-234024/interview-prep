@@ -1,0 +1,179 @@
+APPENDIX B: ADDITIONAL C# CODING EXERCISES
+==================================================================
+
+CODING PATTERNS YOU MUST KNOW
+--------------------------------
+
+1. Two-pointer technique:
+public bool IsPalindrome(string s)
+{
+    int left = 0, right = s.Length - 1;
+    while (left < right)
+    {
+        if (s[left] != s[right]) return false;
+        left++; right--;
+    }
+    return true;
+}
+
+2. Sliding window:
+public int MaxSumSubarray(int[] nums, int k)
+{
+    int windowSum = nums[..k].Sum();
+    int maxSum = windowSum;
+    for (int i = k; i < nums.Length; i++)
+    {
+        windowSum += nums[i] - nums[i - k];
+        maxSum = Math.Max(maxSum, windowSum);
+    }
+    return maxSum;
+}
+
+3. Binary search:
+public int BinarySearch(int[] sorted, int target)
+{
+    int lo = 0, hi = sorted.Length - 1;
+    while (lo <= hi)
+    {
+        int mid = lo + (hi - lo) / 2;
+        if (sorted[mid] == target) return mid;
+        else if (sorted[mid] < target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    return -1;
+}
+
+4. BFS (shortest path):
+public int ShortestPath(int[][] grid, (int r, int c) start, (int r, int c) end)
+{
+    var queue = new Queue<(int r, int c, int steps)>();
+    var visited = new HashSet<(int, int)>();
+    queue.Enqueue((start.r, start.c, 0));
+    int[][] dirs = [[0,1],[1,0],[0,-1],[-1,0]];
+    while (queue.Count > 0)
+    {
+        var (r, c, steps) = queue.Dequeue();
+        if ((r, c) == end) return steps;
+        foreach (var d in dirs)
+        {
+            int nr = r + d[0], nc = c + d[1];
+            if (nr >= 0 && nr < grid.Length && nc >= 0 && nc < grid[0].Length
+                && grid[nr][nc] != 1 && visited.Add((nr, nc)))
+                queue.Enqueue((nr, nc, steps + 1));
+        }
+    }
+    return -1;
+}
+
+5. DFS with recursion:
+public void DFS(TreeNode node, List<int> result)
+{
+    if (node == null) return;
+    result.Add(node.Val);          // Pre-order
+    DFS(node.Left, result);
+    // result.Add(node.Val);       // In-order
+    DFS(node.Right, result);
+    // result.Add(node.Val);       // Post-order
+}
+
+6. Memoized recursion:
+public int Fibonacci(int n, Dictionary<int, int> memo = null)
+{
+    memo ??= new Dictionary<int, int>();
+    if (n <= 1) return n;
+    if (memo.TryGetValue(n, out int cached)) return cached;
+    return memo[n] = Fibonacci(n - 1, memo) + Fibonacci(n - 2, memo);
+}
+
+7. Generic Repository pattern:
+public interface IRepository<T> where T : class
+{
+    Task<T?> GetByIdAsync(int id, CancellationToken ct = default);
+    Task<IReadOnlyList<T>> GetAllAsync(CancellationToken ct = default);
+    Task AddAsync(T entity, CancellationToken ct = default);
+    void Update(T entity);
+    void Remove(T entity);
+    Task<int> SaveChangesAsync(CancellationToken ct = default);
+}
+
+public class EfRepository<T> : IRepository<T> where T : class
+{
+    private readonly AppDbContext _db;
+    public EfRepository(AppDbContext db) => _db = db;
+
+    public Task<T?> GetByIdAsync(int id, CancellationToken ct = default)
+        => _db.Set<T>().FindAsync([id], ct).AsTask();
+
+    public async Task<IReadOnlyList<T>> GetAllAsync(CancellationToken ct = default)
+        => await _db.Set<T>().ToListAsync(ct);
+
+    public async Task AddAsync(T entity, CancellationToken ct = default)
+        => await _db.Set<T>().AddAsync(entity, ct);
+
+    public void Update(T entity) => _db.Set<T>().Update(entity);
+    public void Remove(T entity) => _db.Set<T>().Remove(entity);
+
+    public Task<int> SaveChangesAsync(CancellationToken ct = default)
+        => _db.SaveChangesAsync(ct);
+}
+
+8. Result pattern (avoid exceptions for expected failures):
+public readonly struct Result<T>
+{
+    public T? Value { get; }
+    public string? Error { get; }
+    public bool IsSuccess { get; }
+
+    private Result(T value) { Value = value; IsSuccess = true; Error = null; }
+    private Result(string error) { Error = error; IsSuccess = false; Value = default; }
+
+    public static Result<T> Success(T value) => new(value);
+    public static Result<T> Failure(string error) => new(error);
+}
+
+// Usage:
+public Result<Order> CreateOrder(CreateOrderRequest request)
+{
+    if (request.Items.Count == 0)
+        return Result<Order>.Failure("Order must have at least one item");
+    var order = new Order(request);
+    return Result<Order>.Success(order);
+}
+
+9. Chain of Responsibility:
+public abstract class Handler
+{
+    private Handler? _next;
+    public Handler SetNext(Handler next) { _next = next; return next; }
+    public virtual void Handle(Request request) => _next?.Handle(request);
+}
+
+public class AuthHandler : Handler
+{
+    public override void Handle(Request request)
+    {
+        if (!request.IsAuthenticated) { request.Deny("Not authenticated"); return; }
+        base.Handle(request);
+    }
+}
+
+10. Observer with events:
+public class OrderService
+{
+    public event EventHandler<OrderCreatedEventArgs>? OrderCreated;
+
+    public Order CreateOrder(CreateOrderRequest req)
+    {
+        var order = new Order(req);
+        // save...
+        OrderCreated?.Invoke(this, new OrderCreatedEventArgs(order));
+        return order;
+    }
+}
+
+// Subscriber:
+orderService.OrderCreated += async (s, e) =>
+    await emailService.SendConfirmationAsync(e.Order);
+
+
+==================================================================

@@ -1,0 +1,3255 @@
+[
+  {
+    "id": "C#-1",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is C#?",
+    "answer": "C# is a statically typed, object-oriented, managed programming language developed by Microsoft. It runs on the .NET runtime (CLR), which provides garbage collection, type safety, and JIT compilation. It combines power of C++ with the productivity of Java.",
+    "explanation": "",
+    "realWorldExample": "Used to build everything from web APIs to Windows desktop apps.",
+    "followUpQuestions": [
+      "How does C# differ from Java?"
+    ]
+  },
+  {
+    "id": "C#-2",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between value types and reference types?",
+    "answer": "Value types (int, struct, bool, enum) are stored on the stack (or inline within the containing type). They are copied on assignment. Reference types (class, string, arrays) are stored on the heap; variables hold a reference (pointer) to the data. Assigning a reference type copies the reference, not the data.",
+    "explanation": "",
+    "realWorldExample": "Boxing occurs in legacy code using ArrayList or when passing int to a method expecting object.",
+    "followUpQuestions": [
+      "What happens when you box a value type?"
+    ]
+  },
+  {
+    "id": "C#-3",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are the access modifiers in C#?",
+    "answer": "public (accessible anywhere), private (same class only), protected (same class + derived), internal (same assembly), protected internal (same assembly OR derived), private protected (same assembly AND derived).",
+    "explanation": "",
+    "realWorldExample": "Keep fields private and expose via properties to control invariants.",
+    "followUpQuestions": [
+      "What is the default modifier for a class member?"
+    ]
+  },
+  {
+    "id": "C#-4",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a class vs a struct?",
+    "answer": "Class is a reference type; struct is a value type. Classes support inheritance; structs do not (except implementing interfaces). Structs are value-copied; classes are reference-copied. Classes live on the heap; structs on the stack.",
+    "explanation": "",
+    "realWorldExample": "System.Drawing.Point is a struct because it's small and frequently copied.",
+    "followUpQuestions": [
+      "When would you prefer a struct?"
+    ]
+  },
+  {
+    "id": "C#-5",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between == and .Equals()?",
+    "answer": "For value types, both compare values. For reference types, == by default compares references (object identity), while .Equals() can be overridden to compare content. String overrides both to compare content.",
+    "explanation": "",
+    "realWorldExample": "Two string variables with same content: == returns true because string overrides ==.",
+    "followUpQuestions": [
+      "How does string interning affect this?"
+    ]
+  },
+  {
+    "id": "C#-6",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a constructor?",
+    "answer": "A constructor is a special method called when an object is instantiated. It initializes the object's state. C# supports default constructors, parameterized constructors, static constructors, and copy constructors.",
+    "explanation": "",
+    "realWorldExample": "Static constructors are used to initialize static fields or perform one-time setup logic.",
+    "followUpQuestions": [
+      "What is a static constructor used for?"
+    ]
+  },
+  {
+    "id": "C#-7",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is inheritance in C#?",
+    "answer": "Inheritance allows a class (derived/child) to acquire properties and methods of another class (base/parent) using the : symbol. C# supports single inheritance for classes but multiple inheritance via interfaces.",
+    "explanation": "",
+    "realWorldExample": "A Vehicle base class can be inherited by Car and Truck, sharing common drive logic.",
+    "followUpQuestions": [
+      "What does the 'sealed' keyword do?"
+    ]
+  },
+  {
+    "id": "C#-8",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is an interface?",
+    "answer": "An interface defines a contract — a set of method/property signatures without implementation (in older C#; C# 8+ allows default implementations). Classes that implement an interface must provide implementations for all members.",
+    "explanation": "",
+    "realWorldExample": "IRepository<T> defines CRUD contract — SQL and InMemory repositories both implement it.",
+    "followUpQuestions": [
+      "Can an interface have fields?"
+    ]
+  },
+  {
+    "id": "C#-9",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is an abstract class?",
+    "answer": "An abstract class cannot be instantiated directly. It may contain abstract methods (no implementation, must be overridden) and concrete methods. It provides a partial implementation shared by derived classes.",
+    "explanation": "",
+    "realWorldExample": "An Animal abstract class with an abstract Speak() method — Dog and Cat override it.",
+    "followUpQuestions": [
+      "When would you choose an abstract class over an interface?"
+    ]
+  },
+  {
+    "id": "C#-10",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is polymorphism?",
+    "answer": "Polymorphism means \"many forms.\" In C#, it appears as compile-time (method overloading) and runtime (method overriding with virtual/override keywords). A base class reference can hold a derived class object and call overridden methods.",
+    "explanation": "",
+    "realWorldExample": "IPayment reference calls Process() — at runtime it executes CreditCardPayment or PayPalPayment.",
+    "followUpQuestions": [
+      "What is the difference between overloading and overriding?"
+    ]
+  },
+  {
+    "id": "C#-11",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are properties in C#?",
+    "answer": "Properties are members that provide flexible access to private fields via get and set accessors. They allow validation logic inside set, and computed values in get. Auto-properties generate a backing field automatically.",
+    "explanation": "",
+    "realWorldExample": "public decimal Price { get; private set; } — set only within the class.",
+    "followUpQuestions": [
+      "What is a read-only property?"
+    ]
+  },
+  {
+    "id": "C#-12",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is encapsulation?",
+    "answer": "Encapsulation bundles data (fields) and methods that operate on that data within a class, and restricts direct access to internal state using access modifiers. It protects object integrity.",
+    "explanation": "",
+    "realWorldExample": "Making Order._total private and exposing it via a read-only TotalAmount property.",
+    "followUpQuestions": [
+      "How do you enforce encapsulation in C#?"
+    ]
+  },
+  {
+    "id": "C#-13",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a namespace?",
+    "answer": "A namespace organizes classes and other types into a logical hierarchy, preventing naming conflicts. Declared with the namespace keyword; accessed with using directive or fully qualified name.",
+    "explanation": "",
+    "realWorldExample": "System.Collections vs System.Collections.Generic — both contain List but in different namespaces.",
+    "followUpQuestions": [
+      "Can two classes have the same name in the same namespace?"
+    ]
+  },
+  {
+    "id": "C#-14",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the using statement?",
+    "answer": "Two usages: (1) using directive for importing namespaces. (2) using statement for resource management — calls Dispose() automatically on IDisposable objects when the block exits, even if an exception occurs.",
+    "explanation": "",
+    "realWorldExample": "using var conn = new SqlConnection(cs) — connection is auto-closed at end of scope.",
+    "followUpQuestions": [
+      "What is the 'using declaration' in C# 8+?"
+    ]
+  },
+  {
+    "id": "C#-15",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between string and StringBuilder?",
+    "answer": "string is immutable — every modification creates a new object, causing GC pressure. StringBuilder is mutable and efficient for repeated string manipulation. Use StringBuilder when concatenating in loops.",
+    "explanation": "",
+    "realWorldExample": "Building a CSV string from 10,000 rows — use StringBuilder to avoid O(n²) allocations.",
+    "followUpQuestions": [
+      "At what point does StringBuilder become more efficient?"
+    ]
+  },
+  {
+    "id": "C#-16",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are generics?",
+    "answer": "Generics allow writing type-safe code that works with any data type without boxing. They provide compile-time type checking and code reuse. Example: List<T>, Dictionary<TKey, TValue>.",
+    "explanation": "",
+    "realWorldExample": "public T Max<T>(T a, T b) where T : IComparable<T> — works for int, double, string.",
+    "followUpQuestions": [
+      "What are generic constraints?"
+    ]
+  },
+  {
+    "id": "C#-17",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between List<T> and Array?",
+    "answer": "Array has fixed size, defined at creation. List<T> is dynamic — it grows automatically. List<T> has richer methods (Add, Remove, LINQ). Arrays are slightly faster for fixed-size access.",
+    "explanation": "",
+    "realWorldExample": "Pixel buffer for image processing — fixed size, performance-critical: use array.",
+    "followUpQuestions": [
+      "When would you choose an array over List<T>?"
+    ]
+  },
+  {
+    "id": "C#-18",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is LINQ?",
+    "answer": "LINQ (Language Integrated Query) allows querying collections, databases, XML, and other sources using a unified syntax. Supports two forms: query syntax (SQL-like) and method syntax (lambda-based).",
+    "explanation": "",
+    "realWorldExample": "var result = dbContext.Orders.Where(o => o.Total > 100).ToList() — executed on .ToList().",
+    "followUpQuestions": [
+      "What is deferred execution in LINQ?"
+    ]
+  },
+  {
+    "id": "C#-19",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a delegate?",
+    "answer": "A delegate is a type-safe function pointer. It holds a reference to a method and allows methods to be passed as parameters. Foundation for events and LINQ's Func/Action types.",
+    "explanation": "",
+    "realWorldExample": "Passing a sorting strategy as a delegate to a sort method.",
+    "followUpQuestions": [
+      "What is a multicast delegate?"
+    ]
+  },
+  {
+    "id": "C#-20",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is an event?",
+    "answer": "An event is a mechanism for communication between objects based on publisher-subscriber pattern. Built on delegates. The publisher raises the event; subscribers react. The event keyword restricts external callers from raising or clearing the event.",
+    "explanation": "",
+    "realWorldExample": "Button.Click event — multiple UI handlers subscribed to a single user action.",
+    "followUpQuestions": [
+      "What is the EventHandler<TEventArgs> delegate?"
+    ]
+  },
+  {
+    "id": "C#-21",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are lambda expressions?",
+    "answer": "Lambda expressions are anonymous functions written inline. Syntax: (parameters) => expression or { statements }. Used extensively with LINQ, delegates, events, and Tasks.",
+    "explanation": "",
+    "realWorldExample": "orders.Where(o => o.Status == status) — status captured from outer scope (closure).",
+    "followUpQuestions": [
+      "What is a closure?"
+    ]
+  },
+  {
+    "id": "C#-22",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is exception handling?",
+    "answer": "Exception handling uses try/catch/finally blocks. try wraps risky code. catch catches specific exceptions. finally always executes (cleanup). throw rethrows; throw ex loses stack trace.",
+    "explanation": "",
+    "realWorldExample": "Catching SqlException specifically to handle database connection errors differently from NullReferenceException.",
+    "followUpQuestions": [
+      "What is the difference between throw and throw ex?"
+    ]
+  },
+  {
+    "id": "C#-23",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between int? and int?",
+    "answer": "int is a non-nullable value type (cannot be null). int? (Nullable<int>) wraps int to allow null. Useful for database columns or optional values. Use .HasValue and .Value or null-coalescing ?? operator.",
+    "explanation": "",
+    "realWorldExample": "Database columns that may be NULL — map to int? in C# model.",
+    "followUpQuestions": [
+      "What is the null-conditional operator?",
+      ".?"
+    ]
+  },
+  {
+    "id": "C#-24",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the var keyword?",
+    "answer": "var is an implicitly typed local variable. The compiler infers the type at compile time — it is NOT dynamic. Once assigned, the type is fixed. Use when the type is obvious from context; avoid when it reduces clarity.",
+    "explanation": "",
+    "realWorldExample": "var query = dbContext.Orders.Where(...) — type is IQueryable<Order>, compiler knows it.",
+    "followUpQuestions": [
+      "What is the difference between var and dynamic?"
+    ]
+  },
+  {
+    "id": "C#-25",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is object initializer syntax?",
+    "answer": "Object initializer syntax allows setting properties at creation without a separate constructor: new Person { Name = \"Alice\", Age = 30 }. Works with any accessible setter; runs after the constructor.",
+    "explanation": "",
+    "realWorldExample": "Cleaner test data setup — new Order { Id = 1, Total = 500m }.",
+    "followUpQuestions": [
+      "What is collection initializer syntax?"
+    ]
+  },
+  {
+    "id": "C#-26",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between const and readonly?",
+    "answer": "const is compile-time constant, must be initialized at declaration, implicitly static. readonly is runtime constant, initialized at declaration or in constructor, can be instance or static. Use const for truly fixed values; readonly for values known only at runtime.",
+    "explanation": "",
+    "realWorldExample": "private readonly ILogger _logger — injected via constructor, never reassigned.",
+    "followUpQuestions": [
+      "Can a readonly field be a reference type?"
+    ]
+  },
+  {
+    "id": "C#-27",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a static class?",
+    "answer": "A static class cannot be instantiated and can only contain static members. Useful for utility/helper methods. Example: Math, Console, File.",
+    "explanation": "",
+    "realWorldExample": "StringExtensions static class with Truncate, ToTitleCase extension methods.",
+    "followUpQuestions": [
+      "What are the limitations of a static class?"
+    ]
+  },
+  {
+    "id": "C#-28",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are extension methods?",
+    "answer": "Extension methods add methods to existing types without modifying them. Defined as static methods in a static class with the this keyword on the first parameter.",
+    "explanation": "",
+    "realWorldExample": "string.IsNullOrWhiteSpace() is similar to an extension — adds capability to string type.",
+    "followUpQuestions": [
+      "Can you override a method using extension methods?"
+    ]
+  },
+  {
+    "id": "C#-29",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between IEnumerable and IQueryable?",
+    "answer": "IEnumerable executes queries in memory — data is fetched then filtered. IQueryable translates expressions to the data source query (e.g., SQL) — filtering occurs at database level. Always use IQueryable for EF Core queries to avoid over-fetching.",
+    "explanation": "",
+    "realWorldExample": ".AsEnumerable() on EF query loads all rows before filtering — performance issue.",
+    "followUpQuestions": [
+      "What happens if you return IEnumerable from an EF Core query?"
+    ]
+  },
+  {
+    "id": "C#-30",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the ternary operator?",
+    "answer": "condition ? valueIfTrue : valueIfFalse — a shorthand for simple if/else. Returns one of two values based on a boolean condition.",
+    "explanation": "",
+    "realWorldExample": "string display = name ?? \"Unknown\" — default if null.",
+    "followUpQuestions": [
+      "What is the null-coalescing operator?"
+    ]
+  },
+  {
+    "id": "C#-31",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are named and optional parameters?",
+    "answer": "Named parameters allow passing arguments by name regardless of order. Optional parameters have default values and can be omitted by callers. Both improve API readability.",
+    "explanation": "",
+    "realWorldExample": "public void Log(string msg, LogLevel level = LogLevel.Info) — caller can omit level.",
+    "followUpQuestions": [
+      "What is the difference between optional parameters and method overloading?"
+    ]
+  },
+  {
+    "id": "C#-32",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is method overloading?",
+    "answer": "Defining multiple methods with the same name but different parameter lists (number, type, or order of parameters). Return type alone is not sufficient for overloading.",
+    "explanation": "",
+    "realWorldExample": "Console.Write(string), Console.Write(int), Console.Write(char) — same name, different params.",
+    "followUpQuestions": [
+      "Can async and non-async methods have the same name?"
+    ]
+  },
+  {
+    "id": "C#-33",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the foreach loop?",
+    "answer": "foreach iterates over any IEnumerable<T> collection. It calls GetEnumerator() internally. The loop variable is read-only within the loop body. Simpler than for when index is not needed.",
+    "explanation": "",
+    "realWorldExample": "foreach (var order in orders) — throws InvalidOperationException if orders is modified.",
+    "followUpQuestions": [
+      "What happens if you modify a collection inside foreach?"
+    ]
+  },
+  {
+    "id": "C#-34",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a switch expression (C# 8+)?",
+    "answer": "Switch expressions are a concise form of switch for returning values. Uses => instead of case/break. Supports pattern matching, when guards, and discard _.",
+    "explanation": "",
+    "realWorldExample": "var label = status switch { OrderStatus.Pending => \"Awaiting\", OrderStatus.Shipped => \"On Way\", _ => \"Unknown\" };",
+    "followUpQuestions": [
+      "What is pattern matching in switch?"
+    ]
+  },
+  {
+    "id": "C#-35",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is string interpolation?",
+    "answer": "String interpolation uses $ prefix to embed expressions directly in strings: $\"Hello, {name}!\". Compiled to string.Format() calls. Supports format specifiers: $\"{price:C2}\".",
+    "explanation": "",
+    "realWorldExample": "$\"Invoice #{invoice.Id} for {customer.Name} totaling {invoice.Total:C}\" — readable log message.",
+    "followUpQuestions": [
+      "What is a verbatim string literal (@)?"
+    ]
+  },
+  {
+    "id": "C#-36",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between while and do-while?",
+    "answer": "while checks condition before first iteration — may never execute. do-while executes at least once, checking condition after each iteration.",
+    "explanation": "",
+    "realWorldExample": "Retry logic — do { attempt(); } while (!success && retries-- > 0);",
+    "followUpQuestions": [
+      "When would you prefer do-while over while?"
+    ]
+  },
+  {
+    "id": "C#-37",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are partial classes?",
+    "answer": "Partial classes split a class definition across multiple files using the partial keyword. The compiler merges them. Used by code generators (e.g., Windows Forms designer, EF migrations).",
+    "explanation": "",
+    "realWorldExample": "EF Core migrations generate partial context classes you can extend with your own code.",
+    "followUpQuestions": [
+      "Can partial classes be in different assemblies?"
+    ]
+  },
+  {
+    "id": "C#-38",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a tuple?",
+    "answer": "Tuples are lightweight data structures that group multiple values. C# 7+ supports value tuples with named elements: (string Name, int Age) person = (\"Alice\", 30). More readable than Tuple<T1,T2>.",
+    "explanation": "",
+    "realWorldExample": "Returning two values from a method without creating a class: (bool Success, string Error) Validate(...)",
+    "followUpQuestions": [
+      "What is the difference between ValueTuple and Tuple<T>?"
+    ]
+  },
+  {
+    "id": "C#-39",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is pattern matching?",
+    "answer": "Pattern matching tests a value against a pattern and extracts information. Supports: type patterns (is int n), property patterns ({ Name: \"Alice\" }), positional patterns, switch expressions, and when clauses.",
+    "explanation": "",
+    "realWorldExample": "if (shape is Circle { Radius: > 5 }) — cleaner than casting and property access.",
+    "followUpQuestions": [
+      "What are relational patterns (C# 9)?"
+    ]
+  },
+  {
+    "id": "C#-40",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is records in C# 9?",
+    "answer": "record is a reference type designed for immutable data. It provides value-based equality, a with expression for non-destructive mutation, and auto-generated ToString(). record struct is a value type.",
+    "explanation": "",
+    "realWorldExample": "public record Point(int X, int Y); — DTOs, value objects, immutable data transfer.",
+    "followUpQuestions": [
+      "When should you use record over class?"
+    ]
+  },
+  {
+    "id": "C#-41",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between ToString() and Convert.ToString()?",
+    "answer": "ToString() can throw NullReferenceException if called on null. Convert.ToString(null) returns empty string. Both convert to string representation. Convert.ToString() is null-safe.",
+    "explanation": "",
+    "realWorldExample": "Safe null-to-string conversion in logging: Convert.ToString(obj).",
+    "followUpQuestions": [
+      "What is string.Format() vs interpolation?"
+    ]
+  },
+  {
+    "id": "C#-42",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are enums?",
+    "answer": "Enums are value types that define a set of named integer constants. They improve readability and type safety over magic numbers. Flags attribute allows bitwise combination.",
+    "explanation": "",
+    "realWorldExample": "public enum DayOfWeek { Mon=1, Tue=2, Wed=4, Thu=8, Fri=16 } — [Flags] allows Mon|Wed.",
+    "followUpQuestions": [
+      "What is the [Flags] attribute on an enum?"
+    ]
+  },
+  {
+    "id": "C#-43",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a null check operator (??=)?",
+    "answer": "??= (null-coalescing assignment) assigns a value only if the variable is null. x ??= defaultValue is equivalent to if (x == null) x = defaultValue. Introduced in C# 8.",
+    "explanation": "",
+    "realWorldExample": "_cache ??= new Dictionary<string, string>() — lazy initialization.",
+    "followUpQuestions": [
+      "What is the difference between?",
+      "and?",
+      "=?"
+    ]
+  },
+  {
+    "id": "C#-44",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are indexers?",
+    "answer": "Indexers allow objects to be accessed using array-like syntax with []. Defined with this[type param] syntax. Useful for custom collection classes.",
+    "explanation": "",
+    "realWorldExample": "A Matrix class: matrix[row, col] = value — natural array-like access.",
+    "followUpQuestions": [
+      "Can indexers be overloaded?"
+    ]
+  },
+  {
+    "id": "C#-45",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between is and as operators?",
+    "answer": "is tests if an object is of a type, returns bool. as performs a safe cast — returns null if cast fails instead of throwing. Use is for type checking; as or direct cast for actual conversion.",
+    "explanation": "",
+    "realWorldExample": "if (obj is Order order && order.Total > 100) — test and cast in one expression.",
+    "followUpQuestions": [
+      "How does 'is' with pattern matching differ from classic 'is'?"
+    ]
+  },
+  {
+    "id": "C#-46",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is method hiding (new keyword)?",
+    "answer": "The new keyword hides a base class method instead of overriding it. The method to call depends on the declared type of the reference, not the actual type (no runtime polymorphism).",
+    "explanation": "",
+    "realWorldExample": "Hide a logging method in a derived class without virtual — base reference calls base version.",
+    "followUpQuestions": [
+      "What is the difference between override and new?"
+    ]
+  },
+  {
+    "id": "C#-47",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is object cloning (shallow vs deep)?",
+    "answer": "Shallow clone copies field values — reference types still point to same objects. Deep clone creates new instances of all referenced objects. Object.MemberwiseClone() does shallow copy.",
+    "explanation": "",
+    "realWorldExample": "Copying an Order object — shallow copy means Items list is shared; deep copy gives independent Items.",
+    "followUpQuestions": [
+      "How do you implement deep copy in C#?"
+    ]
+  },
+  {
+    "id": "C#-48",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the IDisposable pattern?",
+    "answer": "IDisposable provides a Dispose() method for deterministic cleanup of unmanaged resources (file handles, DB connections, network sockets). Implement with try/finally or using statement.",
+    "explanation": "",
+    "realWorldExample": "SqlConnection, FileStream — implement IDisposable to release resources immediately.",
+    "followUpQuestions": [
+      "What is the Dispose pattern with a finalizer?"
+    ]
+  },
+  {
+    "id": "C#-49",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between String.Empty and \"\"?",
+    "answer": "String.Empty is a static read-only field; \"\" is a string literal. Both represent empty strings. At runtime, they are the same object due to string interning. Prefer String.Empty for clarity and to avoid typos.",
+    "explanation": "",
+    "realWorldExample": "Validating form input — IsNullOrWhiteSpace catches spaces-only submissions.",
+    "followUpQuestions": [
+      "What is String.IsNullOrEmpty vs IsNullOrWhiteSpace?"
+    ]
+  },
+  {
+    "id": "C#-50",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are attributes in C#?",
+    "answer": "Attributes add metadata to code elements (classes, methods, properties). Applied with [AttributeName] syntax. Read at runtime via reflection. Common: [Obsolete], [Serializable], [Required], [HttpGet].",
+    "explanation": "",
+    "realWorldExample": "[Required], [MaxLength] in ASP.NET model validation — data annotations are attributes.\n\n--------------------------------------------------------------------\nINTERMEDIATE QUESTIONS (51-100)\n--------------------------------------------------------------------",
+    "followUpQuestions": [
+      "How do you create a custom attribute?"
+    ]
+  },
+  {
+    "id": "C#-51",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "Explain the IEnumerable<T> and IEnumerator<T> relationship.",
+    "answer": "IEnumerable<T> exposes GetEnumerator() which returns IEnumerator<T>. IEnumerator<T> provides MoveNext(), Current, and Reset(). foreach calls GetEnumerator() and iterates via MoveNext()/Current. Implementing IEnumerable<T> makes your class foreach-able.",
+    "explanation": "",
+    "realWorldExample": "Custom paged collection that lazily fetches data from database in chunks.",
+    "followUpQuestions": [
+      "What is yield return?"
+    ]
+  },
+  {
+    "id": "C#-52",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between Task and Thread?",
+    "answer": "Thread is a low-level OS thread — high overhead, hard to manage. Task is a higher-level abstraction from the TPL, represents async work that may or may not use a thread. Tasks support continuations, cancellation, exception propagation. Use Task unless you need explicit thread control.",
+    "explanation": "",
+    "realWorldExample": "Web server handling 1000 concurrent requests — Tasks reuse ThreadPool threads efficiently.",
+    "followUpQuestions": [
+      "What is a ThreadPool?"
+    ]
+  },
+  {
+    "id": "C#-53",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is async/await?",
+    "answer": "async/await enables writing asynchronous code that looks synchronous. async marks a method as asynchronous. await suspends execution until the awaited Task completes without blocking the thread. Returns Task, Task<T>, or ValueTask.",
+    "explanation": "",
+    "realWorldExample": "await httpClient.GetAsync(url) — releases thread to handle other requests while waiting for HTTP response.",
+    "followUpQuestions": [
+      "What happens to the thread during await?"
+    ]
+  },
+  {
+    "id": "C#-54",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between Task.Run() and Task.Factory.StartNew()?",
+    "answer": "Task.Run is a simplified wrapper — uses ThreadPool, default scheduler, unwraps nested tasks. Task.Factory.StartNew has more options (scheduler, creation options, cancellation token) but requires explicit unwrapping for async lambdas.",
+    "explanation": "",
+    "realWorldExample": "Task.Run(() => heavyComputation()) offloads CPU work from UI/ASP.NET thread.",
+    "followUpQuestions": [
+      "What is Task.Run vs async void?"
+    ]
+  },
+  {
+    "id": "C#-55",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is ConfigureAwait(false)?",
+    "answer": "By default, await captures the synchronization context and resumes on the same thread (important in UI/ASP.NET Framework). ConfigureAwait(false) skips context capture — more efficient in library code. In ASP.NET Core, there is no sync context, so it matters less.",
+    "explanation": "",
+    "realWorldExample": "Library code awaiting HTTP calls — use ConfigureAwait(false) to avoid deadlocks in Framework callers.",
+    "followUpQuestions": [
+      "When should you NOT use ConfigureAwait(false)?"
+    ]
+  },
+  {
+    "id": "C#-56",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "Explain the SOLID principles.",
+    "answer": "S - Single Responsibility: A class should have only one reason to change.\nO - Open/Closed: Open for extension, closed for modification.\nL - Liskov Substitution: Derived types must be substitutable for base types.\nI - Interface Segregation: Clients should not depend on interfaces they don't use.\nD - Dependency Inversion: Depend on abstractions, not concretions.",
+    "explanation": "",
+    "realWorldExample": "Square extending Rectangle breaks LSP because setting width also changes height.",
+    "followUpQuestions": [
+      "Give an example of violating LSP.?"
+    ]
+  },
+  {
+    "id": "C#-57",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a closure in C#?",
+    "answer": "A closure is a function that captures variables from its enclosing scope. In C#, lambda expressions can capture local variables, which are \"closed over\" — they live beyond the scope of the enclosing method because the delegate holds a reference.",
+    "explanation": "",
+    "realWorldExample": "Capturing loop variable i in a lambda — use int temp = i; to capture by value.",
+    "followUpQuestions": [
+      "What is the common closure bug in loops?"
+    ]
+  },
+  {
+    "id": "C#-58",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is covariance and contravariance?",
+    "answer": "Covariance (out) allows using a more derived type where a base is expected: IEnumerable<Derived> is assignable to IEnumerable<Base>. Contravariance (in) allows using a base type where derived is expected: Action<Base> assignable to Action<Derived>.",
+    "explanation": "",
+    "realWorldExample": "IEnumerable<Dog> assigned to IEnumerable<Animal> — covariance enables this.",
+    "followUpQuestions": [
+      "Which C# interfaces support covariance?"
+    ]
+  },
+  {
+    "id": "C#-59",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is reflection?",
+    "answer": "Reflection allows runtime inspection and manipulation of types, methods, properties, and attributes. System.Reflection namespace. Use Type.GetType(), GetMethods(), GetProperties(). Powerful but slow — cache reflected members.",
+    "explanation": "",
+    "realWorldExample": "AutoMapper uses reflection to map properties. Plugin architectures use reflection to load and invoke types.",
+    "followUpQuestions": [
+      "What are the performance implications of reflection?"
+    ]
+  },
+  {
+    "id": "C#-60",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are generics constraints?",
+    "answer": "where T : class (reference type), where T : struct (value type), where T : new() (default constructor), where T : BaseClass (inheritance), where T : IInterface (contract), where T : unmanaged (C# 8, unmanaged type).",
+    "explanation": "",
+    "realWorldExample": "Generic repository: public class Repository<T> where T : class, IEntity, new()",
+    "followUpQuestions": [
+      "Can you combine multiple constraints?"
+    ]
+  },
+  {
+    "id": "C#-61",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between Func<T> and Action<T>?",
+    "answer": "Func<T> represents a method that returns a value (last type parameter is return type). Action<T> represents a void method. Predicate<T> is a special case of Func<T, bool>.",
+    "explanation": "",
+    "realWorldExample": "LINQ Where takes Func<T, bool> for in-memory, Expression<Func<T, bool>> for EF (translates to SQL).",
+    "followUpQuestions": [
+      "What is Expression<Func<T>>?"
+    ]
+  },
+  {
+    "id": "C#-62",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are immutable types?",
+    "answer": "Immutable types cannot be modified after creation. C# string is immutable. Create immutable classes by: readonly fields, private setters, no mutating methods. C# 9 records with init-only properties. Benefits: thread-safety, predictability.",
+    "explanation": "",
+    "realWorldExample": "public record Money(decimal Amount, string Currency) — immutable value object.",
+    "followUpQuestions": [
+      "What is the difference between immutable and frozen objects?"
+    ]
+  },
+  {
+    "id": "C#-63",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is thread safety and how do you achieve it?",
+    "answer": "Thread-safe code produces correct results when accessed concurrently. Techniques: lock keyword (Monitor), Interlocked for atomic operations, ConcurrentDictionary/ConcurrentQueue, volatile for visibility, Mutex, Semaphore, ReaderWriterLockSlim.",
+    "explanation": "",
+    "realWorldExample": "Incrementing a counter from multiple threads — use Interlocked.Increment() or lock.",
+    "followUpQuestions": [
+      "What is a race condition?"
+    ]
+  },
+  {
+    "id": "C#-64",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "Explain the Garbage Collector generations.",
+    "answer": "GC organizes objects into three generations: Gen0 (short-lived, collected frequently), Gen1 (survived one GC), Gen2 (long-lived, collected rarely). Large Object Heap (LOH) holds objects >= 85KB — collected with Gen2.",
+    "explanation": "",
+    "realWorldExample": "Reusing large arrays via ArrayPool<T> to avoid LOH allocations and Gen2 collections.",
+    "followUpQuestions": [
+      "What is GC pressure and how do you reduce it?"
+    ]
+  },
+  {
+    "id": "C#-65",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between shallow copy and deep copy in the context of serialization?",
+    "answer": "Serialization-based deep copy: serialize to JSON/binary and deserialize back — simple but slow. Manual deep copy: create new instances and copy fields recursively — fast but tedious. For mutable complex graphs, explicit deep copy is usually necessary.",
+    "explanation": "",
+    "realWorldExample": "Cloning entity for audit trail before modification — JSON round-trip is simplest.",
+    "followUpQuestions": [
+      "What is BinaryFormatter and why is it deprecated?"
+    ]
+  },
+  {
+    "id": "C#-66",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are named tuples vs anonymous types?",
+    "answer": "Anonymous types (new { Name = \"Alice\" }) are reference types, inferred at compile time, scope limited to method. Named tuples ((string Name, int Age)) are value types, can be returned from methods, have named members. Tuples are more flexible.",
+    "explanation": "",
+    "realWorldExample": "Grouping LINQ results in a method and returning — named tuple is appropriate.",
+    "followUpQuestions": [
+      "Can you use anonymous types across methods?"
+    ]
+  },
+  {
+    "id": "C#-67",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the IComparable and IComparer interfaces?",
+    "answer": "IComparable<T>.CompareTo() lets a type define its natural ordering. IComparer<T> is an external comparison strategy. Use IComparable for default sort; IComparer for alternate sort strategies (e.g., sort by name or by price).",
+    "explanation": "",
+    "realWorldExample": "Sorting products by multiple criteria — create PriceComparer : IComparer<Product>.",
+    "followUpQuestions": [
+      "How does List<T>.Sort() use these?"
+    ]
+  },
+  {
+    "id": "C#-68",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a memory leak in C# and when can it occur?",
+    "answer": "C# GC prevents classic leaks, but logical leaks occur: event subscriptions not removed (subscriber keeps publisher alive), static dictionaries holding objects, long-lived caches, unmanaged resources not disposed, closures capturing large objects.",
+    "explanation": "",
+    "realWorldExample": "Event handler in UI — if subscriber doesn't unsubscribe, publisher keeps it alive forever.",
+    "followUpQuestions": [
+      "How do you use WeakReference to avoid memory leaks?"
+    ]
+  },
+  {
+    "id": "C#-69",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are expression trees?",
+    "answer": "Expression trees represent code as a tree of data (Expression<Func<T>>). They can be analyzed and compiled at runtime. EF Core translates them to SQL. LINQ providers use them to convert C# to query languages.",
+    "explanation": "",
+    "realWorldExample": "EF Core: where => where.Age > 18 is an expression tree translated to WHERE Age > 18 in SQL.",
+    "followUpQuestions": [
+      "How is Expression<Func<T>> different from Func<T>?"
+    ]
+  },
+  {
+    "id": "C#-70",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the dynamic keyword?",
+    "answer": "dynamic bypasses compile-time type checking — resolved at runtime via DLR (Dynamic Language Runtime). Useful for COM interop, JSON, and reflection-heavy code. No IntelliSense; runtime errors instead of compile-time.",
+    "explanation": "",
+    "realWorldExample": "Reading JSON properties in older code: dynamic json = JsonConvert.DeserializeObject(str); json.Name.",
+    "followUpQuestions": [
+      "What is the performance cost of dynamic?"
+    ]
+  },
+  {
+    "id": "C#-71",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between checked and unchecked?",
+    "answer": "checked throws OverflowException on arithmetic overflow. unchecked (default) silently wraps around. Use checked when overflow indicates a bug; unchecked for performance in known-safe code.",
+    "explanation": "",
+    "realWorldExample": "checked { int result = int.MaxValue + 1; } — throws, prevents silent data corruption.",
+    "followUpQuestions": [
+      "How do you enable checked globally?"
+    ]
+  },
+  {
+    "id": "C#-72",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a weak reference?",
+    "answer": "WeakReference<T> lets you hold a reference to an object without preventing GC from collecting it. The object may be collected; use TryGetTarget() to check if still alive.",
+    "explanation": "",
+    "realWorldExample": "Cache implementation — hold weak references to cached objects; GC can reclaim under pressure.",
+    "followUpQuestions": [
+      "What is the difference between WeakReference and WeakReference<T>?"
+    ]
+  },
+  {
+    "id": "C#-73",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is operator overloading?",
+    "answer": "Operator overloading allows defining custom behavior for operators (+, -, ==, etc.) for your types. Use public static ReturnType operator+(Type a, Type b). Only makes sense when semantics are intuitive.",
+    "explanation": "",
+    "realWorldExample": "Vector struct with + overloaded for vector addition: v1 + v2.",
+    "followUpQuestions": [
+      "Which operators can NOT be overloaded?"
+    ]
+  },
+  {
+    "id": "C#-74",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the volatile keyword?",
+    "answer": "volatile ensures that reads/writes to a field are not reordered by the compiler or CPU, and that all threads see the most recent value. Weaker than lock — no atomicity guarantee for compound operations.",
+    "explanation": "",
+    "realWorldExample": "private volatile bool _running; — simple flag read by multiple threads.",
+    "followUpQuestions": [
+      "When is volatile insufficient?"
+    ]
+  },
+  {
+    "id": "C#-75",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a lazy initialization (Lazy<T>)?",
+    "answer": "Lazy<T> defers creation of an expensive object until first use. Thread-safe by default. Access via .Value. Once initialized, returns the same instance.",
+    "explanation": "",
+    "realWorldExample": "Lazy<HeavyService> — service created only if code path that needs it is actually reached.",
+    "followUpQuestions": [
+      "What are the thread-safety modes of Lazy<T>?"
+    ]
+  },
+  {
+    "id": "C#-76",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is Span<T> and Memory<T>?",
+    "answer": "Span<T> is a stack-only type representing a contiguous region of memory (array slice, stack memory, unmanaged). No heap allocation. Memory<T> is the heap-safe version. Both avoid copies for performance-critical code.",
+    "explanation": "",
+    "realWorldExample": "Parsing a byte stream — use Span<byte> to slice without allocating new arrays.",
+    "followUpQuestions": [
+      "Why can't Span<T> be used as a class field?"
+    ]
+  },
+  {
+    "id": "C#-77",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are nullable reference types (C# 8)?",
+    "answer": "Nullable reference types add compile-time null-safety. Enabled with <Nullable>enable</Nullable>. string is non-nullable; string? is nullable. Compiler warns on potential null dereferences. Does not affect runtime.",
+    "explanation": "",
+    "realWorldExample": "API parameter: string name (never null), string? description (optional). Catch null bugs at compile time.",
+    "followUpQuestions": [
+      "How do you handle migrating existing code to nullable reference types?"
+    ]
+  },
+  {
+    "id": "C#-78",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are source generators?",
+    "answer": "Source generators run during compilation and produce additional C# code. Roslyn-based. Used by EF Core (model snapshots), System.Text.Json (serialization), AutoMapper. No runtime reflection — zero-overhead generated code.",
+    "explanation": "",
+    "realWorldExample": "System.Text.Json uses source generators to produce serialization code at compile time.",
+    "followUpQuestions": [
+      "How are source generators different from T4 templates?"
+    ]
+  },
+  {
+    "id": "C#-79",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between ICollection<T> and IList<T>?",
+    "answer": "ICollection<T> adds Count, Add, Remove, Contains to IEnumerable<T>. IList<T> adds index-based access (this[int], IndexOf, Insert, RemoveAt) to ICollection<T>. Use the least-specific interface that satisfies your needs.",
+    "explanation": "",
+    "realWorldExample": "Return IReadOnlyList<Order> from a repository — caller cannot modify the collection.",
+    "followUpQuestions": [
+      "What does ReadOnlyCollection<T> give you?"
+    ]
+  },
+  {
+    "id": "C#-80",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "Explain memory allocation for value types inside classes.",
+    "answer": "When a value type (struct, int) is a field of a class, it is allocated inline on the heap as part of the class object. Stack allocation only occurs for local variables and method parameters. Boxing occurs when a value type is assigned to object or interface reference.",
+    "explanation": "",
+    "realWorldExample": "Dictionary<string, int> — int is stored inline in the value slot, no boxing.",
+    "followUpQuestions": [
+      "What is the GC cost of boxing?"
+    ]
+  },
+  {
+    "id": "C#-81",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is CancellationToken?",
+    "answer": "CancellationToken enables cooperative cancellation of async operations. A CancellationTokenSource creates and controls the token. Pass the token to async methods; they check IsCancellationRequested or call ThrowIfCancellationRequested().",
+    "explanation": "",
+    "realWorldExample": "HTTP request handler — accept CancellationToken from Request.HttpContext.RequestAborted.",
+    "followUpQuestions": [
+      "What happens if you don't honor a cancellation token?"
+    ]
+  },
+  {
+    "id": "C#-82",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between Parallel.ForEach and async foreach?",
+    "answer": "Parallel.ForEach uses multiple threads for CPU-bound work (data parallelism). async/await foreach (IAsyncEnumerable<T>) is for I/O-bound async streams. Don't use Parallel.ForEach with async lambdas — use Task.WhenAll instead.",
+    "explanation": "",
+    "realWorldExample": "Image processing — Parallel.ForEach to resize 1000 images using all CPU cores.",
+    "followUpQuestions": [
+      "What is Parallel.For vs Parallel.ForEach?"
+    ]
+  },
+  {
+    "id": "C#-83",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the Observer pattern and how does C# events implement it?",
+    "answer": "Observer pattern: subject (publisher) notifies observers (subscribers) of state changes. C# events are built-in observer implementation. event keyword wraps a delegate, restricts external +=/−= only, publisher-only raise.",
+    "explanation": "",
+    "realWorldExample": "INotifyPropertyChanged — raises PropertyChanged event when ViewModel properties change.",
+    "followUpQuestions": [
+      "What are the pitfalls of C# events?"
+    ]
+  },
+  {
+    "id": "C#-84",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the Repository pattern?",
+    "answer": "Repository abstracts data access logic behind an interface. Clients depend on IRepository<T> not on DbContext directly. Benefits: testability (mock repositories), separation of concerns, consistent data access API.",
+    "explanation": "",
+    "realWorldExample": "IOrderRepository with Add, GetById, GetAll methods — SQL/InMemory implementations interchangeable.",
+    "followUpQuestions": [
+      "What is the Unit of Work pattern?"
+    ]
+  },
+  {
+    "id": "C#-85",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is Dependency Injection (DI)?",
+    "answer": "DI is passing dependencies into a class rather than creating them internally. Promotes loose coupling. ASP.NET Core has built-in IoC container. Register services as Transient (new each time), Scoped (per request), Singleton (application lifetime).",
+    "explanation": "",
+    "realWorldExample": "OrderService receives IOrderRepository via constructor — decoupled, testable with mocks.",
+    "followUpQuestions": [
+      "What is the difference between constructor injection and property injection?"
+    ]
+  },
+  {
+    "id": "C#-86",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between Transient, Scoped, and Singleton lifetimes?",
+    "answer": "Transient: new instance every time requested. Scoped: same instance per HTTP request (web) or scope. Singleton: one instance for the app lifetime. Caution: injecting Transient into Singleton (\"captive dependency\") causes bugs.",
+    "explanation": "",
+    "realWorldExample": "DbContext is typically Scoped — one per request to track changes correctly.",
+    "followUpQuestions": [
+      "What is a \"captive dependency\"?"
+    ]
+  },
+  {
+    "id": "C#-87",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are IOptions<T>, IOptionsMonitor<T>, IOptionsSnapshot<T>?",
+    "answer": "IOptions<T>: singleton, reads config once. IOptionsSnapshot<T>: scoped, reloads per request. IOptionsMonitor<T>: singleton with change notification. Use IOptionsMonitor<T> for background services that need live config updates.",
+    "explanation": "",
+    "realWorldExample": "Feature flags via IOptionsMonitor<T> — service reacts to config file changes without restart.",
+    "followUpQuestions": [
+      "How do you validate options on startup?"
+    ]
+  },
+  {
+    "id": "C#-88",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is middleware in ASP.NET Core?",
+    "answer": "Middleware is a pipeline of components that handle HTTP requests and responses. Each component calls next() to pass to the next or short-circuits. Built-in: routing, auth, logging, CORS. Custom: implements Invoke(HttpContext, RequestDelegate).",
+    "explanation": "",
+    "realWorldExample": "Request logging middleware — log before processing, log response after all other middleware.",
+    "followUpQuestions": [
+      "What is the order of middleware execution?"
+    ]
+  },
+  {
+    "id": "C#-89",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between IActionResult and ActionResult<T>?",
+    "answer": "IActionResult is the base interface — return any result type (Ok, NotFound, BadRequest). ActionResult<T> (ASP.NET Core 2.1+) allows returning T directly or an IActionResult — better for Swagger generation and type safety.",
+    "explanation": "",
+    "realWorldExample": "ActionResult<OrderDto> — either returns 200 with order or 404 — Swagger generates accurate schema.",
+    "followUpQuestions": [
+      "What is ProducesResponseType attribute?"
+    ]
+  },
+  {
+    "id": "C#-90",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is model validation in ASP.NET Core?",
+    "answer": "Data annotations ([Required], [Range], [MaxLength]) on model properties. ModelState.IsValid checks validation. [ApiController] attribute automatically returns 400 for invalid models. Custom: IValidatableObject or FluentValidation.",
+    "explanation": "",
+    "realWorldExample": "OrderRequest validation — complex cross-field rules (if PaymentType == CreditCard, then CardNumber required).",
+    "followUpQuestions": [
+      "What is FluentValidation and when would you use it over data annotations?"
+    ]
+  },
+  {
+    "id": "C#-91",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is CORS and how do you configure it in ASP.NET Core?",
+    "answer": "CORS (Cross-Origin Resource Sharing) controls which origins can call your API. Configured via builder.Services.AddCors() with policies. Applied globally (UseRouting/UseCors order matters) or per-controller with [EnableCors].",
+    "explanation": "",
+    "realWorldExample": "React SPA on localhost:3000 calling API on localhost:5000 — CORS policy needed.",
+    "followUpQuestions": [
+      "What is the difference between simple and preflight CORS requests?"
+    ]
+  },
+  {
+    "id": "C#-92",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is JWT authentication?",
+    "answer": "JWT (JSON Web Token) is a stateless token containing header.payload.signature. ASP.NET Core: install Microsoft.AspNetCore.Authentication.JwtBearer, configure AddAuthentication+AddJwtBearer, use [Authorize] attribute. Validate signature, expiry, issuer, audience.",
+    "explanation": "",
+    "realWorldExample": "User logs in → receives JWT → sends JWT in Authorization header → API validates → grants access.",
+    "followUpQuestions": [
+      "What is the difference between authentication and authorization?"
+    ]
+  },
+  {
+    "id": "C#-93",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is Entity Framework Core change tracking?",
+    "answer": "EF Core tracks entities in four states: Added, Modified, Deleted, Unchanged. DbContext.ChangeTracker records changes. SaveChanges() generates SQL based on state. AsNoTracking() disables tracking for read-only queries (performance).",
+    "explanation": "",
+    "realWorldExample": "Admin dashboard read-only queries — use AsNoTracking() for 30% performance improvement.",
+    "followUpQuestions": [
+      "What are the dangers of attaching entities to multiple contexts?"
+    ]
+  },
+  {
+    "id": "C#-94",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a migration in EF Core?",
+    "answer": "Migrations are code files that represent incremental database schema changes. Add-Migration creates a migration class with Up() and Down() methods. Update-Database applies migrations. MigrationHistory table tracks applied migrations.",
+    "explanation": "",
+    "realWorldExample": "Adding a new column via Add-Migration AddOrderStatus; Update-Database — EF generates ALTER TABLE.",
+    "followUpQuestions": [
+      "How do you handle migrations in production?"
+    ]
+  },
+  {
+    "id": "C#-95",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is lazy loading vs eager loading in EF Core?",
+    "answer": "Lazy loading: related data loaded on first access (requires proxies, N+1 risk). Eager loading: Include() fetches related data in single query. Explicit loading: Load() fetches on demand. Prefer eager loading for known required data.",
+    "explanation": "",
+    "realWorldExample": "Loading orders with customers — without Include(o => o.Customer): N+1 queries. With Include: 1 query.",
+    "followUpQuestions": [
+      "What is the N+1 query problem?"
+    ]
+  },
+  {
+    "id": "C#-96",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is caching and how do you implement it in ASP.NET Core?",
+    "answer": "Caching stores computed results to avoid recomputation. In-memory: IMemoryCache (single server). Distributed: IDistributedCache with Redis (multi-server). Response caching: cache entire HTTP responses. Cache-aside pattern is most common.",
+    "explanation": "",
+    "realWorldExample": "Product catalog — cache in Redis with 5-minute sliding expiration; on update, invalidate cache key.",
+    "followUpQuestions": [
+      "What is cache eviction policy?"
+    ]
+  },
+  {
+    "id": "C#-97",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between AddDbContext and AddDbContextFactory?",
+    "answer": "AddDbContext: one DbContext per scope (HTTP request). AddDbContextFactory: creates contexts on demand — useful for background services, Blazor, or when you need multiple contexts per scope.",
+    "explanation": "",
+    "realWorldExample": "Background job service using IDbContextFactory to create a new context for each batch.",
+    "followUpQuestions": [
+      "Why is DbContext not thread-safe?"
+    ]
+  },
+  {
+    "id": "C#-98",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are indexes in SQL Server and how do EF Core fluent APIs configure them?",
+    "answer": "Clustered index (one per table, physical row order), non-clustered (separate B-tree). EF Core: modelBuilder.Entity<Order>().HasIndex(o => o.CustomerId) creates non-clustered index. Include columns for covering indexes.",
+    "explanation": "",
+    "realWorldExample": "Index on Orders.CustomerId for customer order lookup — prevents full table scan.",
+    "followUpQuestions": [
+      "What is an index covering query?"
+    ]
+  },
+  {
+    "id": "C#-99",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is AutoMapper and when would you use it?",
+    "answer": "AutoMapper maps properties from one object to another (entity to DTO and vice versa). Reduces boilerplate mapping code. Configure with CreateMap<Source, Dest>(). Use ProjectTo<T>() for EF queries to avoid loading unnecessary columns.",
+    "explanation": "",
+    "realWorldExample": "OrderEntity → OrderDto mapping — keeps API contract separate from database model.",
+    "followUpQuestions": [
+      "What are the drawbacks of AutoMapper?"
+    ]
+  },
+  {
+    "id": "C#-100",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is MediatR and CQRS?",
+    "answer": "MediatR is a mediator library implementing CQRS (Commands/Queries sent through IMediator.Send()). Commands change state; Queries return data. Decouples sender from handler. Supports pipeline behaviors for cross-cutting concerns (logging, validation).",
+    "explanation": "",
+    "realWorldExample": "CreateOrderCommand → CreateOrderCommandHandler — handler validates, saves, raises domain event.\n\n--------------------------------------------------------------------\nADVANCED QUESTIONS (101-150)\n--------------------------------------------------------------------",
+    "followUpQuestions": [
+      "What is the difference between MediatR and a service layer?"
+    ]
+  },
+  {
+    "id": "C#-101",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "How does the CLR JIT compiler work?",
+    "answer": "CLR compiles IL (Intermediate Language) to native machine code at runtime via JIT (Just-In-Time) compilation. First call to a method triggers JIT; subsequent calls use cached native code. RyuJIT is the current JIT for .NET. .NET 6+ includes tiered compilation: initially interpreted or tier-0 JIT, then optimized tier-1 JIT for hot methods.",
+    "explanation": "",
+    "realWorldExample": ".NET Native for UWP, NativeAOT in .NET 7+, ReadyToRun — reduce startup time.",
+    "followUpQuestions": [
+      "What is ahead-of-time (AOT) compilation in .NET?"
+    ]
+  },
+  {
+    "id": "C#-102",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "Explain the .NET memory model and CPU cache coherency.",
+    "answer": ".NET memory model defines rules for how threads observe memory writes. volatile, Interlocked, lock, and Thread.MemoryBarrier() create memory barriers (fences) that prevent compiler/CPU reordering. Needed because CPUs have private caches; writes may not be immediately visible to other cores.",
+    "explanation": "",
+    "realWorldExample": "Lock-free data structures — release fence after write, acquire fence before read.",
+    "followUpQuestions": [
+      "What is the difference between acquire and release semantics?"
+    ]
+  },
+  {
+    "id": "C#-103",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between Monitor, Mutex, and Semaphore?",
+    "answer": "Monitor (lock keyword): fast, in-process, single thread at a time. Mutex: OS-level, cross-process synchronization, slower. Semaphore/SemaphoreSlim: allows N concurrent threads. SemaphoreSlim supports async (WaitAsync). Use Monitor for intra-process; Mutex for cross-process.",
+    "explanation": "",
+    "realWorldExample": "SemaphoreSlim(10) to limit concurrent external API calls to 10 at a time.",
+    "followUpQuestions": [
+      "What is Monitor.TryEnter used for?"
+    ]
+  },
+  {
+    "id": "C#-104",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is unsafe code in C#?",
+    "answer": "unsafe blocks allow pointer arithmetic, direct memory access, and interfacing with unmanaged code. Enabled with AllowUnsafeBlocks compiler option. Requires pinning managed objects with fixed statement to prevent GC from moving them during pointer operations.",
+    "explanation": "",
+    "realWorldExample": "High-performance image processing — directly manipulate pixel bytes via pointer for orders-of-magnitude speedup.",
+    "followUpQuestions": [
+      "What is the fixed statement and when do you need it?"
+    ]
+  },
+  {
+    "id": "C#-105",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "Explain how EF Core query translation works.",
+    "answer": "EF Core uses IQueryable<T> with LINQ expression trees. QueryTranslationPreprocessor normalizes expressions. RelationalQueryTranslatingExpressionVisitor converts to relational expression. SqlExpressionFactory generates SQL AST. IQuerySqlGenerator renders final SQL string with parameters.",
+    "explanation": "",
+    "realWorldExample": "Complex LINQ that can't be translated — AsEnumerable() to bring into memory, then filter.",
+    "followUpQuestions": [
+      "What are the limitations of EF Core query translation?"
+    ]
+  },
+  {
+    "id": "C#-106",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the garbage collector's tri-color marking algorithm?",
+    "answer": "The GC uses tri-color marking: White (not yet visited — candidates for collection), Gray (discovered but children not yet processed), Black (fully processed — referenced by roots). Starts from roots (stack, statics), marks reachable objects. White objects remaining after traversal are garbage.",
+    "explanation": "",
+    "realWorldExample": "Understanding card tables and write barriers helps diagnose GC pauses in high-throughput services.",
+    "followUpQuestions": [
+      "What is the write barrier in GC?"
+    ]
+  },
+  {
+    "id": "C#-107",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a lock-free data structure?",
+    "answer": "Lock-free structures use atomic operations (Interlocked.CompareExchange) instead of locks. No thread blocks — threads retry on contention. ConcurrentQueue<T>, ConcurrentStack<T> use lock-free algorithms internally. Harder to implement correctly; avoid unless profiling shows lock contention.",
+    "explanation": "",
+    "realWorldExample": "High-frequency trading — ConcurrentQueue for order events to avoid lock overhead.",
+    "followUpQuestions": [
+      "What is the ABA problem?"
+    ]
+  },
+  {
+    "id": "C#-108",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between IAsyncEnumerable<T> and Task<IEnumerable<T>>?",
+    "answer": "Task<IEnumerable<T>>: completes when all data is available — buffered in memory. IAsyncEnumerable<T>: streams items one at a time asynchronously — lower memory, faster first-item latency. Use with await foreach. EF Core 3+ supports IAsyncEnumerable.",
+    "explanation": "",
+    "realWorldExample": "Streaming 1M database rows — IAsyncEnumerable processes row-by-row, not loading all into RAM.",
+    "followUpQuestions": [
+      "How does backpressure work with IAsyncEnumerable?"
+    ]
+  },
+  {
+    "id": "C#-109",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "Explain the ASP.NET Core request pipeline internals.",
+    "answer": "Kestrel (or IIS) receives socket data, passes to HttpContext. Middleware pipeline processes in registration order. Endpoint routing matches URL to controller/action. Model binding, action filters, action execution, result filters, exception filters. Response written back through the pipeline.",
+    "explanation": "",
+    "realWorldExample": "Auth middleware runs before routing; action filters run around controller actions only.",
+    "followUpQuestions": [
+      "What is the difference between middleware and action filters?"
+    ]
+  },
+  {
+    "id": "C#-110",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is gRPC and when would you use it over REST?",
+    "answer": "gRPC uses HTTP/2 and Protocol Buffers (binary serialization). Faster than JSON REST (binary + multiplexing). Supports streaming (server, client, bidirectional). Use when: inter-service communication, performance-critical, streaming needed. Not browser-friendly without grpc-web.",
+    "explanation": "",
+    "realWorldExample": "Microservice-to-microservice communication — gRPC reduces payload size and latency vs REST/JSON.",
+    "followUpQuestions": [
+      "What is Protocol Buffers and how does it differ from JSON?"
+    ]
+  },
+  {
+    "id": "C#-111",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is SignalR and WebSockets?",
+    "answer": "WebSocket: full-duplex persistent TCP connection over HTTP port. SignalR is ASP.NET Core library abstracting WebSockets, Server-Sent Events, Long Polling. Supports Hubs (RPC-like) and groups. Use for real-time features: chat, live dashboards, notifications.",
+    "explanation": "",
+    "realWorldExample": "Live driver status dashboard — SignalR pushes updates to all connected browsers instantly.",
+    "followUpQuestions": [
+      "What is the difference between Hub and persistent connection in SignalR?"
+    ]
+  },
+  {
+    "id": "C#-112",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is source-generated serialization in System.Text.Json?",
+    "answer": "C# source generators create serialization code at compile time via [JsonSourceGenerationOptions] and JsonSerializerContext. Eliminates runtime reflection — faster startup, better AOT compatibility, reduced allocations. Required for NativeAOT scenarios.",
+    "explanation": "",
+    "realWorldExample": "High-throughput API serializing millions of responses — source-generated JSON is 2-3x faster.",
+    "followUpQuestions": [
+      "What are the trade-offs of source-generated vs reflection-based serialization?"
+    ]
+  },
+  {
+    "id": "C#-113",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "Explain the Channel<T> data structure.",
+    "answer": "System.Threading.Channels.Channel<T> is a thread-safe producer-consumer queue. CreateBounded (backpressure) or CreateUnbounded. ChannelWriter<T> for producers, ChannelReader<T> for consumers. Supports async reading/writing. More efficient than BlockingCollection<T> for async scenarios.",
+    "explanation": "",
+    "realWorldExample": "Log aggregation pipeline — producers write log entries, consumer batches writes to disk.",
+    "followUpQuestions": [
+      "When would you use Channel<T> vs ConcurrentQueue<T>?"
+    ]
+  },
+  {
+    "id": "C#-114",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the actor model and how can it be applied in C#?",
+    "answer": "Actor model: each actor is an isolated unit with its own state, communicating only via messages. No shared state — eliminates locks. In C#: Orleans (virtual actors/grains), Akka.NET. Actors process one message at a time, no concurrency within actor.",
+    "explanation": "",
+    "realWorldExample": "Online game server — each player is an Orleans grain with own state, handling events sequentially.",
+    "followUpQuestions": [
+      "What is Microsoft Orleans?"
+    ]
+  },
+  {
+    "id": "C#-115",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between SemaphoreSlim and RateLimiter (ASP.NET Core 7)?",
+    "answer": "SemaphoreSlim controls concurrent access count. System.Threading.RateLimiting (ASP.NET Core 7) provides: TokenBucketRateLimiter (burst), FixedWindowRateLimiter, SlidingWindowRateLimiter, ConcurrencyLimiter. RateLimiter is more expressive and designed for API rate limiting.",
+    "explanation": "",
+    "realWorldExample": "API gateway — RateLimiter.AcquireAsync() before forwarding external requests.",
+    "followUpQuestions": [
+      "How do you implement per-user rate limiting?"
+    ]
+  },
+  {
+    "id": "C#-116",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the MemoryMarshal class and how is it used?",
+    "answer": "MemoryMarshal (System.Runtime.InteropServices) provides zero-copy reinterpretation of memory: MemoryMarshal.Cast<byte, int> reinterprets byte span as int span without copying. GetReference() gets a managed pointer to span start. Used for high-performance binary parsing.",
+    "explanation": "",
+    "realWorldExample": "Network packet parsing — reinterpret byte buffer as struct layout without copying.",
+    "followUpQuestions": [
+      "What are the safety considerations with MemoryMarshal?"
+    ]
+  },
+  {
+    "id": "C#-117",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "Explain how EF Core handles concurrency conflicts.",
+    "answer": "Optimistic concurrency: add [ConcurrencyCheck] or rowversion/timestamp column. EF Core generates WHERE clause including the original value. If row changed by another transaction, SaveChanges() throws DbUpdateConcurrencyException. Retry with refreshed values or report conflict.",
+    "explanation": "",
+    "realWorldExample": "Two users editing same order — rowversion prevents silent data overwrite; user shown \"record was modified.\"",
+    "followUpQuestions": [
+      "What is pessimistic concurrency?"
+    ]
+  },
+  {
+    "id": "C#-118",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are IHostedService and BackgroundService?",
+    "answer": "IHostedService defines Start/Stop for background work. BackgroundService is a base class implementing IHostedService with an ExecuteAsync(CancellationToken) method. Register with AddHostedService<T>(). Runs alongside the web server. Use for polling, message consuming, scheduled tasks.",
+    "explanation": "",
+    "realWorldExample": "Order status sync background service — runs every minute, fetches shipping API, updates database.",
+    "followUpQuestions": [
+      "What is the Quartz.NET alternative?"
+    ]
+  },
+  {
+    "id": "C#-119",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between throw and ExceptionDispatchInfo.Capture().Throw()?",
+    "answer": "throw; rethrows preserving stack trace. ExceptionDispatchInfo.Capture(ex).Throw() rethrows with original stack trace even from a different location/thread. Useful when catching an exception, storing it, and rethrowing from a different async context.",
+    "explanation": "",
+    "realWorldExample": "Aggregating exceptions from parallel tasks — preserve original stack trace when rethrowing.",
+    "followUpQuestions": [
+      "When does await lose the original exception stack trace?"
+    ]
+  },
+  {
+    "id": "C#-120",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is Roslyn and how can you write code analyzers?",
+    "answer": "Roslyn is the .NET compiler platform with public APIs for syntax trees, semantic models, and symbol analysis. Write DiagnosticAnalyzers to report code issues at compile time. CodeFixProviders suggest fixes. Deployed as NuGet packages. StyleCop, Roslynator are examples.",
+    "explanation": "",
+    "realWorldExample": "Enforce company coding standards — analyzer warns when async methods don't have Async suffix.",
+    "followUpQuestions": [
+      "What is a syntax tree in Roslyn?"
+    ]
+  },
+  {
+    "id": "C#-121",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between ValueTask and Task?",
+    "answer": "Task always allocates heap memory. ValueTask avoids allocation when result is already available (synchronously completed path). Use ValueTask for hot paths where most calls complete synchronously. Don't await ValueTask more than once; don't cache unless converting to Task.",
+    "explanation": "",
+    "realWorldExample": "High-frequency cache lookup — ValueTask<T> returns cached value synchronously without allocation.",
+    "followUpQuestions": [
+      "What is PooledValueTask?"
+    ]
+  },
+  {
+    "id": "C#-122",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the purpose of [SkipLocalsInit] attribute?",
+    "answer": "By default, .NET zero-initializes stack-allocated memory. [SkipLocalsInit] (requires unsafe) skips this initialization for performance in tight loops. Risky — read uninitialized memory. Use only in well-analyzed hot paths. Introduced in C# 9.",
+    "explanation": "",
+    "realWorldExample": "Parsing millions of network packets — avoid zero-init cost for temporary buffers.",
+    "followUpQuestions": [
+      "What other low-level attributes affect codegen?"
+    ]
+  },
+  {
+    "id": "C#-123",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "Explain how P/Invoke works.",
+    "answer": "P/Invoke (Platform Invocation Services) allows calling native DLL functions from C#. [DllImport(\"kernel32.dll\")] attribute on extern method declaration. Marshaler converts .NET types to native types automatically or via custom MarshalAs attributes. Calling convention, entry point, charset configurable.",
+    "explanation": "",
+    "realWorldExample": "Call WinAPI CreateFile for low-level file access not exposed by .NET BCL.",
+    "followUpQuestions": [
+      "What is the LibraryImport attribute (C# 11)?"
+    ]
+  },
+  {
+    "id": "C#-124",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between Thread.Abort() and CancellationToken?",
+    "answer": "Thread.Abort() (deprecated in .NET Core) throws ThreadAbortException anywhere — unsafe, leaves resources uncleaned, unpredictable. CancellationToken is cooperative — code checks voluntarily. Cannot force cancellation but respects resource cleanup and exception safety.",
+    "explanation": "",
+    "realWorldExample": "Long-running database query — pass CancellationToken; query checks at safe yield points.",
+    "followUpQuestions": [
+      "Why was Thread.Abort removed in .NET Core?"
+    ]
+  },
+  {
+    "id": "C#-125",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is tiered compilation in .NET?",
+    "answer": "Tiered compilation improves startup time by initially using fast, unoptimized code (Tier-0) and later recompiling hot methods with full optimizations (Tier-1) in background. Profile-guided optimization (PGO) in .NET 6+ further improves by optimizing based on actual runtime behavior.",
+    "explanation": "",
+    "realWorldExample": "ASP.NET Core startup — tiered compilation lets the process start fast, optimize hot paths later.",
+    "followUpQuestions": [
+      "What is Dynamic PGO in .NET 6+?"
+    ]
+  },
+  {
+    "id": "C#-126",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "Explain the concept of phantom reads, dirty reads, and non-repeatable reads.",
+    "answer": "Dirty read: read uncommitted data. Non-repeatable read: read same row twice, get different values (another transaction modified it). Phantom read: query returns different rows because another transaction inserted/deleted rows matching criteria. SQL isolation levels address these.",
+    "explanation": "",
+    "realWorldExample": "Inventory system — phantom reads cause over-selling; SERIALIZABLE or SNAPSHOT prevents it.",
+    "followUpQuestions": [
+      "What isolation levels does SQL Server support?"
+    ]
+  },
+  {
+    "id": "C#-127",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is CQRS and how does it scale?",
+    "answer": "CQRS separates command (write) and query (read) models. Command side: handles writes, strong consistency. Query side: denormalized read models, eventually consistent. Scales independently — read replicas for queries, write primary for commands. Event sourcing often paired with CQRS.",
+    "explanation": "",
+    "realWorldExample": "E-commerce: writes go to SQL Server; reads from Elasticsearch read model — 10x query performance.",
+    "followUpQuestions": [
+      "What are the downsides of CQRS?"
+    ]
+  },
+  {
+    "id": "C#-128",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is event sourcing?",
+    "answer": "Event sourcing stores all state changes as immutable events. Current state = replay of all events. Benefits: complete audit trail, time travel (replay to any point), event-driven integration. Challenges: eventual consistency, schema evolution, projection performance.",
+    "explanation": "",
+    "realWorldExample": "Bank account — store Deposited, Withdrawn events rather than current balance; replay for balance.",
+    "followUpQuestions": [
+      "What is a projection in event sourcing?"
+    ]
+  },
+  {
+    "id": "C#-129",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between optimistic and pessimistic locking at the application level?",
+    "answer": "Optimistic: read data, process, check at save time if data was changed (rowversion). No lock held during processing — good for low-contention. Pessimistic: lock row at read time (SELECT FOR UPDATE / UPDLOCK) — hold lock until save. Good for high-contention, but reduces concurrency.",
+    "explanation": "",
+    "realWorldExample": "High-concurrency ticket booking — optimistic concurrency prevents double booking without lock contention.",
+    "followUpQuestions": [
+      "What is SNAPSHOT isolation in SQL Server?"
+    ]
+  },
+  {
+    "id": "C#-130",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are common performance anti-patterns in C#?",
+    "answer": "String concatenation in loops (use StringBuilder). Select N+1 in EF (use Include). Synchronous I/O in async context. Boxing/unboxing in hot paths. Unnecessary ToList() on IQueryable. Not using IAsyncEnumerable for large result sets. Holding locks too long. Missing indexes. Reflection in hot paths.",
+    "explanation": "",
+    "realWorldExample": "API response time increased — profile with dotnet-trace, find 80% time in string formatting.",
+    "followUpQuestions": [
+      "How do you profile a .NET application?"
+    ]
+  },
+  {
+    "id": "C#-131",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a memory pool (ArrayPool<T>)?",
+    "answer": "ArrayPool<T>.Shared.Rent(minLength) returns a pooled array from a shared pool. Return with Return(array). Avoids repeated heap allocations for temporary buffers. Critical for high-throughput scenarios to reduce GC pressure.",
+    "explanation": "",
+    "realWorldExample": "Network protocol parsing — rent byte arrays for each packet, return after processing.",
+    "followUpQuestions": [
+      "What is MemoryPool<T>?"
+    ]
+  },
+  {
+    "id": "C#-132",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between abstract factory and factory method patterns?",
+    "answer": "Factory Method: defines an interface for creating an object but lets subclasses decide which class to instantiate. Abstract Factory: provides interface for creating families of related objects. Abstract Factory uses composition; Factory Method uses inheritance.",
+    "explanation": "",
+    "realWorldExample": "Abstract Factory: UI toolkit factory for Windows/Linux (Button, ScrollBar families). Factory Method: Logger factory (FileLogger, ConsoleLogger).",
+    "followUpQuestions": [
+      "When would you prefer one over the other?"
+    ]
+  },
+  {
+    "id": "C#-133",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the Decorator pattern and how does ASP.NET Core middleware use it?",
+    "answer": "Decorator wraps an object with additional behavior without modifying it, implementing the same interface. ASP.NET Core middleware is a form of decorator — each middleware wraps the next, adding request/response processing. Also used in retry policies, logging, caching wrappers.",
+    "explanation": "",
+    "realWorldExample": "CachingRepository wraps Repository — adds caching without modifying Repository.",
+    "followUpQuestions": [
+      "How does Scrutor library simplify decorator registration in .NET DI?"
+    ]
+  },
+  {
+    "id": "C#-134",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the Strategy pattern?",
+    "answer": "Strategy defines a family of algorithms, encapsulates each, and makes them interchangeable. Clients select strategy at runtime. Eliminates conditionals. Common in sorting, payment processing, compression.",
+    "explanation": "",
+    "realWorldExample": "PaymentService with IPaymentStrategy — CreditCard, PayPal, Crypto strategies swappable.",
+    "followUpQuestions": [
+      "How does the Strategy pattern relate to Func<T>?"
+    ]
+  },
+  {
+    "id": "C#-135",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the Builder pattern?",
+    "answer": "Builder separates complex object construction from its representation. A Builder class has methods for each part; Build() returns the final object. Enables step-by-step construction with validation. Common in test data, HTTP client configuration, query builders.",
+    "explanation": "",
+    "realWorldExample": "IHostBuilder in ASP.NET Core — chain ConfigureServices, Configure, UseKestrel.",
+    "followUpQuestions": [
+      "What is a fluent builder?"
+    ]
+  },
+  {
+    "id": "C#-136",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is Circuit Breaker pattern?",
+    "answer": "Prevents cascade failures by monitoring failures. States: Closed (normal, calls pass through), Open (failure threshold exceeded, calls fail fast), Half-Open (trial call to test recovery). Polly library implements Circuit Breaker for .NET.",
+    "explanation": "",
+    "realWorldExample": "External payment API circuit breaker — after 5 failures, reject calls for 30 seconds without hitting API.",
+    "followUpQuestions": [
+      "What is the difference between Retry and Circuit Breaker?"
+    ]
+  },
+  {
+    "id": "C#-137",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is Polly and resilience in .NET?",
+    "answer": "Polly is a .NET resilience library. Policies: Retry (with backoff), Circuit Breaker, Timeout, Bulkhead (concurrent call limit), Fallback, Hedging. Microsoft.Extensions.Resilience in .NET 8 wraps Polly. Combine policies with PolicyWrap.",
+    "explanation": "",
+    "realWorldExample": "HTTP client calling external API — Retry(3) with exponential backoff + circuit breaker + timeout.",
+    "followUpQuestions": [
+      "What is exponential backoff with jitter?"
+    ]
+  },
+  {
+    "id": "C#-138",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between synchronous and asynchronous exceptions?",
+    "answer": "Synchronous exceptions propagate through call stack normally. Async exceptions are stored in the Task. When you await the task, they are re-thrown. Unobserved task exceptions (not awaited, Task not checked) trigger TaskScheduler.UnobservedTaskException. Always await or handle all tasks.",
+    "explanation": "",
+    "realWorldExample": "Task.WhenAll — all exceptions collected in AggregateException; iterate InnerExceptions to handle each.",
+    "followUpQuestions": [
+      "What is AggregateException in TPL?"
+    ]
+  },
+  {
+    "id": "C#-139",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a domain event and how does it differ from an integration event?",
+    "answer": "Domain event: within a bounded context, raised by domain model, processed in-process (synchronously in same transaction or via in-process mediator). Integration event: crosses bounded context boundaries, typically via message bus (async, durable). Both implement event-driven patterns.",
+    "explanation": "",
+    "realWorldExample": "OrderPlaced domain event → triggers inventory reservation in same transaction. Integration event → notifies shipping service via RabbitMQ.",
+    "followUpQuestions": [
+      "How do you implement domain events with MediatR?"
+    ]
+  },
+  {
+    "id": "C#-140",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the Outbox pattern?",
+    "answer": "Outbox pattern ensures at-least-once delivery of integration events. Instead of publishing directly to message bus (two-phase commit problem), save event to Outbox table in same database transaction. A background process polls Outbox and publishes to bus, then marks as published.",
+    "explanation": "",
+    "realWorldExample": "Order service saves order + publishes OrderCreated to Outbox atomically — no lost events.",
+    "followUpQuestions": [
+      "How does Wolverine or MassTransit implement the Outbox pattern?"
+    ]
+  },
+  {
+    "id": "C#-141",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is a saga in microservices?",
+    "answer": "Saga manages distributed transactions via a sequence of local transactions. Choreography: each service publishes events that trigger next step. Orchestration: central orchestrator tells each service what to do. Both handle rollback via compensating transactions.",
+    "explanation": "",
+    "realWorldExample": "Order fulfillment saga: Reserve Inventory → Charge Payment → Ship Order — each step compensatable.",
+    "followUpQuestions": [
+      "What is the difference between choreography and orchestration sagas?"
+    ]
+  },
+  {
+    "id": "C#-142",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is HATEOAS in REST API design?",
+    "answer": "HATEOAS (Hypermedia as the Engine of Application State) — API responses include links to related actions/resources. Client discovers actions dynamically; no hardcoded URLs. True REST Level 3. Rarely implemented fully in practice.",
+    "explanation": "",
+    "realWorldExample": "Order response includes links: rel=cancel href=/orders/1/cancel, rel=ship href=/orders/1/ship.",
+    "followUpQuestions": [
+      "What are the Richardson Maturity Model levels?"
+    ]
+  },
+  {
+    "id": "C#-143",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is OpenTelemetry and how does it differ from legacy monitoring?",
+    "answer": "OpenTelemetry is a vendor-neutral standard for traces, metrics, and logs. Three pillars: traces (distributed request tracking), metrics (quantitative measurements), logs (events). Exporters send to Jaeger, Prometheus, Datadog, etc. Replaces app-specific instrumentation.",
+    "explanation": "",
+    "realWorldExample": "Request from React → API → EF Core → SQL → external API — single trace shows full path and timing.",
+    "followUpQuestions": [
+      "What is a distributed trace span?"
+    ]
+  },
+  {
+    "id": "C#-144",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between push and pull metrics in Prometheus/OpenTelemetry?",
+    "answer": "Push: application sends metrics to collector actively. Pull: Prometheus scrapes /metrics endpoint. OpenTelemetry Collector bridges both. Push is simpler for containerized apps; pull is more Prometheus-native and reduces coupling.",
+    "explanation": "",
+    "realWorldExample": "API latency histogram — measure request duration distribution, compute P50/P95/P99.",
+    "followUpQuestions": [
+      "What is a histogram metric type?"
+    ]
+  },
+  {
+    "id": "C#-145",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What are primary constructors in C# 12?",
+    "answer": "Primary constructors allow constructor parameters directly on the class declaration: class OrderService(IOrderRepository repo). Parameters are in scope throughout the class. Reduces boilerplate for simple classes. Note: parameters are captured as fields implicitly when used in instance methods.",
+    "explanation": "",
+    "realWorldExample": "class ProductService(IProductRepository repo, ILogger<ProductService> logger) — clean DI syntax.",
+    "followUpQuestions": [
+      "How do primary constructors interact with DI?"
+    ]
+  },
+  {
+    "id": "C#-146",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is collection expressions in C# 12?",
+    "answer": "Collection expressions use [] syntax to create lists, arrays, spans, and other collections uniformly: int[] arr = [1, 2, 3]. Spread operator .. embeds another collection: [..existing, 4, 5]. Compiler chooses most efficient implementation.",
+    "explanation": "",
+    "realWorldExample": "List<int> combined = [..listA, ..listB, 0] — clean, efficient collection creation.",
+    "followUpQuestions": [
+      "How does the spread operator work?"
+    ]
+  },
+  {
+    "id": "C#-147",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is Interceptors in C# 12?",
+    "answer": "Interceptors are a preview feature allowing source generators to redirect method calls to a different method. Applied by specifying file path and line/column of call site. Enables zero-overhead aspect-like behavior. Used internally by EF Core for query interception.",
+    "explanation": "",
+    "realWorldExample": "EF Core 8 uses interceptors to redirect LINQ calls to source-generated materializers.",
+    "followUpQuestions": [
+      "How do interceptors relate to source generators?"
+    ]
+  },
+  {
+    "id": "C#-148",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between IClonable and copy constructors for cloning?",
+    "answer": "ICloneable is ambiguous (shallow or deep not specified) and returns object (unsafe). Prefer: copy constructors (new Order(existingOrder)), IDeepCloneable<T> custom interface, or with expression for records. Records provide with for non-destructive mutation out of the box.",
+    "explanation": "",
+    "realWorldExample": "var updated = order with { Status = OrderStatus.Shipped } — immutable update without full copy code.",
+    "followUpQuestions": [
+      "How does the with expression work for records?"
+    ]
+  },
+  {
+    "id": "C#-149",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the managed thread abort issue and how is it solved in modern .NET?",
+    "answer": "Thread.Abort() could inject ThreadAbortException at arbitrary points — corrupting state, bypassing finally blocks. .NET Core removed it (throws PlatformNotSupportedException). Solution: cooperative cancellation via CancellationToken, or structured concurrency patterns.",
+    "explanation": "",
+    "realWorldExample": "CancellationTokenSource(TimeSpan.FromSeconds(5)) + cooperative checks in the sync loop.",
+    "followUpQuestions": [
+      "How do you timeout a synchronous operation in .NET Core?"
+    ]
+  },
+  {
+    "id": "C#-150",
+    "category": "C#",
+    "level": "Intermediate",
+    "question": "What is the difference between Process and AppDomain isolation?",
+    "answer": "AppDomain (deprecated in .NET Core) provided in-process isolation in .NET Framework for plugin systems. .NET Core/5+ removed multi-AppDomain — single AppDomain per process. Use AssemblyLoadContext for plugin isolation now. Full process isolation gives true memory separation.",
+    "explanation": "",
+    "realWorldExample": "Plugin architecture — load each plugin in separate AssemblyLoadContext; unload without affecting host.\n\n\n==================================================================",
+    "followUpQuestions": [
+      "What is AssemblyLoadContext used for?"
+    ]
+  },
+  {
+    "id": "ASP.NET Core-1",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is ASP.NET Core and how does it differ from ASP.NET MVC 5?",
+    "answer": "ASP.NET Core is a cross-platform, high-performance, open-source framework running on .NET Core. Unlike ASP.NET MVC (Windows-only, System.Web dependency, IIS-hosted), ASP.NET Core is modular, runs on Linux/Mac, uses Kestrel (or IIS), has unified MVC/Web API, built-in DI, and is significantly faster.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-2",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between Kestrel and IIS in ASP.NET Core?",
+    "answer": "Kestrel is ASP.NET Core's cross-platform HTTP server — fast, lightweight, built-in. IIS acts as a reverse proxy in front of Kestrel on Windows (in-process or out-of-process hosting). In production, put Kestrel behind nginx/IIS for SSL termination, load balancing, static file serving.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-3",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the Program.cs entry point in ASP.NET Core 6+?",
+    "answer": "ASP.NET Core 6 uses top-level statements — no Main method. WebApplication.CreateBuilder(args) creates the builder. builder.Services configures DI. builder.Build() creates the WebApplication. app.Use* configures middleware. app.MapControllers()/MapGet() registers endpoints. app.Run() starts the server.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-4",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the IApplicationBuilder interface?",
+    "answer": "IApplicationBuilder is used to configure the HTTP request pipeline (middleware). Available in Startup.Configure() or passed to app.Use* in modern apps. Use(middleware), Run(terminal), Map(branch), UseMiddleware<T>() are the core methods.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-5",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is routing in ASP.NET Core?",
+    "answer": "Routing maps incoming URLs to endpoint handlers. Attribute routing: [Route(\"api/orders/{id}\")]. Conventional routing: app.MapControllerRoute. Endpoint routing (ASP.NET Core 3+) is the modern approach — middleware-agnostic, resolved at routing middleware. Route constraints: {id:int}, {slug:regex(...)}.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-6",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What are route constraints?",
+    "answer": "Route constraints restrict what values a route parameter accepts: {id:int} (integer), {id:guid} (GUID), {name:minlength(3)}, {id:range(1,100)}, {id:alpha} (letters only). Custom: implement IRouteConstraint. Prevent wrong types from reaching action before model binding.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-7",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is model binding in ASP.NET Core?",
+    "answer": "Model binding maps HTTP request data (route, query string, body, headers, form) to action method parameters. Attributes: [FromRoute], [FromQuery], [FromBody], [FromHeader], [FromForm], [FromServices]. Custom binders implement IModelBinder.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-8",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is action result and content negotiation?",
+    "answer": "Content negotiation selects response format based on Accept header. AddControllers().AddXmlSerializerFormatters() adds XML support. JSON is default. Client sends Accept: application/xml — server responds with XML. FormatFilter attribute allows format in URL: /orders.xml.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-9",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between [ApiController] and ControllerBase?",
+    "answer": "[ApiController] adds: automatic model validation (400 for invalid), binding source inference ([FromBody] for complex types, [FromRoute] for route params), ProblemDetails error responses. ControllerBase is for Web API (no view support). Controller (inherits ControllerBase) adds View() for MVC.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-10",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is minimal APIs in ASP.NET Core 6+?",
+    "answer": "Minimal APIs define endpoints without controllers: app.MapGet(\"/orders/{id}\", (int id) => ...). Simpler than MVC for microservices. Supports filters, DI, route groups. Less ceremony for simple CRUD APIs. Comparable performance to controllers.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-11",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is middleware pipeline order importance?",
+    "answer": "Order is critical. Correct order: UseExceptionHandler, UseHsts, UseHttpsRedirection, UseStaticFiles, UseRouting, UseCors, UseAuthentication, UseAuthorization, UseEndpoints. Auth after routing (route must match for auth decisions). CORS before auth. Static files before routing (bypass auth for public files).",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-12",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is IHostedService vs Controller lifecycle?",
+    "answer": "Controllers are transient — new instance per request. IHostedService runs continuously for app lifetime. Use IHostedService/BackgroundService for: message bus consumers, scheduled jobs, cache warming, health monitoring. Access services via IServiceScopeFactory (can't inject Scoped directly into Singleton).",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-13",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the Options pattern?",
+    "answer": "Options pattern binds configuration sections to strongly-typed classes. services.Configure<MailSettings>(config.GetSection(\"Mail\")). Inject IOptions<MailSettings>. IOptionsSnapshot reloads per request. IOptionsMonitor notifies of changes. Validation: services.AddOptions<MailSettings>().ValidateDataAnnotations().",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-14",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is health checks in ASP.NET Core?",
+    "answer": "Built-in health check framework. services.AddHealthChecks().AddDbContextCheck<AppDbContext>().AddUrlGroup(new Uri(\"https://api.external.com\")). app.MapHealthChecks(\"/health\"). UI dashboard available. Kubernetes uses liveness and readiness probes against these endpoints.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-15",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is rate limiting in ASP.NET Core 7?",
+    "answer": "System.Threading.RateLimiting + ASP.NET Core integration. builder.Services.AddRateLimiter(options => options.AddFixedWindowLimiter(\"api\", o => { o.PermitLimit = 100; o.Window = TimeSpan.FromMinutes(1); })). app.UseRateLimiter(). [EnableRateLimiting(\"api\")] on controllers.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-16",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is problem details in ASP.NET Core?",
+    "answer": "RFC 7807 standard for HTTP error responses. {type, title, status, detail, instance} JSON structure. [ApiController] returns ProblemDetails for 4xx errors. builder.Services.AddProblemDetails() enables it globally for unhandled exceptions. Consistent error format for API clients.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-17",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is output caching in ASP.NET Core 7?",
+    "answer": "Output caching caches complete HTTP responses. services.AddOutputCache(). app.UseOutputCache(). [OutputCache(Duration = 60)] on action or app.MapGet(...).CacheOutput(). More powerful than Response Caching middleware — supports vary by tags, custom policies, programmatic invalidation.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-18",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is request throttling vs rate limiting?",
+    "answer": "Rate limiting: maximum number of requests per time window per client. Throttling: slow down requests (queue/delay) rather than reject. ASP.NET Core 7 Rate Limiter rejects at limit (429 Too Many Requests). Polly's Bulkhead throttles concurrent calls.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-19",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between UseAuthentication and UseAuthorization?",
+    "answer": "UseAuthentication: determines WHO the user is — validates token/cookie, populates HttpContext.User. UseAuthorization: determines WHAT the user can do — checks policies, roles, claims. Both required; authentication must come first. [Authorize] attribute uses authorization.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-20",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What are authorization policies?",
+    "answer": "Policies combine multiple requirements: services.AddAuthorization(options => options.AddPolicy(\"Senior\", policy => policy.RequireClaim(\"Age\", \"18+\").RequireRole(\"Employee\"))). Custom: IAuthorizationRequirement + AuthorizationHandler<T>. [Authorize(Policy = \"Senior\")] on controller.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-21",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is IExceptionHandler in ASP.NET Core 8?",
+    "answer": "IExceptionHandler (ASP.NET Core 8) provides a cleaner exception handling mechanism. Implement IExceptionHandler, register with AddExceptionHandler<T>(). UseExceptionHandler() invokes them in order. Return false to let next handler try. Replaces complex UseExceptionHandler lambda patterns.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-22",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between REST and RPC API styles?",
+    "answer": "REST: resource-oriented (nouns), HTTP verbs semantics, stateless, cacheable, uniform interface. RPC: action-oriented (verbs), method calls over HTTP. gRPC is RPC. GraphQL is neither pure REST nor RPC. REST is better for public APIs; gRPC for internal service communication.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-23",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is Swagger/OpenAPI in ASP.NET Core?",
+    "answer": "Swashbuckle or NSwag generates OpenAPI spec from C# code. AddSwaggerGen() + UseSwagger() + UseSwaggerUI(). XML comments become descriptions. [ProducesResponseType] enriches schema. OpenAPI spec enables API client code generation (NSwag, OpenAPI Generator).",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-24",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between [FromBody] and [FromForm]?",
+    "answer": "[FromBody]: reads request body as JSON (or XML) — uses registered formatters. One [FromBody] per action. [FromForm]: reads application/x-www-form-urlencoded or multipart/form-data. For file uploads, use [FromForm] with IFormFile. Cannot use both on the same action.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-25",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is file upload in ASP.NET Core?",
+    "answer": "Single file: IFormFile parameter with [FromForm]. Multiple: IFormFileCollection or List<IFormFile>. Stream large files: form.ReadStreamAsync(). Set request size limits: [RequestSizeLimit(52428800)] (50MB). Streaming large files avoids buffering in memory.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-26",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is background job processing in ASP.NET Core?",
+    "answer": "Options: IHostedService/BackgroundService (in-process, simple). Hangfire (persistent, dashboard, retry, scheduling). Quartz.NET (CRON scheduling). Mass Transit (message bus + consumer). For distributed, reliable jobs, use Hangfire or a message bus.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-27",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between AddScoped and AddTransient for DbContext?",
+    "answer": "AddDbContext registers as Scoped (one per HTTP request) — correct for web apps (tracks changes per request). Adding as Transient causes issues with change tracking consistency. Use IDbContextFactory<T> for background services needing multiple contexts per scope.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-28",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is API versioning in ASP.NET Core?",
+    "answer": "Microsoft.AspNetCore.Mvc.Versioning. Version via URL (/api/v1/orders), query string (?version=1.0), or header (X-API-Version). ApiVersionAttribute on controllers. Sunset deprecated versions. MapToApiVersion for per-action versioning.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-29",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between redirect and forward in ASP.NET Core?",
+    "answer": "Redirect (301/302): client makes new request to new URL — URL changes in browser. RedirectToAction(), Redirect(). Forward (internal): server forwards to different handler internally — URL stays same. UseRewriter() for URL rewriting.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-30",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "How do you implement pagination in ASP.NET Core?",
+    "answer": "Standard query params: ?page=1&pageSize=20. Create PagedResult<T>: { Items, TotalCount, Page, PageSize, TotalPages }. EF Core: query.Skip((page-1)*pageSize).Take(pageSize). Return Link header or metadata for navigation. Cursor-based pagination for large datasets.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-31",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is SignalR Hub?",
+    "answer": "Hub is the central SignalR class. Clients connect to Hub URL. Hub methods callable by clients: Clients.All.SendAsync(\"ReceiveMessage\", message). Clients can call hub methods from JS. Groups allow targeting subsets. Hub is transient; state via IHubContext.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-32",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is IHttpClientFactory?",
+    "answer": "IHttpClientFactory manages HttpClient lifetimes and DNS refresh. Named clients: services.AddHttpClient(\"payment\", c => c.BaseAddress = ...). Typed clients: services.AddHttpClient<PaymentClient>(). Polly integration: .AddPolicyHandler(retryPolicy). Avoids socket exhaustion from manual HttpClient.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-33",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is response compression in ASP.NET Core?",
+    "answer": "services.AddResponseCompression() + app.UseResponseCompression(). Supports gzip, Brotli. Add CompressionLevel options. Exclude small responses (overhead > benefit). Check Accept-Encoding request header. Significant bandwidth reduction for JSON APIs.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-34",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between cookie and JWT authentication?",
+    "answer": "Cookie: server maintains session; cookie sent automatically; CSRF protection needed; stateful. JWT: stateless; client stores token; sent in Authorization header; no CSRF; larger request overhead; scales horizontally easily. JWT preferred for APIs/SPAs.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-35",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is refresh token?",
+    "answer": "Refresh token is a long-lived token used to obtain new access tokens when they expire (short TTL: 15min). Stored securely (httpOnly cookie or secure storage). Refresh endpoint: exchange valid refresh token for new access + refresh token. Rotate refresh tokens; maintain revocation list.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-36",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is ASP.NET Core Data Protection API?",
+    "answer": "Data Protection provides cryptographic APIs for protecting data (cookies, tokens, anti-forgery). IDataProtector.Protect()/Unprotect(). Keys managed automatically with rotation. Configure key storage (file system, Azure Key Vault). Used by Cookie authentication, TempData, ViewState replacement.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-37",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is anti-forgery (CSRF protection) in ASP.NET Core?",
+    "answer": "Anti-forgery generates a token embedded in forms and validated on POST. HTML helper @Html.AntiForgeryToken(). [ValidateAntiForgeryToken] on POST actions. For SPAs, use X-XSRF-TOKEN header. APIs using JWT don't need CSRF protection (cookie not used).",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-38",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between TempData and ViewBag?",
+    "answer": "ViewBag/ViewData: pass data from controller to view for current request only — gone on redirect. TempData: survives one redirect — stored in session or cookie. Use TempData for post-redirect-get pattern (success messages after form submit).",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-39",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is Razor Pages?",
+    "answer": "Razor Pages is a page-based model — each page has .cshtml + .cshtml.cs (PageModel) pair. OnGet/OnPost handlers. Simpler than MVC for CRUD-heavy pages. No controller/action separation — page is self-contained. Supports model binding, validation, DI.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-40",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is Tag Helpers in ASP.NET Core?",
+    "answer": "Tag Helpers enhance HTML elements with server-side logic: <asp-for=\"Name\">, <asp-controller=\"Orders\">, <asp-action=\"Create\">. More readable than HtmlHelper @Html.TextBoxFor(). Custom tag helpers implement TagHelper class. Replaces most HTML helper usage.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-41",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between Session and Distributed Session?",
+    "answer": "Default in-memory session: single server only, lost on restart. Distributed session: IDistributedCache backed (Redis, SQL Server) — multi-server, persistent. builder.Services.AddStackExchangeRedisCache(). Required for multi-instance deployments.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-42",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is content security policy (CSP) in ASP.NET Core?",
+    "answer": "CSP is an HTTP header restricting sources of scripts, styles, images. Mitigates XSS. Configure with middleware or NWebSec: app.UseCsp(opts => opts.DefaultSources(s => s.Self()).ScriptSources(s => s.Self())). Nonce-based CSP for inline scripts.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-43",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the Forwarded Headers middleware?",
+    "answer": "When behind a reverse proxy (nginx, IIS, Azure Front Door), the original client IP and scheme are in X-Forwarded-For and X-Forwarded-Proto headers. app.UseForwardedHeaders() reads them. Without it, Request.Scheme is http even for HTTPS, HttpContext.Connection.RemoteIpAddress is proxy IP.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-44",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "How do you implement API key authentication?",
+    "answer": "Custom middleware or AuthenticationHandler. Check Authorization header or X-Api-Key query/header. Validate against stored keys (database or config). Hash keys (don't store plain text). Scope keys to services. Implement IAuthenticationHandler for proper integration with [Authorize].",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-45",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is WebApplication.CreateSlimBuilder in ASP.NET Core 8?",
+    "answer": "CreateSlimBuilder reduces memory and startup time for minimal APIs — fewer default services registered. Intended for containerized microservices. Excludes console logging, default health checks, and other rarely-needed defaults. Combine with source-generated JSON for minimal footprint.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-46",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is named options in ASP.NET Core?",
+    "answer": "Named options allow multiple configuration instances of the same class: services.Configure<ConnectionOptions>(\"primary\", ...).Configure<ConnectionOptions>(\"secondary\", ...). Inject IOptionsFactory<ConnectionOptions>. Create(name) retrieves specific instance. Useful for multiple database connections.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-47",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is startup filters?",
+    "answer": "IStartupFilter allows middleware to be added in the startup pipeline without modifying Configure(). Useful for library middleware that must run early. Implement IStartupFilter.Configure(Action<IApplicationBuilder> next) — add middleware before/after calling next(app).",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-48",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is app.Environment in ASP.NET Core?",
+    "answer": "IWebHostEnvironment (or IHostEnvironment) provides EnvironmentName, ContentRootPath, WebRootPath. Use app.Environment.IsDevelopment(), IsProduction(), IsStaging(). Set via ASPNETCORE_ENVIRONMENT env variable. Different config, error handling, logging per environment.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-49",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is Endpoint metadata in ASP.NET Core?",
+    "answer": "Endpoints carry metadata: route pattern, controller/action info, [Authorize] attributes, [OutputCache], custom attributes. Access via HttpContext.GetEndpoint(). Middleware can read endpoint metadata to make decisions without knowing controller internals.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-50",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is dynamic controller routing?",
+    "answer": "IActionDescriptorProvider and IApplicationModelConvention allow programmatic route and controller configuration. Add routes dynamically, change conventions application-wide. Area routing is a built-in grouping convention. Custom: implement IApplicationModelConvention to apply attribute globally.\n\n--------------------------------------------------------------------\nREST API QUESTIONS (30)\n--------------------------------------------------------------------",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-1",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What are HTTP methods and their semantics?",
+    "answer": "GET (read, safe, idempotent), POST (create, not idempotent), PUT (full replace, idempotent), PATCH (partial update), DELETE (remove, idempotent). HEAD (like GET, no body). OPTIONS (CORS preflight, get allowed methods).",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-2",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What are idempotent HTTP methods?",
+    "answer": "An operation is idempotent if calling it multiple times has the same effect as calling once. GET, PUT, DELETE, HEAD are idempotent. POST is NOT — calling POST twice creates two resources. PATCH is not guaranteed idempotent (depends on implementation).",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-3",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What are HTTP status codes?",
+    "answer": "1xx Informational. 2xx Success: 200 OK, 201 Created, 202 Accepted, 204 No Content. 3xx Redirect: 301 Moved Permanently, 302 Found, 304 Not Modified. 4xx Client Error: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 409 Conflict, 422 Unprocessable Entity, 429 Too Many Requests. 5xx Server Error: 500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-4",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is REST and its constraints?",
+    "answer": "REST (Representational State Transfer) constraints: Client-Server, Stateless (no session state on server), Cacheable, Uniform Interface, Layered System, Code on Demand (optional). Stateless means each request carries all needed info; enables horizontal scaling.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-5",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the Richardson Maturity Model?",
+    "answer": "Level 0: HTTP as tunnel (SOAP). Level 1: Resources (URIs). Level 2: HTTP verbs + status codes. Level 3: Hypermedia controls (HATEOAS). Most REST APIs are Level 2 in practice.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-6",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is API versioning best practice?",
+    "answer": "Version in URL (/v1/orders) — most visible, simplest. Query string (?api-version=1.0) — less clean. Header (X-Api-Version) — cleaner URLs but less visible. Never version individual fields — version the resource representation. Deprecation notice before removal.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-7",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is OAuth 2.0?",
+    "answer": "OAuth 2.0 is an authorization framework. Flows: Authorization Code (web apps), PKCE (SPAs, mobile), Client Credentials (server-to-server), Device Flow. Access tokens grant resource access. Scopes limit what access token can do. Use PKCE always for public clients.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-8",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is OpenID Connect?",
+    "answer": "OpenID Connect (OIDC) is an identity layer on top of OAuth 2.0. Returns ID token (JWT with user info) in addition to access token. UserInfo endpoint for additional claims. Used for SSO. Claims: sub (user ID), email, name, roles.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-9",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between authorization and authentication in REST?",
+    "answer": "Authentication: verify identity (who are you?). HTTP: Basic, Bearer token, API key, mTLS. Authorization: what are you allowed to do? OAuth scopes, RBAC roles, ABAC policies. API must do both: authenticate first, then authorize.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-10",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is HATEOAS?",
+    "answer": "HATEOAS (Hypermedia As The Engine Of Application State): API responses include links to available actions. Client navigates API without hardcoded URLs. _links object in responses (HAL format). Rarely fully implemented; valuable for discoverability.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-11",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between PUT and PATCH?",
+    "answer": "PUT replaces the entire resource — client sends full representation. PATCH partially updates — client sends only changed fields. PATCH risks concurrent update issues; use conditional requests (If-Match ETag) with PATCH. JSON Patch (RFC 6902) defines patch operations formally.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-12",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is ETags and conditional requests?",
+    "answer": "ETag is a hash/version of resource. Server returns ETag: \"v1abc\". Client sends If-None-Match: \"v1abc\" — server returns 304 Not Modified if unchanged (caching). If-Match: \"v1abc\" on PUT/PATCH — fails with 412 if resource changed (optimistic concurrency).",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-13",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is API rate limiting?",
+    "answer": "Limit requests per client per time window (100 req/min). Headers: X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After (429 response). Algorithms: Fixed Window, Sliding Window, Token Bucket, Leaky Bucket. Identify clients by API key, IP, user ID.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-14",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is API pagination?",
+    "answer": "Offset pagination: ?skip=0&take=20 — simple, inefficient for large offsets. Cursor-based: ?after=cursor — efficient, no inconsistencies during inserts. Page-based: ?page=1&perPage=20 — user-friendly. Always return total count and next/prev cursors/links.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-15",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is API idempotency keys?",
+    "answer": "Client generates unique idempotency key (UUID) per request, sends in Idempotency-Key header. Server stores key + result. Duplicate request with same key returns cached result without re-executing. Critical for financial/payment APIs to prevent double charges.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-16",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between synchronous and asynchronous API patterns?",
+    "answer": "Synchronous: client waits for response. Asynchronous: server returns 202 Accepted with job ID. Client polls status endpoint or receives webhook notification. Use async for long-running operations (report generation, bulk import, video processing).",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-17",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is webhook?",
+    "answer": "Webhook is an HTTP callback — server sends HTTP POST to client-registered URL when an event occurs. Subscribe: client registers URL. Publish: server sends event payload. Client must validate signature (HMAC). Retry on failure. Secret-signed POST is most secure approach.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-18",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is GraphQL vs REST?",
+    "answer": "REST: multiple endpoints per resource. GraphQL: single endpoint, client specifies exact fields needed (no over/under fetching). GraphQL has queries (read), mutations (write), subscriptions (real-time). More flexible for clients, more complex server implementation.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-19",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is API gateway?",
+    "answer": "API gateway is a single entry point for all API calls. Functions: routing, auth, rate limiting, load balancing, SSL termination, request/response transformation, logging. Examples: Azure API Management, AWS API Gateway, Kong, Nginx. Reduces client-side complexity.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-20",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is a microservice API design principle?",
+    "answer": "API per service. Backward compatible changes only (no breaking changes). Use semantic versioning. Consumer-driven contract testing (Pact). Each service owns its API — no shared schema. Async communication for cross-service events.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-21",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is content type negotiation in APIs?",
+    "answer": "Client sends Accept: application/json header. Server responds with Content-Type: application/json. Server can serve JSON and XML based on Accept header. application/vnd.company.v2+json — vendor media type for API versioning.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-22",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is API documentation best practice?",
+    "answer": "OpenAPI 3.0 spec as source of truth. Generate from code (Swashbuckle) or code from spec (contract-first). Include: endpoint description, request/response schemas, error responses, example payloads, authentication requirements. Versioned docs. Postman collections.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-23",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between REST and SOAP?",
+    "answer": "SOAP: XML-based, strict WSDL contract, built-in WS-Security/WS-Transaction, stateful possible, slower. REST: lightweight, JSON/XML, no strict contract (OpenAPI optional), stateless, cacheable, faster. SOAP still used in enterprise/financial integration; REST dominates new development.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-24",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is OData?",
+    "answer": "OData (Open Data Protocol) extends REST with standardized query options: $filter, $select, $expand, $orderby, $top, $skip, $count. Clients can query without custom endpoints. Built-in with ASP.NET Core OData package. Powerful for data-heavy APIs but can expose too much.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-25",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is an API contract test?",
+    "answer": "Contract test verifies that provider API meets consumer expectations. Pact framework: consumer defines expectations, provider validates against them. Prevents integration failures. Consumer-driven contract testing is the gold standard for microservice APIs.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-26",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is HTTP/2 and how does it improve APIs?",
+    "answer": "HTTP/2 multiplexes multiple requests over single TCP connection (no head-of-line blocking). Server push sends resources proactively. Header compression (HPACK). Binary protocol. gRPC requires HTTP/2. REST benefits: reduced connection overhead, parallel requests.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-27",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between 401 and 403?",
+    "answer": "401 Unauthorized: not authenticated — provide credentials. WWW-Authenticate header indicates auth scheme. 403 Forbidden: authenticated but not authorized — no access regardless of credentials. 401 = wrong key; 403 = right key, wrong room.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-28",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is API security best practices?",
+    "answer": "Use HTTPS always. Validate input (prevent injection). Rate limiting. CORS policy. Never expose internal errors. Use API keys or OAuth. Log all API calls. OWASP API Security Top 10: broken object level auth, broken auth, data exposure, lack of resources/rate limiting.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-29",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is request/response logging middleware?",
+    "answer": "Log: method, URL, request headers/body (redact sensitive), response status, duration. Use correlation ID (X-Correlation-Id header) to trace across services. Structured logging (Serilog, ELK). Log to stdout in containers for platform to collect.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-30",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is API gateway vs BFF (Backend for Frontend)?",
+    "answer": "API gateway is generic — all clients use same gateway. BFF is client-specific backend — mobile app, web app, partner each have own BFF aggregating and adapting multiple microservice calls. BFF reduces chatty client-server communication.\n\n--------------------------------------------------------------------\nENTITY FRAMEWORK CORE QUESTIONS (30)\n--------------------------------------------------------------------",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-1",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is ORM and how does EF Core work?",
+    "answer": "ORM (Object-Relational Mapper) maps C# objects to database tables. EF Core: DbContext manages entity objects. DbSet<T> represents a table. LINQ queries translated to SQL. Change tracking detects modifications. SaveChanges() persists changes to DB.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-2",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is DbContext and its lifecycle?",
+    "answer": "DbContext is the primary class in EF Core. Manages: database connection, entity tracking, query execution, transaction management. Should be scoped (one per request in web apps). Not thread-safe. Register with AddDbContext() for DI.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-3",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What are the different ways to configure entities in EF Core?",
+    "answer": "Data annotations: [Key], [Required], [MaxLength], [Table], [Column]. Fluent API (in OnModelCreating): more powerful, no pollution in entities. IEntityTypeConfiguration<T>: separate configuration class per entity — recommended for larger models.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-4",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is table splitting in EF Core?",
+    "answer": "Table splitting maps multiple entity types to the same table — shared primary key. Useful for splitting a wide table into frequently-used and rarely-used columns. Both entities tracked independently, saved to same row.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-5",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is owned entity types?",
+    "answer": "Owned entities are always used with owner — no separate DbSet, no identity. Configured with OwnsOne/OwnsMany. Mapped to same table (default) or separate table. Perfect for value objects in DDD: Order.ShippingAddress is an Address value object.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-6",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is a shadow property?",
+    "answer": "Shadow properties exist in EF Core model but not in entity class. Defined in OnModelCreating with Property<T>(name). Useful for: audit fields (CreatedAt, UpdatedAt) without polluting entities, foreign keys not in entity class.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-7",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is query splitting in EF Core?",
+    "answer": "Single query with multiple collections: EF generates a JOIN that can produce a data explosion (cartesian product). AsSplitQuery() generates separate queries per collection — avoids data explosion but multiple round trips. Configure globally with UseQuerySplittingBehavior.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-8",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is raw SQL in EF Core?",
+    "answer": "FromSqlRaw() / FromSqlInterpolated() executes SQL and materializes into entities. ExecuteSqlRaw() / ExecuteSqlInterpolated() for non-query SQL. FromSqlInterpolated parameterizes automatically — prevents SQL injection. Combine with LINQ after FromSql.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-9",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between FirstOrDefault and SingleOrDefault?",
+    "answer": "FirstOrDefault: returns first matching row, no error if multiple. SingleOrDefault: throws if more than one match — use when exactly one is expected. First/Single throw if no match; FirstOrDefault/SingleOrDefault return null/default.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-10",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is Include vs ThenInclude?",
+    "answer": "Include loads first-level related entity: query.Include(o => o.Customer). ThenInclude loads further nested entities: .Include(o => o.Items).ThenInclude(i => i.Product). Each adds a JOIN (or separate query if AsSplitQuery).",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-11",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is global query filter?",
+    "answer": "modelBuilder.Entity<Order>().HasQueryFilter(o => !o.IsDeleted) — filter applied to all queries for that entity. Used for soft delete, multi-tenancy (TenantId filter). Override with IgnoreQueryFilters(). Great for transparent filtering.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-12",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is database seeding in EF Core?",
+    "answer": "modelBuilder.Entity<Product>().HasData(new Product { Id = 1, Name = \"Widget\" }) — inserts on migration. For larger datasets: custom migration or a seeding service in startup. HasData requires primary key set.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-13",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What are value converters in EF Core?",
+    "answer": "Map CLR types to database types: store enum as string, encrypt a property, serialize list as JSON. modelBuilder.Entity<Order>().Property(o => o.Status).HasConversion<string>(). Custom: implement ValueConverter<TModel, TProvider>.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-14",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is EF Core interceptors?",
+    "answer": "Interceptors hook into DbCommand, DbConnection, DbTransaction, SaveChanges. ISaveChangesInterceptor for audit logging. IDbCommandInterceptor for query logging/modification. Register with AddInterceptors(). Less intrusive than overriding SaveChanges.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-15",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is compiled queries in EF Core?",
+    "answer": "EF.CompileQuery() compiles a LINQ query once and reuses the compiled form. Skips query translation overhead on subsequent calls. Significant performance improvement for frequently executed parameterized queries.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-16",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the N+1 problem and how to fix it?",
+    "answer": "N+1: loading parent entities (1 query), then accessing related data for each parent (N queries). Fix: eager loading with Include(). Or: explicit joins in SQL, projection with Select(), AsSplitQuery() for collections.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-17",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is database first vs code first?",
+    "answer": "Code first: define C# classes → generate migrations → create DB. Full control over schema. Database first: scaffold from existing DB (Scaffold-DbContext). Generates entities and DbContext from DB. Better for legacy databases.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-18",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the Unit of Work pattern with EF Core?",
+    "answer": "DbContext already implements Unit of Work — tracks all changes, SaveChanges() commits all in one transaction. Explicit UoW pattern wraps DbContext in a custom UnitOfWork class with Commit()/Rollback(). Useful for explicit transaction control.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-19",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is execution strategy in EF Core?",
+    "answer": "Execution strategy handles transient failures (connection drops, timeouts). optionsBuilder.UseSqlServer(conn, opts => opts.EnableRetryOnFailure()). Automatic retry with exponential backoff. Critical for cloud databases (Azure SQL). Custom: inherit ExecutionStrategy.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-20",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is bulk operations in EF Core?",
+    "answer": "EF Core's SaveChanges processes entities one by one — slow for large batches. EF Core 7 introduced ExecuteUpdate/ExecuteDelete (direct SQL). For large inserts: EF Core Extensions (Bulk Extensions), SqlBulkCopy, or Dapper. Always benchmark.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-21",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is EF Core temporal tables?",
+    "answer": "SQL Server temporal tables: IsSqlServerTemporalTable() in EF Core 6+. System-versioned — DB tracks all historical row versions with ValidFrom/ValidTo. Query history: TemporalAsOf(dateTime), TemporalAll(), TemporalFromTo(). Great for audit trails.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-22",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is table-per-hierarchy (TPH) vs table-per-type (TPT)?",
+    "answer": "TPH: all hierarchy types in one table with discriminator column — efficient queries, nullable columns for subtype fields. TPT: each type has own table — clean schema, JOIN overhead. TPT supported in EF Core 5+. TPC (table-per-concrete-class) in EF Core 7+.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-23",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is projection in EF Core?",
+    "answer": "Select() projects to a DTO rather than loading entire entity: query.Select(o => new OrderDto { Id = o.Id, CustomerName = o.Customer.Name }). Reduces data transfer. EF Core translates to SQL SELECT only needed columns. Always prefer projection for read operations.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-24",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is EF Core 8 JSON columns?",
+    "answer": "EF Core 8 supports mapping owned entities/collections to JSON columns natively. OwnsOne(x => x.Address).ToJson(). Full LINQ query translation into JSON path queries. No serialization boilerplate. Database stores as JSON; EF maps automatically.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-25",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is optimistic vs pessimistic concurrency in EF Core?",
+    "answer": "Optimistic: [ConcurrencyCheck] or IsRowVersion() + HasRowVersion(). EF adds WHERE rowversion = @original in UPDATE. Throws DbUpdateConcurrencyException if changed. Pessimistic: use explicit transactions with UPDLOCK hints or SET TRANSACTION ISOLATION LEVEL SERIALIZABLE.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-26",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between migrations and database initialization?",
+    "answer": "Migrations: incremental, versioned schema changes — production-safe. Database.Migrate() in startup applies pending migrations. EnsureCreated(): creates schema without migrations — dev/test only, no migration history. Never mix both.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-27",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is a self-referencing entity?",
+    "answer": "Entity referencing itself: Category with ParentId (FK to Category.Id). EF Core supports: HasOne(c => c.Parent).WithMany(c => c.Children).HasForeignKey(c => c.ParentId). Hierarchy queries may need recursive CTE in SQL.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-28",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is AsNoTrackingWithIdentityResolution?",
+    "answer": "AsNoTracking() is fastest but may create duplicate entity instances for the same row. AsNoTrackingWithIdentityResolution() avoids duplicates (identity map) while still not tracking for change detection. Use when loading same entity from multiple navigation paths.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-29",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is EF Core's FromExpression for table-valued functions?",
+    "answer": "Map SQL TVFs (table-valued functions) to LINQ-queryable methods. Define DbFunction attribute or HasDbFunction in modelBuilder. Call in LINQ: context.GetTopProducts(10).Where(p => p.Price > 100). Enables complex DB-side logic in LINQ.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "ASP.NET Core-30",
+    "category": "ASP.NET Core",
+    "level": "Intermediate",
+    "question": "What is the difference between SaveChanges and ExecuteUpdate?",
+    "answer": "SaveChanges: change-tracked ORM approach — load entity, modify, save. Round trips: 1 SELECT + 1 UPDATE. ExecuteUpdate (EF Core 7): direct bulk UPDATE without loading entities — faster for mass updates. context.Orders.Where(o => o.Status == Pending).ExecuteUpdate(s => s.SetProperty(o => o.Status, Processing)).\n\n\n==================================================================",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "design-url-shortener",
+    "category": "System Design",
+    "level": "Advanced",
+    "question": "URL SHORTENER",
+    "answer": "",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "design-centralized-logging-system",
+    "category": "System Design",
+    "level": "Advanced",
+    "question": "CENTRALIZED LOGGING SYSTEM",
+    "answer": "",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "design-inventory-management-system",
+    "category": "System Design",
+    "level": "Advanced",
+    "question": "INVENTORY MANAGEMENT SYSTEM",
+    "answer": "",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "design-device-monitoring-platform",
+    "category": "System Design",
+    "level": "Advanced",
+    "question": "DEVICE MONITORING PLATFORM",
+    "answer": "",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "design-driver-update-management-system",
+    "category": "System Design",
+    "level": "Advanced",
+    "question": "DRIVER UPDATE MANAGEMENT SYSTEM",
+    "answer": "",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-1",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your ASP.NET Core API is returning 500 errors in production. How do you diagnose?",
+    "answer": "Check Application Insights / Serilog logs for exception stack traces. Look for patterns: same endpoint, specific user, time-based. Check health endpoints. Review recent deployments. Enable verbose logging temporarily. Check database connectivity, external API timeouts. Use correlation IDs to trace specific failed requests.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-2",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "A customer reports intermittent 404 errors on an endpoint that works for others.",
+    "answer": "Check if endpoint is authenticated — maybe user lacks permissions (403 misconfigured as 404). Check route constraints — user input might not match constraint pattern. Enable request logging to capture exact URL being called. Check if endpoint is deployed on all instances (partial deployment issue).",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-3",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your background service suddenly stopped processing messages.",
+    "answer": "Check service health endpoint. Look for unhandled exceptions in host logs — BackgroundService catches exception but logs it; process continues but ExecuteAsync stopped. Check message queue connectivity. Verify CancellationToken not cancelled prematurely. Check if message poison-pilled (same message processed repeatedly, always failing).",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-4",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Database queries started taking 10x longer after a deployment.",
+    "answer": "Check if indexes were dropped in migration. Run Query Store or SQL Profiler to find slow queries. Check if data volume changed significantly. Look for parameter sniffing issues. Review Entity Framework generated SQL — added .AsNoTracking() removed? New Include()? Check connection pool exhaustion.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-5",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your API response times are high but the database looks fast.",
+    "answer": "Profile outside the database: middleware execution time, serialization time, GC pauses (check GC stats), external API calls, network latency. Add granular timing to each pipeline stage. Use dotnet-trace to identify CPU-bound hotspots. Check for synchronous blocking on async code (Task.Result, .Wait()).\n\nPERFORMANCE SCENARIOS\n---------------------",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-6",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your ASP.NET Core API handles 1000 RPS but you need 10,000 RPS. What do you do?",
+    "answer": "Profile first — identify bottleneck. Horizontal scaling: add instances behind load balancer. Add response caching for read-heavy endpoints. Optimize hot database queries (add indexes, optimize LINQ). Use async/await throughout (eliminate blocking). Enable HTTP/2. Move to Redis for session/distributed cache.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-7",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Memory usage keeps growing in your long-running .NET service. How do you find the leak?",
+    "answer": "Collect memory dumps (dotnet-dump). Analyze with dotnet-gcdump (GC root analysis). Look for: event handlers not unsubscribed, static collections growing, cache without eviction, Disposed objects still referenced, IDisposable not disposed. PerfView or dotMemory for detailed heap analysis.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-8",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your EF Core queries are loading entire tables when they should be loading one row.",
+    "answer": "Log generated SQL: dbContext.Database.LogTo(Console.WriteLine). Check if LINQ is materialized early (AsEnumerable() before Where). Check if lazy loading is loading related entities. Use .FirstOrDefault() instead of .ToList().Where(). Ensure filters in LINQ translate to SQL WHERE clause.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-9",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "CPU usage spikes to 100% on your API server every few minutes.",
+    "answer": "Schedule this with Application Performance Monitor. Correlate with: GC Gen2 collection (large objects, LOH), scheduled background job, external batch request. dotnet-counters monitor cpu-usage, gc-heap-size. CPU profiler (dotnet-trace) shows hot methods.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-10",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your application response time is normally 50ms but occasionally spikes to 5 seconds.",
+    "answer": "Likely GC pauses or connection pool exhaustion. Check GC stats: Gen2 collections, LOH size. Check SQL connection pool: Number of SQL connections active (sp_who2). Check external API timeouts. Use percentile metrics (P99) to characterize spike pattern.\n\nCONCURRENCY SCENARIOS\n---------------------",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-11",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Two users try to book the last seat simultaneously. How do you prevent double-booking?",
+    "answer": "Use optimistic concurrency with version check: read seat (SELECT ... WHERE Available=1), update with version check (UPDATE ... WHERE Available=1 AND RowVersion=@v), retry if 0 rows affected. Or pessimistic: BEGIN TRAN; SELECT ... WITH (UPDLOCK); update; COMMIT. Application-level: SemaphoreSlim per resource, or database-level locking.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-12",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your counter incremented from multiple threads is giving wrong results.",
+    "answer": "Classic race condition. Fix: use Interlocked.Increment(ref counter) for simple increment. For complex operations: lock { counter++; }. Use ConcurrentDictionary for dictionary scenarios. Don't use regular int with multiple threads.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-13",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your async code is deadlocking in ASP.NET Framework (not Core).",
+    "answer": "Classic deadlock: calling .Result or .Wait() on Task in ASP.NET Framework (synchronization context). Call stack: controller calls service.DoAsync().Result → task awaits, resumes on sync context → but sync context thread is blocked by .Result. Fix: use ConfigureAwait(false) in library code, or make caller truly async.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-14",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Multiple threads are writing to a List<T> and causing exceptions.",
+    "answer": "List<T> is not thread-safe. Options: lock around all Add/Remove/Read. Use ConcurrentBag<T> for unordered concurrent add. Use ConcurrentQueue<T> for FIFO. Use ImmutableList<T> with Interlocked.Exchange for functional updates.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-15",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your cache is thundering herd — cache miss causes 100 concurrent DB queries.",
+    "answer": "Cache stampede/thundering herd. Solutions: SemaphoreSlim per cache key (only one thread fetches, others wait). Double-checked locking with async lock. Background refresh before expiry. Soft TTL: serve stale while revalidating. Circuit breaker on the cache miss path.\n\nPRODUCTION INCIDENTS\n--------------------",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-16",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your production database is at 100% CPU. What's your immediate action?",
+    "answer": "Immediate: Kill longest-running queries (sp_who2 + kill). Check for blocking chains. Enable Query Store to identify top CPU queries. If unresolved: failover to read replica for read traffic. Long-term: add missing indexes, optimize queries, scale up hardware.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-17",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your microservice just deployed and is returning 500 for all requests.",
+    "answer": "Immediate rollback. Check deployment logs — migration failed? Config missing? Check Application Insights for exception: NullReferenceException at startup (missing required config), DbContext migration errors, missing service registration (DI error). Feature flags to disable problematic code.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-18",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Users report they're seeing other users' data.",
+    "answer": "P1 incident. Immediate: disable the affected feature/endpoint. Investigate: data isolation bug — multi-tenant filter not applied, session mixed up, authorization check missing. Audit all data access for the time period. Notify security team. Review data access logs. Fix and regression test thoroughly before re-enabling.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-19",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your message queue has 1 million unprocessed messages. Consumers are down.",
+    "answer": "Scale up consumers immediately. Check why consumers went down: dependency failure, exception, resource exhaustion. Review dead-letter queue for poison messages. Prioritize recent messages over old ones if business-critical. Monitor consumer lag after restart — may need temporary overcapacity.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-20",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your SSL certificate expired. HTTPS is broken for all users.",
+    "answer": "Immediate: obtain new certificate. If auto-renewal (Let's Encrypt): troubleshoot renewal process. If manual: emergency renewal from CA. Update certificate in load balancer/Kestrel/IIS. Restart service. Verify with curl -v. Post-incident: add certificate expiry monitoring alert 30 days before expiry.\n\nARCHITECTURE DECISIONS\n-----------------------",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-21",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "When would you choose microservices over monolith?",
+    "answer": "Monolith first for new products — simpler to develop, deploy, test. Move to microservices when: team scales (Conway's Law), different scaling requirements per component, different deployment cadences, technology diversity needed. Don't over-engineer early.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-22",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "How do you handle schema migrations in a zero-downtime deployment?",
+    "answer": "Backward-compatible migrations only. Add column nullable first; deploy; populate data; deploy code to write new column; then add NOT NULL constraint. Never rename/drop column in same deploy as code change. Expand-Contract pattern.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-23",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "How do you design for eventual consistency?",
+    "answer": "Acknowledge it exists — some data will be stale. Use events for cross-service updates. Sagas for distributed transactions. Idempotent consumers for duplicate event handling. UI: show \"last updated\" timestamp. Compensating transactions for rollback.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-24",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "When do you use sync vs async inter-service communication?",
+    "answer": "Sync (REST/gRPC): when you need immediate response, when consistency is critical, simple request-reply. Async (message queue): when decoupling is important, when consumer being slow shouldn't block producer, for long-running operations, for broadcast to multiple consumers.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-25",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "How do you secure sensitive data in your application?",
+    "answer": "Encrypt at rest (database TDE, column-level encryption). Encrypt in transit (TLS). Hash passwords (bcrypt, Argon2 — not MD5/SHA1). Store secrets in vault (Azure Key Vault, HashiCorp Vault), not config files. Mask PII in logs. Minimal privilege — service accounts with only needed permissions.\n\nDRIVER-RELATED SCENARIOS\n--------------------------",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-26",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your Windows driver is causing a BSOD on some machines but not others. How do you debug?",
+    "answer": "Collect crash dump (WinDbg: !analyze -v). Look for faulting address, call stack, exception. Driver Verifier on test machine to reproduce. Check if issue is hardware-specific (different chipset, DMA issues). WPP tracing to trace execution path leading to crash. Check for IRQL violations.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-27",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your Linux kernel module causes kernel oops on module load.",
+    "answer": "dmesg output shows: oops message, CPU registers, call stack. addr2line -e module.ko address converts address to source line. Enable KASAN (CONFIG_KASAN) for memory error detection. Check init function: null pointer, incorrect ioremap, accessing hardware before ready. QEMU for safe kernel debugging.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-28",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your driver is loading on Windows 10 but not on Windows 11.",
+    "answer": "Check device manager error code. Driver signing requirements changed (EV cert required). Check if using deprecated WDM APIs removed in newer Windows. Run compatibility manifest check. Check driver's supported OS list in INF file. Enable test signing mode to test unsigned.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-29",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Device is detected but driver won't bind to it.",
+    "answer": "Check device IDs in INF/driver match actual hardware (Device Manager → Details → Hardware IDs). Check device class compatibility. Windows: devmgmt.msc shows \"Unknown Device\" — collect HW IDs. Linux: check dmesg for \"no driver found\", ensure MODULE_DEVICE_TABLE matches hardware.",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  },
+  {
+    "id": "scenario-30",
+    "category": "Scenario",
+    "level": "Advanced",
+    "question": "Your I2C driver reads wrong values from sensor.",
+    "answer": "Check: bit order (MSB vs LSB), byte order (endianness), register address correctness, I2C address (7-bit vs 8-bit addressing), signal integrity (use oscilloscope). Add logging before/after each I2C transaction. Cross-reference with datasheet for register map and communication timing.\n\n\n==================================================================",
+    "explanation": "",
+    "realWorldExample": "",
+    "followUpQuestions": []
+  }
+]

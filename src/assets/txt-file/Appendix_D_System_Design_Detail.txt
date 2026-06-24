@@ -1,0 +1,67 @@
+APPENDIX D: SYSTEM DESIGN — ADDITIONAL DETAIL
+==================================================================
+
+SCALABILITY PATTERNS REFERENCE
+---------------------------------
+
+HORIZONTAL vs VERTICAL SCALING:
+Vertical (scale-up): bigger machine — simple, no code change, limited, expensive.
+Horizontal (scale-out): more machines — complex (stateless required), infinite scale, cheaper.
+Target: stateless services (session in Redis, files in blob storage) to enable horizontal scaling.
+
+CACHING LAYERS:
+Browser cache → CDN → API Gateway cache → Application cache (IMemoryCache/Redis) → DB query cache.
+Cache-Aside: app checks cache, fills on miss.
+Write-Through: app writes cache and DB together.
+Write-Behind: app writes cache, async flush to DB.
+Read-Through: cache fills itself on miss.
+
+DATABASE SCALING:
+Read replicas: direct read traffic to replicas, writes to primary.
+Sharding: partition data across multiple databases (by user ID, geography).
+CQRS: separate read and write databases.
+Caching: reduce DB load with Redis.
+Connection pooling: PgBouncer (PostgreSQL), SQL Server pool.
+
+MESSAGE QUEUE PATTERNS:
+Competing consumers: multiple instances consume same queue — scales processing.
+Fan-out: one message → multiple queues (pub/sub) — notify multiple systems.
+Dead letter queue: failed messages after N retries — inspect and replay.
+Priority queue: process urgent messages first.
+Delay queue: process after a delay (retries with backoff).
+
+API GATEWAY PATTERNS:
+Request routing: route to appropriate microservice.
+Authentication: validate token once at gateway.
+Rate limiting: per client, per endpoint.
+Request/response transformation: version adapters.
+Circuit breaking: fail fast if downstream is unhealthy.
+Aggregation: combine multiple service calls into one response.
+
+CONSISTENCY MODELS:
+Strong consistency: every read sees most recent write (single-node SQL, transactions).
+Eventual consistency: reads may see stale data temporarily (distributed systems, DNS).
+Read-your-writes: after you write, your reads see it.
+Monotonic reads: once you see a value, future reads won't return older value.
+Causal consistency: operations causally related are ordered.
+
+BACK-OF-ENVELOPE CALCULATIONS:
+1 million requests/day = ~12 requests/second
+1 billion requests/day = ~12,000 requests/second
+1 byte storage for a flag, 4 bytes for int, 8 bytes for long/datetime, 100 bytes avg for small row
+1 KB = ~1,000 bytes, 1 MB = ~1,000,000 bytes, 1 GB = ~1 billion bytes
+SSD read latency: ~100 microseconds
+Network round trip (same datacenter): ~1 millisecond
+Network round trip (cross-continent): ~100 milliseconds
+HDD seek: ~10 milliseconds
+
+COMMON INTERVIEW SYSTEM DESIGN TEMPLATE:
+Step 1 (5 min): Clarify requirements — functional, non-functional (scale, latency, availability).
+Step 2 (5 min): Capacity estimation — requests/sec, storage needed, bandwidth.
+Step 3 (10 min): High-level design — boxes and arrows: clients, servers, DB, cache, queue.
+Step 4 (10 min): Deep dive — focus on interesting/hard parts. Ask interviewer what to focus on.
+Step 5 (5 min): Bottlenecks and scaling — what breaks at scale? How do you fix it?
+Step 6 (5 min): Summary — trade-offs made, what you'd do with more time.
+
+
+==================================================================

@@ -1,0 +1,55 @@
+SECTION 12: QUESTIONS TO ASK THE INTERVIEWER
+==================================================================
+
+1. "What does the day-to-day work of this role look like? Is it more new feature development, maintenance, or a mix?"
+
+2. "What hardware or devices will I be writing drivers for? Are there existing datasheets and reference designs available?"
+
+3. "How is the team structured? Are driver developers and application developers on the same team, or separate?"
+
+4. "What does the code review process look like for kernel-mode code? Given the consequences of bugs, how do you ensure quality?"
+
+5. "What's the biggest technical challenge the team is currently facing?"
+
+6. "How do you handle driver testing? Do you have hardware-in-the-loop test infrastructure?"
+
+7. "What does the onboarding process look like for someone new to driver development?"
+
+8. "What operating systems and kernel versions do you target? Do you support both current and LTS versions?"
+
+9. "How do you handle driver signing and certification? Do you go through WHQL certification?"
+
+10. "What debugging tools are commonly used by the team — WinDbg, KGDB, something custom?"
+
+11. "How do you handle the transition from development to production for drivers? What does your staging environment look like?"
+
+12. "What's your deployment/update process for drivers in the field? Is there an over-the-air update mechanism?"
+
+13. "How do you balance the stability required for driver code with the need to ship new features?"
+
+14. "What does success look like in the first 90 days for someone in this role?"
+
+15. "How does this team approach cross-functional collaboration — with firmware, hardware, and software application teams?"
+
+16. "Is there an opportunity to contribute to open-source driver work, or is everything proprietary?"
+
+17. "What C++ standard does the team use (C++11, C++17, C++20)? Are there coding standards in place?"
+
+18. "How does the team handle breaking changes in the Linux kernel API between versions?"
+
+19. "What's the culture around learning and professional development here? Is there a budget for conferences, training, or certifications?"
+
+20. "What tools do you use for project management and tracking (Jira, Azure DevOps, GitHub Projects)?"
+
+21. "How do you measure the impact and quality of driver code? What metrics matter to the team?"
+
+22. "Is this role more individual-contributor focused, or is there a mentoring/technical leadership component?"
+
+23. "What's the team's philosophy on technical debt? How do you balance new development with code quality improvements?"
+
+24. "How has this role evolved over the last few years, and how do you see it evolving?"
+
+25. "What do people on the team enjoy most about working here? What do they find most challenging?"
+
+
+==================================================================

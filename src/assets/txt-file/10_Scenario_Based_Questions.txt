@@ -1,0 +1,115 @@
+SECTION 10: SCENARIO-BASED QUESTIONS
+==================================================================
+
+(Selected from 100 scenarios — organized by category)
+
+TROUBLESHOOTING SCENARIOS
+--------------------------
+
+S1. Your ASP.NET Core API is returning 500 errors in production. How do you diagnose?
+Answer: Check Application Insights / Serilog logs for exception stack traces. Look for patterns: same endpoint, specific user, time-based. Check health endpoints. Review recent deployments. Enable verbose logging temporarily. Check database connectivity, external API timeouts. Use correlation IDs to trace specific failed requests.
+
+S2. A customer reports intermittent 404 errors on an endpoint that works for others.
+Answer: Check if endpoint is authenticated — maybe user lacks permissions (403 misconfigured as 404). Check route constraints — user input might not match constraint pattern. Enable request logging to capture exact URL being called. Check if endpoint is deployed on all instances (partial deployment issue).
+
+S3. Your background service suddenly stopped processing messages.
+Answer: Check service health endpoint. Look for unhandled exceptions in host logs — BackgroundService catches exception but logs it; process continues but ExecuteAsync stopped. Check message queue connectivity. Verify CancellationToken not cancelled prematurely. Check if message poison-pilled (same message processed repeatedly, always failing).
+
+S4. Database queries started taking 10x longer after a deployment.
+Answer: Check if indexes were dropped in migration. Run Query Store or SQL Profiler to find slow queries. Check if data volume changed significantly. Look for parameter sniffing issues. Review Entity Framework generated SQL — added .AsNoTracking() removed? New Include()? Check connection pool exhaustion.
+
+S5. Your API response times are high but the database looks fast.
+Answer: Profile outside the database: middleware execution time, serialization time, GC pauses (check GC stats), external API calls, network latency. Add granular timing to each pipeline stage. Use dotnet-trace to identify CPU-bound hotspots. Check for synchronous blocking on async code (Task.Result, .Wait()).
+
+PERFORMANCE SCENARIOS
+---------------------
+
+S6. Your ASP.NET Core API handles 1000 RPS but you need 10,000 RPS. What do you do?
+Answer: Profile first — identify bottleneck. Horizontal scaling: add instances behind load balancer. Add response caching for read-heavy endpoints. Optimize hot database queries (add indexes, optimize LINQ). Use async/await throughout (eliminate blocking). Enable HTTP/2. Move to Redis for session/distributed cache.
+
+S7. Memory usage keeps growing in your long-running .NET service. How do you find the leak?
+Answer: Collect memory dumps (dotnet-dump). Analyze with dotnet-gcdump (GC root analysis). Look for: event handlers not unsubscribed, static collections growing, cache without eviction, Disposed objects still referenced, IDisposable not disposed. PerfView or dotMemory for detailed heap analysis.
+
+S8. Your EF Core queries are loading entire tables when they should be loading one row.
+Answer: Log generated SQL: dbContext.Database.LogTo(Console.WriteLine). Check if LINQ is materialized early (AsEnumerable() before Where). Check if lazy loading is loading related entities. Use .FirstOrDefault() instead of .ToList().Where(). Ensure filters in LINQ translate to SQL WHERE clause.
+
+S9. CPU usage spikes to 100% on your API server every few minutes.
+Answer: Schedule this with Application Performance Monitor. Correlate with: GC Gen2 collection (large objects, LOH), scheduled background job, external batch request. dotnet-counters monitor cpu-usage, gc-heap-size. CPU profiler (dotnet-trace) shows hot methods.
+
+S10. Your application response time is normally 50ms but occasionally spikes to 5 seconds.
+Answer: Likely GC pauses or connection pool exhaustion. Check GC stats: Gen2 collections, LOH size. Check SQL connection pool: Number of SQL connections active (sp_who2). Check external API timeouts. Use percentile metrics (P99) to characterize spike pattern.
+
+CONCURRENCY SCENARIOS
+---------------------
+
+S11. Two users try to book the last seat simultaneously. How do you prevent double-booking?
+Answer: Use optimistic concurrency with version check: read seat (SELECT ... WHERE Available=1), update with version check (UPDATE ... WHERE Available=1 AND RowVersion=@v), retry if 0 rows affected. Or pessimistic: BEGIN TRAN; SELECT ... WITH (UPDLOCK); update; COMMIT. Application-level: SemaphoreSlim per resource, or database-level locking.
+
+S12. Your counter incremented from multiple threads is giving wrong results.
+Answer: Classic race condition. Fix: use Interlocked.Increment(ref counter) for simple increment. For complex operations: lock { counter++; }. Use ConcurrentDictionary for dictionary scenarios. Don't use regular int with multiple threads.
+
+S13. Your async code is deadlocking in ASP.NET Framework (not Core).
+Answer: Classic deadlock: calling .Result or .Wait() on Task in ASP.NET Framework (synchronization context). Call stack: controller calls service.DoAsync().Result → task awaits, resumes on sync context → but sync context thread is blocked by .Result. Fix: use ConfigureAwait(false) in library code, or make caller truly async.
+
+S14. Multiple threads are writing to a List<T> and causing exceptions.
+Answer: List<T> is not thread-safe. Options: lock around all Add/Remove/Read. Use ConcurrentBag<T> for unordered concurrent add. Use ConcurrentQueue<T> for FIFO. Use ImmutableList<T> with Interlocked.Exchange for functional updates.
+
+S15. Your cache is thundering herd — cache miss causes 100 concurrent DB queries.
+Answer: Cache stampede/thundering herd. Solutions: SemaphoreSlim per cache key (only one thread fetches, others wait). Double-checked locking with async lock. Background refresh before expiry. Soft TTL: serve stale while revalidating. Circuit breaker on the cache miss path.
+
+PRODUCTION INCIDENTS
+--------------------
+
+S16. Your production database is at 100% CPU. What's your immediate action?
+Answer: Immediate: Kill longest-running queries (sp_who2 + kill). Check for blocking chains. Enable Query Store to identify top CPU queries. If unresolved: failover to read replica for read traffic. Long-term: add missing indexes, optimize queries, scale up hardware.
+
+S17. Your microservice just deployed and is returning 500 for all requests.
+Answer: Immediate rollback. Check deployment logs — migration failed? Config missing? Check Application Insights for exception: NullReferenceException at startup (missing required config), DbContext migration errors, missing service registration (DI error). Feature flags to disable problematic code.
+
+S18. Users report they're seeing other users' data.
+Answer: P1 incident. Immediate: disable the affected feature/endpoint. Investigate: data isolation bug — multi-tenant filter not applied, session mixed up, authorization check missing. Audit all data access for the time period. Notify security team. Review data access logs. Fix and regression test thoroughly before re-enabling.
+
+S19. Your message queue has 1 million unprocessed messages. Consumers are down.
+Answer: Scale up consumers immediately. Check why consumers went down: dependency failure, exception, resource exhaustion. Review dead-letter queue for poison messages. Prioritize recent messages over old ones if business-critical. Monitor consumer lag after restart — may need temporary overcapacity.
+
+S20. Your SSL certificate expired. HTTPS is broken for all users.
+Answer: Immediate: obtain new certificate. If auto-renewal (Let's Encrypt): troubleshoot renewal process. If manual: emergency renewal from CA. Update certificate in load balancer/Kestrel/IIS. Restart service. Verify with curl -v. Post-incident: add certificate expiry monitoring alert 30 days before expiry.
+
+ARCHITECTURE DECISIONS
+-----------------------
+
+S21. When would you choose microservices over monolith?
+Answer: Monolith first for new products — simpler to develop, deploy, test. Move to microservices when: team scales (Conway's Law), different scaling requirements per component, different deployment cadences, technology diversity needed. Don't over-engineer early.
+
+S22. How do you handle schema migrations in a zero-downtime deployment?
+Answer: Backward-compatible migrations only. Add column nullable first; deploy; populate data; deploy code to write new column; then add NOT NULL constraint. Never rename/drop column in same deploy as code change. Expand-Contract pattern.
+
+S23. How do you design for eventual consistency?
+Answer: Acknowledge it exists — some data will be stale. Use events for cross-service updates. Sagas for distributed transactions. Idempotent consumers for duplicate event handling. UI: show "last updated" timestamp. Compensating transactions for rollback.
+
+S24. When do you use sync vs async inter-service communication?
+Answer: Sync (REST/gRPC): when you need immediate response, when consistency is critical, simple request-reply. Async (message queue): when decoupling is important, when consumer being slow shouldn't block producer, for long-running operations, for broadcast to multiple consumers.
+
+S25. How do you secure sensitive data in your application?
+Answer: Encrypt at rest (database TDE, column-level encryption). Encrypt in transit (TLS). Hash passwords (bcrypt, Argon2 — not MD5/SHA1). Store secrets in vault (Azure Key Vault, HashiCorp Vault), not config files. Mask PII in logs. Minimal privilege — service accounts with only needed permissions.
+
+DRIVER-RELATED SCENARIOS
+--------------------------
+
+S26. Your Windows driver is causing a BSOD on some machines but not others. How do you debug?
+Answer: Collect crash dump (WinDbg: !analyze -v). Look for faulting address, call stack, exception. Driver Verifier on test machine to reproduce. Check if issue is hardware-specific (different chipset, DMA issues). WPP tracing to trace execution path leading to crash. Check for IRQL violations.
+
+S27. Your Linux kernel module causes kernel oops on module load.
+Answer: dmesg output shows: oops message, CPU registers, call stack. addr2line -e module.ko address converts address to source line. Enable KASAN (CONFIG_KASAN) for memory error detection. Check init function: null pointer, incorrect ioremap, accessing hardware before ready. QEMU for safe kernel debugging.
+
+S28. Your driver is loading on Windows 10 but not on Windows 11.
+Answer: Check device manager error code. Driver signing requirements changed (EV cert required). Check if using deprecated WDM APIs removed in newer Windows. Run compatibility manifest check. Check driver's supported OS list in INF file. Enable test signing mode to test unsigned.
+
+S29. Device is detected but driver won't bind to it.
+Answer: Check device IDs in INF/driver match actual hardware (Device Manager → Details → Hardware IDs). Check device class compatibility. Windows: devmgmt.msc shows "Unknown Device" — collect HW IDs. Linux: check dmesg for "no driver found", ensure MODULE_DEVICE_TABLE matches hardware.
+
+S30. Your I2C driver reads wrong values from sensor.
+Answer: Check: bit order (MSB vs LSB), byte order (endianness), register address correctness, I2C address (7-bit vs 8-bit addressing), signal integrity (use oscilloscope). Add logging before/after each I2C transaction. Cross-reference with datasheet for register map and communication timing.
+
+
+==================================================================

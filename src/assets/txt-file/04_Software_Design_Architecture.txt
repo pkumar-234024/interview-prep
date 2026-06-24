@@ -1,0 +1,270 @@
+SECTION 4: SOFTWARE DESIGN & ARCHITECTURE
+==================================================================
+
+--------------------------------------------------------------------
+OOP PRINCIPLES
+--------------------------------------------------------------------
+
+Theory:
+The four pillars of OOP are Encapsulation, Abstraction, Inheritance, and Polymorphism.
+
+Encapsulation: Bundling data and behavior; hiding internal state. Private fields with public properties.
+Abstraction: Hiding implementation details; exposing only what's necessary. Interfaces and abstract classes.
+Inheritance: Reusing code via parent-child class hierarchy. Promotes DRY.
+Polymorphism: Single interface, multiple implementations. Virtual/override, interfaces.
+
+Real-world Example:
+PaymentProcessor (abstract) → CreditCardProcessor, PayPalProcessor, CryptoProcessor.
+IPaymentProcessor.Process() is the polymorphic method — caller doesn't care which processor is used.
+
+Interview Questions:
+Q: Is-a vs Has-a relationships?
+A: Is-a = inheritance (Dog is-a Animal). Has-a = composition (Car has-a Engine). Prefer composition over inheritance — more flexible, less fragile.
+
+Q: What is the Diamond problem?
+A: In multiple inheritance (C++), if B and C both inherit A, and D inherits B and C, D has ambiguous A methods. C# solves this by not allowing multiple class inheritance; interfaces handle it via explicit implementation.
+
+Common Mistakes:
+- Deep inheritance hierarchies (> 3 levels) — use composition
+- Inheriting for code reuse when is-a relationship doesn't hold
+- Exposing internal fields directly (violates encapsulation)
+
+--------------------------------------------------------------------
+SOLID PRINCIPLES
+--------------------------------------------------------------------
+
+S - Single Responsibility Principle (SRP)
+Theory: A class should have only one reason to change. One responsibility per class.
+Example: OrderService (process orders) + EmailService (send emails) — NOT combined.
+Mistake: God class with 2000 lines handling everything.
+
+O - Open/Closed Principle (OCP)
+Theory: Open for extension, closed for modification. Add behavior via new code, not modifying existing.
+Example: IDiscountStrategy — add BulkDiscount without changing OrderCalculator.
+Mistake: Switch statement that needs modification every time a new case is added.
+
+L - Liskov Substitution Principle (LSP)
+Theory: Subtype must be fully substitutable for its base type.
+Example: ReadOnlyCollection<T> should not inherit from Collection<T> if Add throws — violates LSP.
+Mistake: Square extends Rectangle but setting Width also sets Height — base code breaks.
+
+I - Interface Segregation Principle (ISP)
+Theory: Clients should not be forced to depend on interfaces they don't use.
+Example: Split IWorker into IWorkable and IFeedable — robots implement only IWorkable.
+Mistake: Fat interface with 20 methods — implementing class must stub 15 unused methods.
+
+D - Dependency Inversion Principle (DIP)
+Theory: High-level modules should not depend on low-level modules. Both depend on abstractions.
+Example: OrderService depends on IEmailSender, not SmtpEmailSender directly.
+Mistake: new SmtpEmailSender() inside OrderService — tightly coupled, untestable.
+
+--------------------------------------------------------------------
+DESIGN PATTERNS
+--------------------------------------------------------------------
+
+CREATIONAL PATTERNS
+----
+
+Singleton:
+Theory: Ensure only one instance; provide global access point.
+Real-world: Configuration manager, logging service, thread pool.
+Interview Q: How do you implement thread-safe singleton? A: Double-checked locking or static initialization: private static readonly Lazy<T> _instance.
+Mistake: Overusing singletons — creates hidden global state, testing difficulties.
+
+Factory Method:
+Theory: Define interface for creating object; let subclasses decide which class.
+Real-world: ILoggerFactory — ConsoleLoggerFactory vs FileLoggerFactory.
+Mistake: Creating complex factory logic that should be in the objects themselves.
+
+Abstract Factory:
+Theory: Interface for creating families of related objects without specifying concrete classes.
+Real-world: UI widget factory — DarkThemeFactory creates DarkButton, DarkScrollbar; LightThemeFactory creates light versions.
+
+Builder:
+Theory: Construct complex objects step by step; same process, different representations.
+Real-world: QueryBuilder, WebHostBuilder, HttpClient setup.
+Mistake: Using builder for simple objects (adds unnecessary complexity).
+
+Prototype:
+Theory: Clone existing objects rather than creating from scratch.
+Real-world: Copying configuration objects; game entity templates.
+
+STRUCTURAL PATTERNS
+----
+
+Adapter:
+Theory: Make incompatible interfaces compatible.
+Real-world: Wrapping a legacy payment API behind IPaymentProcessor interface.
+
+Decorator:
+Theory: Add behavior to objects dynamically without modifying them.
+Real-world: CachingRepository wraps Repository; LoggingService wraps Service.
+Mistake: Too many decorator layers — debugging becomes difficult.
+
+Facade:
+Theory: Simple interface to complex subsystem.
+Real-world: OrderFacade.PlaceOrder() — calls inventory, payment, shipping, notification internally.
+
+Proxy:
+Theory: Placeholder that controls access to another object.
+Real-world: Lazy loading proxy (EF Core), security proxy, virtual proxy.
+
+Composite:
+Theory: Tree structures of objects treated uniformly.
+Real-world: File system (File and Folder both implement IFileSystemItem). UI component tree.
+
+Bridge:
+Theory: Decouple abstraction from implementation.
+Real-world: Shape + Renderer — CircleShape with VectorRenderer or RasterRenderer independently.
+
+BEHAVIORAL PATTERNS
+----
+
+Strategy:
+Theory: Family of algorithms; encapsulate each; make them interchangeable.
+Real-world: Sorting strategies, payment methods, validation strategies.
+
+Observer:
+Theory: One-to-many dependency; notify subscribers of state changes.
+Real-world: C# events, INotifyPropertyChanged, EventBus.
+
+Command:
+Theory: Encapsulate request as object; support undo, queue, log.
+Real-world: Menu items in GUI, MediatR commands, transactional scripts.
+
+Template Method:
+Theory: Define skeleton of algorithm in base class; let subclasses fill in steps.
+Real-world: DataMiner base class with abstract ExtractData(), ProcessData(); concrete subclasses for CSV, XML, JSON.
+
+Chain of Responsibility:
+Theory: Pass request along chain of handlers; each decides to handle or pass.
+Real-world: ASP.NET Core middleware pipeline, validation chains.
+
+State:
+Theory: Object changes behavior when its state changes.
+Real-world: Order state machine (Pending → Processing → Shipped → Delivered → Cancelled).
+
+Iterator:
+Theory: Traverse elements without exposing underlying representation.
+Real-world: IEnumerable<T>/IEnumerator<T> in C#.
+
+Mediator:
+Theory: Objects communicate via mediator; reduces direct dependencies.
+Real-world: MediatR, EventBus, chat room (users talk via server).
+
+Memento:
+Theory: Capture object's state to restore later (undo functionality).
+Real-world: Text editor undo, game save states.
+
+Visitor:
+Theory: Separate algorithm from object structure.
+Real-world: Compiler AST (expression visitor), report generator across different entity types.
+
+--------------------------------------------------------------------
+CLEAN ARCHITECTURE
+--------------------------------------------------------------------
+
+Theory:
+Concentric circles of dependency: innermost = Entities (Domain), Application, Infrastructure, Presentation (outermost). Dependencies point inward. Inner layers have no knowledge of outer layers.
+
+Layers:
+1. Domain: Entities, Value Objects, Domain Services, Domain Events. No dependencies on frameworks.
+2. Application: Use cases (commands/queries), interfaces (IRepository, IEmailSender). No framework dependencies.
+3. Infrastructure: EF Core, SMTP, File Storage implementations. Depends on Application abstractions.
+4. Presentation: ASP.NET Core controllers, UI. Depends on Application.
+
+Real-world Example:
+Domain: Order entity, OrderId value object, IOrderRepository interface.
+Application: PlaceOrderCommand, PlaceOrderCommandHandler, IOrderRepository used.
+Infrastructure: SqlOrderRepository implements IOrderRepository using EF Core.
+Presentation: OrderController calls mediator.Send(new PlaceOrderCommand(...)).
+
+Interview Questions:
+Q: How does Clean Architecture differ from N-Tier?
+A: N-Tier: Presentation → Business → Data (DB can be swapped but business still knows data layer). Clean Architecture: Domain knows nothing about persistence; direction of dependency inverted.
+
+Common Mistakes:
+- Putting business logic in controllers
+- Domain entities with EF Core attributes (infrastructure leak)
+- Application layer referencing EF Core directly
+
+--------------------------------------------------------------------
+MICROSERVICES ARCHITECTURE
+--------------------------------------------------------------------
+
+Theory:
+Microservices decompose application into small, independently deployable services. Each service: owns its data (database per service), is independently scalable, communicates via APIs (sync) or messages (async).
+
+Key Patterns:
+- API Gateway: single entry point, aggregation, routing
+- Service Discovery: Consul, Kubernetes DNS
+- Circuit Breaker: Polly
+- Saga: distributed transactions
+- Outbox: reliable event publishing
+- CQRS: separated read/write models per service
+- Event Sourcing: state as events
+
+Real-world Example:
+E-Commerce: Order Service, Inventory Service, Payment Service, Shipping Service, Notification Service.
+Order placed → OrderCreated event → Inventory reserves stock, Payment charges card, Notification sends email.
+
+Interview Questions:
+Q: What are the challenges of microservices?
+A: Distributed transactions, service discovery, network latency, data consistency, debugging across services, increased operational complexity, contract management.
+
+Common Mistakes:
+- Micro-monolith: too-fine-grained services that are tightly coupled
+- Sharing databases between services
+- Synchronous communication everywhere (creates coupling and cascading failures)
+- Skipping API contracts (breaking changes across services)
+
+--------------------------------------------------------------------
+REPOSITORY PATTERN
+--------------------------------------------------------------------
+
+Theory: Abstract data persistence behind an interface. Domain and application layers use IRepository<T>, not directly DbContext or SQL.
+
+public interface IRepository<T> where T : class
+{
+    Task<T> GetByIdAsync(int id);
+    Task<IReadOnlyList<T>> GetAllAsync();
+    Task AddAsync(T entity);
+    void Update(T entity);
+    void Remove(T entity);
+}
+
+Real-world: IOrderRepository with SqlOrderRepository (EF Core) and InMemoryOrderRepository (tests).
+
+Mistake: Generic repository exposing IQueryable<T> — leaks EF Core into domain layer.
+
+--------------------------------------------------------------------
+CQRS (Command Query Responsibility Segregation)
+--------------------------------------------------------------------
+
+Theory: Separate read model (query) from write model (command). Commands change state; queries return data. Can use different data stores for each. Often paired with MediatR.
+
+Commands: CreateOrderCommand → CreateOrderCommandHandler
+Queries: GetOrderByIdQuery → GetOrderByIdQueryHandler
+
+Benefits: Optimize reads and writes independently, cleaner handlers (each has one purpose), easier scaling.
+
+Real-world with MediatR:
+OrderController → _mediator.Send(new CreateOrderCommand(...)) → handler validates, creates order, publishes domain event.
+
+--------------------------------------------------------------------
+EVENT-DRIVEN ARCHITECTURE
+--------------------------------------------------------------------
+
+Theory: Services communicate by producing and consuming events. Publisher doesn't know consumers. Decoupled, scalable. Message bus: RabbitMQ, Azure Service Bus, Kafka.
+
+Patterns: Event notification, Event-carried state transfer, Event sourcing.
+
+Real-world: Order placed → OrderCreated message on bus → InventoryService consumes, PaymentService consumes, NotificationService consumes — all independent.
+
+Common Mistakes:
+- Events without versioning (breaking consumer contracts)
+- Not handling duplicate messages (idempotent consumers)
+- No dead-letter queue for failed messages
+
+
+==================================================================

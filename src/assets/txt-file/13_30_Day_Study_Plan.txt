@@ -1,0 +1,177 @@
+SECTION 13: 30-DAY STUDY PLAN
+==================================================================
+
+WEEK 1: C# DEEP DIVE (Days 1-7)
+---------------------------------
+
+Day 1 — Memory & GC:
+- Study: GC generations, LOH, finalizers, WeakReference
+- Practice: Write code demonstrating boxing, Span<T>, ArrayPool<T>
+- Read: Microsoft docs on .NET Memory Management
+
+Day 2 — Async/Await Deep Dive:
+- Study: Task internals, ConfigureAwait, ValueTask, CancellationToken
+- Practice: Write a concurrent file processor with cancellation
+- Debug: Create a deadlock scenario and fix it
+
+Day 3 — Advanced C# Features:
+- Study: Expression trees, reflection, dynamic, source generators
+- Practice: Build a simple AutoMapper using reflection
+- Read: dotnet/csharplang GitHub for language proposals
+
+Day 4 — Concurrency:
+- Study: Monitor, Mutex, SemaphoreSlim, Interlocked, ConcurrentCollections
+- Practice: Thread-safe counter, producer-consumer with Channel<T>
+- Review: Common threading bugs
+
+Day 5 — LINQ & Collections:
+- Study: Deferred execution, expression vs func, custom LINQ operators
+- Practice: Write custom IEnumerable<T> with yield return
+- Solve: 10 LeetCode medium problems using LINQ
+
+Day 6 — OOP & SOLID:
+- Study: All SOLID principles with examples
+- Practice: Refactor a god class to SOLID-compliant design
+- Write: One real-world example for each principle
+
+Day 7 — Review & Practice:
+- Solve 10 C# algorithm questions
+- Review Section 2 of this guide
+- Write code for 5 design patterns
+
+WEEK 2: ARCHITECTURE & .NET (Days 8-14)
+-----------------------------------------
+
+Day 8 — Design Patterns:
+- Study: Creational, Structural, Behavioral patterns
+- Implement: Factory, Strategy, Observer, Decorator in code
+- Connect to: ASP.NET Core uses of each pattern
+
+Day 9 — Clean Architecture:
+- Study: Layers, dependency inversion, domain model
+- Practice: Build a mini Clean Architecture project (API → Application → Domain → Infrastructure)
+- Review: CQRS + MediatR
+
+Day 10 — ASP.NET Core Deep Dive:
+- Study: Middleware pipeline, request lifecycle, DI lifetimes
+- Practice: Custom middleware, custom authorization handler
+- Review: Section 3 questions
+
+Day 11 — API Design:
+- Study: REST constraints, versioning, idempotency, rate limiting, JWT
+- Practice: Design a complete REST API for an order system
+- Review: HTTP status codes, error handling
+
+Day 12 — EF Core:
+- Study: Query optimization, N+1, global filters, interceptors
+- Practice: Identify and fix N+1 in a sample project
+- Lab: Enable SQL logging and review generated queries
+
+Day 13 — System Design Basics:
+- Study: Caching, message queues, databases, scaling patterns
+- Practice: Design URL shortener from scratch
+- Review: Section 9 designs
+
+Day 14 — Review Week 2:
+- Mock interview: answer 5 architecture questions aloud
+- Review notes on Clean Architecture
+- Solve 5 scenario questions from Section 10
+
+WEEK 3: DRIVER FUNDAMENTALS (Days 15-21)
+------------------------------------------
+
+Day 15 — Windows Driver Concepts:
+- Study: Kernel vs user mode, IRP, I/O Manager, driver stack
+- Read: Microsoft's "What Is a Driver?" and "Kernel-Mode Driver Architecture"
+- Install: Windows Driver Kit (WDK) + Visual Studio WDK extension
+
+Day 16 — WDM vs KMDF vs UMDF:
+- Study: Compare the three models, when to use each
+- Read: KMDF design guide on docs.microsoft.com
+- Review: All Windows driver questions Q1-Q25
+
+Day 17 — Build and Run First Driver:
+- Lab: Build WDK echo sample
+- Run: Install on test VM
+- Debug: Add DbgPrint messages, view in DebugView
+- Study: Driver lifecycle, AddDevice, DriverEntry
+
+Day 18 — KMDF Objects and Queues:
+- Study: WDFDEVICE, WDFQUEUE, WDFREQUEST, synchronization
+- Lab: Modify echo sample to handle a custom IOCTL
+- Write: User-mode application that sends IOCTL to your driver
+
+Day 19 — Linux Driver Basics:
+- Install: Ubuntu VM or WSL2
+- Study: Module structure, file_operations, cdev
+- Lab: Build hello_world module, insmod/rmmod
+
+Day 20 — Linux Character Driver:
+- Lab: Build character driver with read/write/ioctl
+- Test: User-mode C program reading from /dev/mydevice
+- Study: copy_to_user/copy_from_user, printk
+
+Day 21 — Driver Review:
+- Review: Windows Q1-50, Linux Q1-50
+- Review notes from week
+- Mock explain: "How does a user-mode application communicate with a kernel driver?"
+
+WEEK 4: C++, PYTHON & FINAL PREP (Days 22-30)
+-----------------------------------------------
+
+Day 22 — C++ Fundamentals:
+- Study: Pointers, references, memory management, RAII
+- Code: Write classes with rule of three/five
+- Compare: Each concept with C# equivalent
+
+Day 23 — C++ Smart Pointers & Templates:
+- Study: unique_ptr, shared_ptr, weak_ptr, template basics
+- Code: Generic stack, smart pointer exercise
+- Review: C++ questions Q1-Q30
+
+Day 24 — C++ STL & Modern Features:
+- Study: STL containers, algorithms, lambdas, C++17 features
+- Code: Solve 5 algorithm problems using STL
+- Review: C++ questions Q31-75
+
+Day 25 — Python Basics:
+- Study: Syntax, data types, OOP, exceptions
+- Code: Python OOP — class hierarchy with decorators
+- Complete: Python exercises Q1-Q25
+
+Day 26 — Python Scripting & Automation:
+- Study: File handling, os/sys, subprocess, logging
+- Code: Write a file monitoring script, log analyzer
+- Complete: Python exercises Q26-50
+
+Day 27 — System Design Practice:
+- Practice: Full system design for Device Monitoring Platform
+- Design: Driver Update Management System
+- Time: 45 minutes per design (simulate interview)
+
+Day 28 — Mock Interview Day:
+- Complete: Full Mock Interview 1 (Technical) — write out all answers
+- Review: Scenario questions S1-S15
+- Identify: 5 weakest topics; review them
+
+Day 29 — Final Review:
+- Read: Section 14 Cheat Sheet entirely
+- Review: Questions to ask interviewer
+- Practice: Behavioral questions aloud
+
+Day 30 — Day Before Interview:
+- Light review only — no new material
+- Review: Your strongest talking points
+- Prepare: Questions for interviewer
+- Rest: Good sleep is critical for performance
+
+PRIORITY ORDER FOR STUDY:
+1. C# (strongest — review and deepen, not learn)
+2. OOP + Architecture (strong — refine examples)
+3. ASP.NET Core (strong — review edge cases)
+4. Windows Driver basics (gap — focused learning)
+5. Linux Driver basics (gap — hands-on labs)
+6. C++ (gap — prioritize concepts over mastery)
+7. Python (small gap — scripting focus)
+
+

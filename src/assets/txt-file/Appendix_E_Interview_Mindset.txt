@@ -1,0 +1,57 @@
+APPENDIX E: INTERVIEW MINDSET & COMMUNICATION TIPS
+==================================================================
+
+TECHNICAL COMMUNICATION FRAMEWORK
+------------------------------------
+
+When answering ANY technical question, use this structure:
+1. WHAT it is (1 sentence definition)
+2. WHY it exists (problem it solves)
+3. HOW it works (mechanism)
+4. WHEN to use it (vs alternatives)
+5. Real-world example from your experience
+
+Example — "What is caching?":
+WHAT: Caching stores computed or fetched results to serve future requests faster.
+WHY: Database/computation is expensive; serving from memory is ~100x faster.
+HOW: On read, check cache first. On miss, compute and store with TTL.
+WHEN: Read-heavy data that changes infrequently. Not for real-time critical data.
+EXAMPLE: In my last project, I cached the product catalog in Redis with 15-min TTL —
+         API response time dropped from 400ms to 25ms.
+
+CODING INTERVIEW COMMUNICATION:
+1. Repeat the problem to confirm understanding.
+2. Clarify constraints: "Can input be empty? Negative numbers? Duplicates?"
+3. Discuss approach before coding: "I'm thinking BFS here because..."
+4. Think aloud while coding — interviewers want to hear reasoning.
+5. Test with example before claiming done.
+6. Discuss complexity: O(n) time, O(n) space.
+7. Suggest improvements: "This could be optimized to O(log n) with..."
+
+SYSTEM DESIGN COMMUNICATION:
+Start broad, go deep on request. Say: "I'll start with the high-level design and we can deep-dive wherever you're most interested." This shows maturity — you know you can't cover everything equally.
+
+HANDLING UNKNOWN QUESTIONS:
+Don't fake it. Say: "I haven't worked with X directly, but from what I know about Y (related thing), I'd expect it to work like Z. Can you confirm if that's the right direction?" Shows: intellectual honesty + reasoning skills.
+
+FOR THE DRIVER GAPS:
+"I haven't written production drivers yet, but I've been actively studying this area — I've built a simple character device module in Linux and worked through the KMDF echo sample in Windows. I understand the concepts at a foundational level and I'm confident I can be productive with mentorship from your team."
+
+BEHAVIORAL QUESTION FRAMEWORK (STAR):
+Situation: context (brief)
+Task: what you were responsible for
+Action: what YOU specifically did (not "we")
+Result: quantified outcome
+
+NUMBERS MATTER IN RESULTS:
+Not: "The app got faster" → "API latency dropped from 1.2s to 180ms for P95"
+Not: "I fixed a bug" → "Fixed a race condition causing 0.3% of orders to double-charge"
+Not: "I improved tests" → "Increased test coverage from 23% to 71% over 3 months"
+
+SALARY NEGOTIATION MINDSET:
+Research market rate first (levels.fyi, Glassdoor, LinkedIn Salary, local benchmarks).
+For a role requiring both software expertise AND driver learning: you bring the software skills immediately, driver gap is filled by training investment on their side. Frame accordingly.
+Let them make first offer when possible. Counter with data, not just desire.
+
+
+==================================================================

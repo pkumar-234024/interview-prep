@@ -1,0 +1,260 @@
+==================================================================
+SECTION 14: CHEAT SHEET
+==================================================================
+
+--------------------------------------------------------------------
+C# QUICK REFERENCE
+--------------------------------------------------------------------
+
+VALUE TYPES: int, long, double, float, decimal, bool, char, struct, enum
+REFERENCE TYPES: class, string, array, delegate, interface, dynamic, object
+
+KEY KEYWORDS:
+async/await — asynchronous programming without blocking
+yield return — lazy enumeration
+var — implicitly typed (compile-time, NOT dynamic)
+dynamic — runtime type resolution (DLR)
+readonly — can only be set at declaration or in constructor
+sealed — prevents inheritance
+virtual/override — polymorphism
+abstract — must be overridden; class cannot be instantiated
+partial — split class definition across files
+unsafe — allow pointer operations
+checked/unchecked — overflow handling
+ref/out/in — pass by reference
+
+COLLECTIONS CHEATSHEET:
+Array — fixed size, O(1) access
+List<T> — dynamic array, O(1) amortized add
+Dictionary<K,V> — hash map, O(1) avg access
+HashSet<T> — unique values, O(1) lookup
+Queue<T>/Stack<T> — FIFO/LIFO
+SortedDictionary<K,V> — O(log n) sorted
+ConcurrentDictionary<K,V> — thread-safe dictionary
+ImmutableList<T> — thread-safe, creates new on modification
+
+LINQ QUICK REFERENCE:
+.Where(predicate) — filter
+.Select(transform) — project
+.OrderBy/.OrderByDescending — sort
+.GroupBy(keySelector) — group
+.Join(other, k1, k2, resultSelector) — join
+.FirstOrDefault(pred) — first or null
+.Any(pred) — any matching?
+.All(pred) — all matching?
+.Count(pred) — count matching
+.Sum/Min/Max/Average — aggregates
+.Take(n)/.Skip(n) — pagination
+.Distinct() — unique
+.ToList()/.ToArray() — materialize (triggers deferred execution)
+
+ASYNC PATTERNS:
+Task<T> GetDataAsync() — returns Task
+await SomeAsync() — suspend without blocking
+await Task.WhenAll(t1, t2) — parallel await
+await Task.WhenAny(t1, t2) — first to complete
+CancellationTokenSource cts = new(); cts.Cancel(); — cancellation
+ConfigureAwait(false) — no context capture (library code)
+
+EXCEPTION HANDLING:
+try { } catch (SpecificException ex) { } catch (Exception ex) { } finally { }
+throw; — rethrow preserving stack trace
+throw ex; — rethrow LOSING stack trace (avoid)
+ExceptionDispatchInfo.Capture(ex).Throw() — rethrow from another context
+
+--------------------------------------------------------------------
+OOP QUICK REFERENCE
+--------------------------------------------------------------------
+
+FOUR PILLARS:
+Encapsulation: private fields + public properties
+Abstraction: interfaces and abstract classes hide complexity
+Inheritance: class Child : Parent (single), class C : IA, IB (multiple interfaces)
+Polymorphism: virtual/override, interface dispatch
+
+INTERFACE vs ABSTRACT CLASS:
+Interface: contract only (no state), multiple, always public, no constructor
+Abstract: can have state, implementation, constructor; single inheritance
+
+IS-A vs HAS-A:
+Is-a → inheritance (Dog is an Animal)
+Has-a → composition (Car has an Engine) — prefer composition!
+
+WHEN TO USE WHICH:
+interface: define a contract (IRepository, ILogger, IPaymentProcessor)
+abstract class: shared implementation with variation (HttpMessageHandler, Stream)
+sealed class: prevent inheritance (string in C# is sealed)
+struct: small value type with no identity, few fields, rarely boxed
+
+--------------------------------------------------------------------
+SOLID QUICK REFERENCE
+--------------------------------------------------------------------
+
+S — Single Responsibility: one class, one reason to change
+    Bad: OrderService saves to DB AND sends emails
+    Good: OrderService + EmailService separately
+
+O — Open/Closed: extend without modifying existing
+    Bad: switch(type) to add new behavior
+    Good: IStrategy interface, add new class
+
+L — Liskov Substitution: subtype fully substitutable for base
+    Bad: Square.Width setter also sets Height (breaks Rectangle assumption)
+    Good: derived class strengthens not weakens base contract
+
+I — Interface Segregation: small focused interfaces
+    Bad: IWorker with Work() and Eat() — robots don't eat
+    Good: IWorkable + IFeedable separately
+
+D — Dependency Inversion: depend on abstractions
+    Bad: new SmtpEmailSender() inside OrderService
+    Good: inject IEmailSender via constructor
+
+--------------------------------------------------------------------
+DESIGN PATTERNS QUICK REFERENCE
+--------------------------------------------------------------------
+
+CREATIONAL (object creation):
+Singleton: one instance (Lazy<T> + Instance property)
+Factory Method: subclass decides what to create (ILoggerFactory)
+Abstract Factory: family of related objects (IUIFactory → DarkThemeFactory)
+Builder: step-by-step complex construction (WebHostBuilder)
+Prototype: clone existing object
+
+STRUCTURAL (composing objects):
+Adapter: incompatible → compatible interface (legacy API wrapper)
+Decorator: add behavior without modifying (CachingRepository wraps Repository)
+Facade: simple interface to complex subsystem (OrderFacade)
+Composite: tree of objects (file system, UI component tree)
+Proxy: surrogate — lazy loading, security, logging
+
+BEHAVIORAL (object collaboration):
+Strategy: swappable algorithms (IPaymentStrategy)
+Observer: publish-subscribe (C# events, INotifyPropertyChanged)
+Command: encapsulate request (MediatR ICommand, undo/redo)
+Chain of Responsibility: pass request down a chain (middleware)
+Template Method: algorithm skeleton, subclass fills steps
+State: behavior changes with state (order state machine)
+
+--------------------------------------------------------------------
+DRIVER DEVELOPMENT QUICK REFERENCE
+--------------------------------------------------------------------
+
+WINDOWS DRIVERS:
+User Mode (Ring 3) → Kernel Mode (Ring 0)
+I/O Request Packet (IRP) = data structure representing I/O
+WDM (legacy) → KMDF (modern kernel) → UMDF (modern user-mode)
+IRQL: PASSIVE_LEVEL(0) < APC_LEVEL(1) < DISPATCH_LEVEL(2) < DIRQL
+Non-paged pool: accessible at any IRQL
+Paged pool: only at PASSIVE/APC_LEVEL
+Tools: WinDbg, DbgView, Driver Verifier, WPP Tracing
+
+LINUX DRIVERS:
+Everything is a file — devices in /dev
+Character device: byte stream (keyboard, serial)
+Block device: random access (disk)
+Module: insmod driver.ko / rmmod driver / dmesg
+file_operations: .open, .read, .write, .unlocked_ioctl
+copy_to_user / copy_from_user — never dereference user pointers directly
+kmalloc(size, GFP_KERNEL) — kernel heap allocation
+printk(KERN_INFO "msg\n") — kernel logging
+
+KEY DRIVER QUESTION: How does user mode talk to a driver?
+Windows: CreateFile("\\\\.\\DeviceName") → DeviceIoControl(hDevice, controlCode, ...)
+Linux: open("/dev/mydevice") → ioctl(fd, IOCTL_CODE, ...) or read()/write()
+
+--------------------------------------------------------------------
+C++ QUICK REFERENCE
+--------------------------------------------------------------------
+
+MEMORY:
+Stack: local variables, automatic cleanup, fixed size
+Heap: new/delete, manual management, flexible lifetime
+
+POINTERS:
+int* p = &x; — pointer
+*p = 5; — dereference
+p = nullptr; — null pointer
+
+SMART POINTERS (prefer over raw):
+unique_ptr<T>: sole owner, auto-delete — make_unique<T>()
+shared_ptr<T>: shared ownership, ref-count — make_shared<T>()
+weak_ptr<T>: non-owning reference to shared_ptr object
+
+RAII: resource acquired in constructor, released in destructor
+
+REFERENCES:
+int& ref = x; — alias, cannot be null, cannot rebind
+void f(const string& s) — read-only reference parameter (no copy!)
+void f(string&& s) — rvalue reference (move semantics)
+
+std::move(x) — cast to rvalue (enable move)
+std::forward<T>(x) — perfect forwarding in templates
+
+C# → C++ MAPPING:
+List<T> → std::vector<T>
+Dictionary<K,V> → std::unordered_map<K,V>
+SortedDictionary → std::map<K,V>
+string → std::string
+Func<T,R> → std::function<R(T)>
+var x = ... → auto x = ...
+foreach (x in c) → for (const auto& x : c)
+IEnumerable<T> → range with begin()/end()
+
+--------------------------------------------------------------------
+PYTHON QUICK REFERENCE
+--------------------------------------------------------------------
+
+TYPES: int, float, bool, str, list, tuple, dict, set, None
+MUTABLE: list, dict, set | IMMUTABLE: int, str, tuple, frozenset
+
+LIST OPERATIONS:
+l.append(x), l.extend([x,y]), l.insert(i, x)
+l.remove(x), l.pop(), l.pop(i)
+l.sort(), sorted(l), l.reverse()
+len(l), x in l
+
+DICT OPERATIONS:
+d[k], d.get(k, default), d.keys(), d.values(), d.items()
+d.update({k:v}), del d[k], k in d
+
+COMPREHENSIONS:
+[x*2 for x in range(10) if x%2==0] — list
+{k:v for k,v in items.items()} — dict
+(x for x in items) — generator (lazy!)
+
+KEY BUILT-INS:
+range(), zip(), enumerate(), map(), filter()
+len(), sorted(), reversed(), sum(), min(), max()
+isinstance(x, type), type(x)
+open(), print(), input()
+
+OOP:
+class Dog(Animal): — inheritance
+def __init__(self, name): self.name = name
+@property / @setter / @classmethod / @staticmethod
+super().__init__() — call parent constructor
+__str__, __repr__, __eq__, __len__, __iter__
+
+ASYNC:
+async def fetch(): await asyncio.sleep(1)
+asyncio.run(main()) — run coroutine
+async with, async for
+
+DECORATORS:
+@functools.lru_cache(maxsize=128) — memoization
+@property — getter
+@staticmethod / @classmethod
+Custom: def my_dec(func): def wrapper(*a, **k): return func(*a, **k); return wrapper
+
+==================================================================
+END OF COMPLETE INTERVIEW PREPARATION GUIDE
+==================================================================
+
+Total Content: 14 Sections covering 500+ interview questions with answers.
+Estimated study time: 30 days with the provided roadmap.
+
+Good luck with your interview! Remember: honesty about gaps + clear enthusiasm to learn
+= strong candidate, especially for a transitional role like this one.
+
+==================================================================

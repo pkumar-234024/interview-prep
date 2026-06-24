@@ -1,0 +1,257 @@
+SECTION 6: LINUX DRIVER DEVELOPMENT BASICS
+==================================================================
+
+--------------------------------------------------------------------
+BEGINNER'S GUIDE TO LINUX DRIVER DEVELOPMENT
+--------------------------------------------------------------------
+
+LINUX KERNEL OVERVIEW
+Linux kernel is a monolithic kernel with loadable module support. Runs entirely in kernel space. Linux architecture: User Space (applications, libc) → System Call Interface → Kernel (VFS, Drivers, Network, Memory Management, Scheduler) → Hardware.
+
+Key concepts:
+- Everything is a file — devices appear as files under /dev
+- Modules — driver code loaded/unloaded dynamically
+- GPL — Linux kernel is GPL; drivers can be GPL or proprietary (limited)
+
+DEVICE FILES
+Devices appear as special files:
+/dev/sda — block device (disk)
+/dev/ttyS0 — character device (serial port)
+/dev/null, /dev/zero, /dev/random — virtual character devices
+
+File types (ls -l shows c or b prefix):
+c — character device (byte stream: keyboard, serial)
+b — block device (random access blocks: disk)
+
+Major and Minor Numbers:
+Major: identifies the driver. Minor: identifies the specific device instance.
+ls -l /dev/sda shows: brw-rw---- 1 root disk 8, 0 → major=8, minor=0
+
+CHARACTER DRIVERS
+Stream-oriented devices. Implement file_operations structure with:
+.open — device opened
+.release — device closed
+.read — user reads data from device
+.write — user writes data to device
+.unlocked_ioctl — custom control commands
+.poll — support for select/poll/epoll
+
+Registration: register_chrdev(major, "name", &fops) or alloc_chrdev_region for dynamic major.
+
+BLOCK DRIVERS
+Random-access, sector-based. Used for disks. More complex than character drivers. Implement request queue processing. gendisk structure represents the disk.
+
+KERNEL MODULES
+Kernel code that can be loaded/unloaded dynamically without rebooting.
+
+Essential macros:
+module_init(init_function) — called on insmod
+module_exit(exit_function) — called on rmmod
+MODULE_LICENSE("GPL")
+MODULE_AUTHOR("Your Name")
+MODULE_DESCRIPTION("My Driver")
+
+Hello World Kernel Module:
+#include <linux/module.h>
+#include <linux/kernel.h>
+static int __init hello_init(void) {
+    printk(KERN_INFO "Hello, Kernel World!\n");
+    return 0;
+}
+static void __exit hello_exit(void) {
+    printk(KERN_INFO "Goodbye, Kernel World!\n");
+}
+module_init(hello_init);
+module_exit(hello_exit);
+MODULE_LICENSE("GPL");
+
+SYSTEM CALLS
+System calls are the interface between user space and kernel:
+open() → sys_open, read() → sys_read, write() → sys_write, ioctl() → sys_ioctl.
+In a driver, you implement the kernel-side handler for these.
+
+DRIVER LOADING/UNLOADING
+insmod driver.ko — load module
+rmmod driver — unload module
+modprobe driver — load with dependencies
+lsmod — list loaded modules
+dmesg — view kernel messages (printk output)
+Persistent loading: add to /etc/modules or /etc/modprobe.d/
+
+Makefile for kernel module:
+obj-m += mydriver.o
+all:
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+clean:
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+
+MEMORY ALLOCATION IN LINUX KERNEL
+kmalloc(size, GFP_KERNEL) — like malloc for kernel (physically contiguous, may sleep)
+kmalloc(size, GFP_ATOMIC) — like malloc but can't sleep (use in interrupt handlers)
+kfree(ptr) — free allocated memory
+vmalloc(size) — virtually contiguous, not physically (large allocations)
+get_free_pages() — page-aligned allocations
+
+SYNCHRONIZATION IN LINUX KERNEL
+Spinlock: spin_lock(&lock) / spin_unlock(&lock) — for code that can't sleep
+Mutex: mutex_lock(&mutex) / mutex_unlock(&mutex) — may sleep (PROCESS context only)
+Semaphore: up()/down() — counting semaphore
+Atomic operations: atomic_inc(&counter), atomic_dec_and_test()
+Read-Write lock: rwlock for many readers, few writers
+
+--------------------------------------------------------------------
+LINUX DRIVER INTERVIEW QUESTIONS (50)
+--------------------------------------------------------------------
+
+Q1. What is a Linux kernel module?
+Answer: Dynamically loadable code that extends kernel functionality without recompiling. Loaded with insmod/modprobe, unloaded with rmmod. Must implement init and exit functions.
+
+Q2. What is the difference between character and block devices?
+Answer: Character devices: byte-stream oriented, sequential access (keyboard, serial). Block devices: random access in fixed-size blocks (disks). Character drivers implement file_operations; block drivers implement block_device_operations with request queues.
+
+Q3. What is printk?
+Answer: Kernel equivalent of printf. Takes log level prefix: KERN_DEBUG, KERN_INFO, KERN_WARNING, KERN_ERR, KERN_CRIT. Output viewed via dmesg or /proc/kmsg. Always include KERN_ prefix.
+
+Q4. What are major and minor device numbers?
+Answer: Major number identifies the driver. Minor number identifies the device instance managed by that driver. struct dev_t holds both. alloc_chrdev_region() allocates dynamically; MAJOR(dev)/MINOR(dev) extract them.
+
+Q5. What is file_operations structure?
+Answer: C struct containing function pointers for all file operations a driver supports: open, release, read, write, unlocked_ioctl, poll, mmap, llseek. Driver registers this struct; VFS calls the appropriate function when user space performs file operations.
+
+Q6. How do you copy data between kernel and user space?
+Answer: copy_to_user(user_buf, kernel_buf, len) — kernel to user. copy_from_user(kernel_buf, user_buf, len) — user to kernel. Both return 0 on success, number of bytes NOT copied on failure. Never directly dereference user pointers in kernel.
+
+Q7. What is kmalloc vs vmalloc?
+Answer: kmalloc: physically contiguous, small allocations (typically < 128KB), returns NULL or valid pointer. vmalloc: only virtually contiguous, for large allocations, slower (page table setup). DMA requires physically contiguous memory — use kmalloc or DMA APIs.
+
+Q8. What is GFP_KERNEL vs GFP_ATOMIC?
+Answer: GFP_KERNEL: normal allocation — may sleep if memory unavailable. Use in process context. GFP_ATOMIC: cannot sleep — use in interrupt handlers, spin-locked contexts. GFP_ATOMIC may fail more often.
+
+Q9. What is a spinlock in Linux kernel?
+Answer: Busy-wait lock for short critical sections. spin_lock(&lock) disables kernel preemption and acquires. spin_unlock releases. Use only for very short critical sections; CPU wastes cycles spinning. Not usable in code that can sleep.
+
+Q10. What is the difference between spinlock and mutex in Linux?
+Answer: Spinlock: busy-wait, non-sleeping, usable in interrupt context, very short sections. Mutex: may sleep (blocking), only process context, longer sections. Spinlock is safer in atomic context; mutex is more fair and CPU-efficient for longer waits.
+
+Q11. What is a device tree?
+Answer: Data structure describing hardware to the kernel — used in embedded Linux (ARM). Defines: CPU, memory, peripherals, interrupt controllers. Replaces x86 ACPI for ARM. Driver matches via compatible = "vendor,device" string. DTS compiled to DTB (binary).
+
+Q12. What is sysfs?
+Answer: Virtual filesystem mounted at /sys — exposes kernel objects and their attributes to user space. Drivers can create sysfs attributes for configuration and status readable from user space via files.
+
+Q13. What is udev?
+Answer: User-space device manager. Monitors kernel uevent netlink messages when devices added/removed. Creates/removes /dev entries, sets permissions, runs custom scripts. Replaces devfs. Configured via udev rules in /etc/udev/rules.d/.
+
+Q14. What is the platform driver model?
+Answer: For SoC/embedded devices not on self-describing buses. platform_driver registered with compatible strings. platform_device describes hardware (from device tree or board file). Probe/remove callbacks called when device matched.
+
+Q15. What is probe/remove in Linux driver?
+Answer: probe() called when driver matches a device — initialize hardware, allocate resources. remove() called when device removed or driver unloaded — release resources, stop hardware. Required functions for struct platform_driver/usb_driver/pci_driver.
+
+Q16. What is ioremap?
+Answer: Maps physical hardware register address to kernel virtual address. void *ioremap(phys_addr, size). Access mapped registers with readl()/writel() (not direct pointer — ensures memory barriers). iounmap() when done.
+
+Q17. What are interrupts in Linux drivers?
+Answer: request_irq(irq, handler, flags, name, dev) registers an interrupt handler. Handler runs in interrupt context (no sleeping!). free_irq() on cleanup. Flags: IRQF_SHARED for shared IRQ lines.
+
+Q18. What is the difference between top half and bottom half in interrupt handling?
+Answer: Top half (ISR): runs immediately on interrupt — must be fast, no sleeping. Schedules bottom half. Bottom half: deferred processing — workqueue (can sleep), softirq, tasklet. Like Windows DPC pattern.
+
+Q19. What is a workqueue?
+Answer: Kernel deferred work mechanism that runs in process context (can sleep). schedule_work(&work) queues work for execution. alloc_workqueue creates custom queue. Used for time-consuming work that ISR cannot do.
+
+Q20. What is a tasklet?
+Answer: Lightweight deferred mechanism running in software interrupt (softirq) context — cannot sleep. Faster than workqueue but limited. tasklet_init(&tasklet, handler, data); tasklet_schedule(&tasklet). Being deprecated in favor of threaded IRQs.
+
+Q21. What is threaded IRQ?
+Answer: request_threaded_irq() — top half (ISR) runs in interrupt context, bottom half runs in kernel thread (process context, can sleep). Modern recommendation over tasklets/workqueues for most drivers.
+
+Q22. What are kernel namespaces?
+Answer: Not to be confused with C++ namespaces — Linux kernel namespaces are isolation mechanisms (PID, network, mount, UTS namespaces). Foundation of container technology (Docker). Separate from driver development.
+
+Q23. What is kobject and kref?
+Answer: kobject is the base object in the kernel object model — provides reference counting, sysfs integration, hotplug events. kref is a simple reference counter. Drivers use kobjects through higher-level abstractions (struct device, cdev).
+
+Q24. What is the cdev structure?
+Answer: Represents a character device in the kernel. cdev_init(&cdev, &fops); cdev_add(&cdev, dev_number, count) — registers with kernel. cdev_del on cleanup. Typically embedded in driver's private structure.
+
+Q25. What is request_mem_region?
+Answer: Marks a physical memory range as being used by your driver. request_mem_region(start, len, name). Prevents other drivers from using same range. Shown in /proc/iomem. release_mem_region() on cleanup.
+
+Q26. What is devm_ prefix in Linux kernel?
+Answer: Managed device resources — automatically freed when device is detached. devm_kmalloc, devm_ioremap, devm_request_irq, devm_gpio_request. Simplifies error handling and cleanup in probe(). Modern preferred approach.
+
+Q27. What is the difference between kernel space and user space virtual addresses?
+Answer: On x86-64: user space 0 to ~128TB (high bits 0), kernel space ~128TB-256TB (high bits 1, 0xFFFF...). Kernel can access kernel addresses directly; cannot dereference user pointers without copy_from/to_user.
+
+Q28. What is a wait queue?
+Answer: Mechanism to put a process to sleep until a condition is met. DECLARE_WAITQUEUE, wait_event(queue, condition), wake_up(&queue). Used in read()/write() to block until data available. Like Monitor.Wait/Pulse in C#.
+
+Q29. What is poll_wait in driver context?
+Answer: poll() file operation: add current process to wait queues, return bitmask of ready events (POLLIN|POLLOUT). Allows select/poll/epoll system calls to monitor device. Network sockets use this extensively.
+
+Q30. What is seq_file in Linux?
+Answer: Framework for implementing /proc files that output multi-line data. Implements seq_open, seq_read, seq_show, seq_start/stop/next. Handles buffer management, multiple read() calls automatically. Much easier than manual /proc implementation.
+
+Q31. What is the /proc filesystem?
+Answer: Virtual filesystem exposing kernel information. /proc/cpuinfo, /proc/meminfo, /proc/interrupts. Drivers can create entries: proc_create(). Data generated on-demand. Mainly for debugging and status.
+
+Q32. What is debugfs?
+Answer: Debug-only virtual filesystem at /sys/kernel/debug. Easier than /proc for debugging — create files/directories to expose internal driver state, tunable parameters. debugfs_create_u32, debugfs_create_file. Not for production use.
+
+Q33. What is kernel panic?
+Answer: Kernel panic is Linux's equivalent of Windows BSOD. Caused by: NULL pointer dereference in kernel, oops in critical path, page fault at wrong context. Message printed to console. System halts or reboots. Use crash dump + kdump + crash tool for analysis.
+
+Q34. What is an oops in Linux?
+Answer: A kernel oops is a recoverable error (unlike panic). Prints register dump and stack trace to kernel log. System may continue running but is in uncertain state. Caused by bugs like NULL dereference, stack corruption.
+
+Q35. What is KASAN?
+Answer: Kernel Address SANitizer — compile-time instrumentation detecting memory bugs: out-of-bounds access, use-after-free, use-after-scope. Enabled in kernel config (CONFIG_KASAN). Essential for driver debugging.
+
+Q36. What is SLUB allocator?
+Answer: The default kernel memory allocator (replacing SLAB). Manages kmalloc pools. Efficient for small, frequently allocated objects. Creates per-CPU caches for common sizes. /proc/slabinfo shows statistics.
+
+Q37. What is a bus driver in Linux?
+Answer: Manages a physical or virtual bus (PCI, USB, I2C, SPI, UART). Discovers devices, creates device structures, matches with device drivers. Implements bus_type with match(), uevent(), probe() callbacks.
+
+Q38. What is MODULE_DEVICE_TABLE?
+Answer: Declares device IDs a module supports — used by udev to auto-load the driver. MODULE_DEVICE_TABLE(pci, my_pci_ids) or MODULE_DEVICE_TABLE(usb, my_usb_ids). Entries added to modules.alias file for auto-loading.
+
+Q39. What is Linux's IOMMU?
+Answer: I/O Memory Management Unit — maps device DMA addresses to physical memory addresses. Provides isolation (devices can't access arbitrary memory). dma_map_single(), dma_alloc_coherent() use IOMMU. Critical for security in virtualized environments.
+
+Q40. What is a GPIO in Linux?
+Answer: General Purpose I/O pin. gpio_request(num, label), gpio_direction_output(num, value), gpio_direction_input(num), gpio_get_value(num). Modern API: descriptor-based: gpiod_get(), gpiod_set_value(). Accessible from driver for controlling pins.
+
+Q41. What is I2C driver in Linux?
+Answer: i2c_driver with probe/remove/id_table. i2c_add_driver() registers. Communication: i2c_master_send(), i2c_master_recv(), i2c_smbus_read_byte_data(). Device described in device tree with reg = <0x50> (7-bit address).
+
+Q42. What is SPI driver in Linux?
+Answer: Serial Peripheral Interface bus driver. struct spi_driver with probe/remove. spi_message and spi_transfer for transactions. spi_sync() for synchronous transfer. Device described in device tree with spi-max-frequency, spi-cpol, spi-cpha.
+
+Q43. What is USB driver in Linux?
+Answer: struct usb_driver with probe/disconnect/id_table. usb_register(&driver). Communication via URBs (USB Request Blocks) — similar to Windows IRPs. alloc_urb, fill_bulk_urb, usb_submit_urb. usb_bulk_msg for simpler transfers.
+
+Q44. What is PCI driver in Linux?
+Answer: struct pci_driver with probe/remove/id_table. pci_register_driver(). pci_enable_device(), pci_request_regions(), pci_iomap(). Access BAR (Base Address Registers) for MMIO. pci_enable_msi() for MSI interrupts.
+
+Q45. What are netdev operations?
+Answer: For network device drivers: struct net_device_ops with ndo_open, ndo_stop, ndo_start_xmit (TX), ndo_set_mac_address. struct sk_buff for packet data. alloc_etherdev() for Ethernet devices. napi_schedule for RX interrupt mitigation.
+
+Q46. What is RCU (Read-Copy-Update)?
+Answer: Lock-free synchronization for data structures accessed frequently by readers, rarely updated. Readers: rcu_read_lock()/rcu_read_unlock(). Updater: creates new version, updates pointer, then synchronize_rcu() waits for all readers.
+
+Q47. What is EXPORT_SYMBOL?
+Answer: Makes a kernel function available to other modules. EXPORT_SYMBOL(my_function) or EXPORT_SYMBOL_GPL (only GPL modules). Without this, other modules cannot call the function. Core APIs are all exported.
+
+Q48. What is kallsyms?
+Answer: /proc/kallsyms contains all kernel symbols with addresses. Used for: crash analysis, ftrace, kprobes. CONFIG_KALLSYMS enables it. Drivers can use kallsyms_lookup_name() to find functions by name (hooking/patching).
+
+Q49. What is a kernel regression?
+Answer: A previously working kernel feature that is broken by a new change. Linux kernel community treats regressions as critical bugs. Driver developers must test against new kernel versions. Kernel maintains strict ABI compatibility for user space; driver APIs can change.
+
+Q50. How do you debug a kernel module?
+Answer: printk/pr_debug for trace messages. dmesg to view output. KASAN/KGDB for memory/interactive debugging. addr2line to convert crash address to source line. Dynamic debugging: echo "module mymod +p" > /sys/kernel/debug/dynamic_debug/control. QEMU for safe kernel debugging.
+
+
+==================================================================

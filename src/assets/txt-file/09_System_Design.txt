@@ -1,0 +1,245 @@
+SECTION 9: SYSTEM DESIGN
+==================================================================
+
+--------------------------------------------------------------------
+SYSTEM DESIGN QUESTION 1: URL SHORTENER
+--------------------------------------------------------------------
+
+Requirements:
+Functional: Given a long URL, return a short URL. Short URL redirects to long URL. Custom aliases optional. URL expiration optional. Analytics: click count.
+Non-Functional: 100M URL creations/day. 1B reads/day. 99.99% availability. < 50ms redirect latency.
+
+Architecture:
+Client → API Gateway → Load Balancer → URL Service (ASP.NET Core)
+                                     ↓              ↓
+                              SQL Server DB     Redis Cache
+Write path: Generate short code → store (shortCode, longUrl, createdAt, expiry, userId)
+Read path: shortCode lookup → Redis hit (fast) → DB miss → 301/302 redirect
+
+Short Code Generation:
+Option 1: Hash long URL (MD5/SHA), take 6 chars — collision risk
+Option 2: Base62 encode auto-increment ID (a-z, A-Z, 0-9) — 6 chars = 56B combinations
+Option 3: Pre-generate short codes in a code pool — distribute via Zookeeper
+
+Database Design:
+Table url_mappings:
+  id BIGINT PK IDENTITY
+  short_code VARCHAR(10) UNIQUE INDEX
+  long_url TEXT
+  created_at DATETIME
+  expires_at DATETIME NULL
+  user_id INT NULL (FK to users)
+  click_count BIGINT DEFAULT 0
+
+Table analytics:
+  id BIGINT PK
+  short_code VARCHAR(10) INDEX
+  clicked_at DATETIME
+  ip_address VARCHAR(50)
+  referrer VARCHAR(500)
+
+Scalability:
+Cache: Redis with short_code as key, long_url as value. TTL matches expiry. 80% cache hit rate expected.
+DB: Read replicas for redirect lookups. Write to primary.
+CDN: Cache responses at edge for popular short URLs.
+Partitioning: Shard by short_code hash for URLs table.
+
+Security:
+Rate limit URL creation per user/IP. Block malicious URLs (check against blacklist). HTTPS only. No PII in short codes.
+
+--------------------------------------------------------------------
+SYSTEM DESIGN QUESTION 2: CENTRALIZED LOGGING SYSTEM
+--------------------------------------------------------------------
+
+Requirements:
+Ingest logs from 100 microservices. Store and index for search. Alerting on patterns. Dashboard. Retention: 90 days.
+
+Architecture:
+Services → Log Shipper (Filebeat/Fluentd) → Message Queue (Kafka) → Log Processor → Elasticsearch
+                                                                                    ↓
+                                                                            Kibana Dashboard
+                                                                            Alerting Engine
+
+Components:
+Kafka: Durable buffer between services and Elasticsearch. Topics per service. Consumer groups for parallel processing.
+Elasticsearch: Full-text search, JSON documents, sharded/replicated. Index per day for easy retention management.
+Kibana: Visualization, search UI, dashboards.
+Alerter: Consumer reads Kafka, matches patterns (regex, threshold), sends alerts (email, Slack, PagerDuty).
+
+Log Format (Structured):
+{
+  "timestamp": "2024-01-15T10:30:00Z",
+  "service": "OrderService",
+  "level": "ERROR",
+  "traceId": "abc123",
+  "message": "Payment failed",
+  "context": { "orderId": 42, "userId": 100 }
+}
+
+Scalability:
+Kafka: Horizontal partitioning. Multiple consumer instances.
+Elasticsearch: Multiple nodes. Index sharding. Hot/warm/cold tiering.
+Retention: Delete indices older than 90 days via ILM (Index Lifecycle Management).
+
+ASP.NET Core Integration:
+Serilog with Elasticsearch sink. Correlation ID middleware. Structured logging throughout.
+
+--------------------------------------------------------------------
+SYSTEM DESIGN QUESTION 3: INVENTORY MANAGEMENT SYSTEM
+--------------------------------------------------------------------
+
+Requirements:
+Track inventory across warehouses. Reserve stock on order. Release on cancellation. Low-stock alerts. Multi-warehouse.
+
+Architecture:
+API Layer (ASP.NET Core Web API)
+  ├── Inventory Service: CRUD operations
+  ├── Reservation Service: Reserve/release
+  └── Alert Service: Low-stock notifications
+
+Database: SQL Server with row-level locking for concurrency.
+
+Table design:
+products: id, name, sku, unit, reorder_point
+warehouses: id, name, location
+inventory: product_id, warehouse_id, quantity_on_hand, quantity_reserved (composite PK)
+inventory_transactions: id, product_id, warehouse_id, transaction_type, quantity, order_id, created_at
+reservations: id, order_id, product_id, warehouse_id, quantity, status, expires_at
+
+Reservation Flow (Concurrency Safe):
+BEGIN TRANSACTION
+SELECT quantity_on_hand - quantity_reserved AS available
+FROM inventory WITH (UPDLOCK) — pessimistic lock
+WHERE product_id = @pid AND warehouse_id = @wid
+IF available >= @requested:
+    INSERT INTO reservations (...)
+    UPDATE inventory SET quantity_reserved += @requested
+COMMIT
+
+Scalability:
+Separate read model (denormalized) for availability queries.
+Events: StockReserved, StockReleased, LowStockDetected → triggers downstream processing.
+Cache: Available quantity in Redis with short TTL.
+
+--------------------------------------------------------------------
+SYSTEM DESIGN QUESTION 4: DEVICE MONITORING PLATFORM
+--------------------------------------------------------------------
+
+Requirements:
+Monitor 1M connected devices. Collect telemetry (CPU, memory, temperature, status). Alert on anomalies. Historical analysis. Remote command support.
+
+Architecture:
+Devices → MQTT Broker (Mosquitto/HiveMQ) → Telemetry Processor → Time-Series DB (InfluxDB/TimescaleDB)
+                                                                  → Alert Engine
+                                                                  → Real-time Dashboard (SignalR)
+Admin → REST API → Command Queue (Kafka) → Command Dispatcher → Devices
+
+Telemetry Schema (InfluxDB):
+Measurement: device_metrics
+Tags: device_id, device_type, firmware_version, location
+Fields: cpu_pct, memory_pct, temperature, uptime_seconds, error_count
+Timestamp: nanosecond precision
+
+Alerting Rules:
+CPU > 95% for 5 minutes → Warning
+Temperature > 80°C → Critical
+Device offline > 5 minutes → Offline Alert
+Error count > threshold → Investigate
+
+Scalability:
+MQTT: Clustered broker. TLS for device communication.
+Timescale: Automatic partitioning by time. Continuous aggregates for dashboard queries.
+API Gateway: Device authentication via device certificate + JWT.
+
+Security:
+mTLS for device authentication. Certificate rotation. Message signing. Command authorization (only admin can send commands).
+
+--------------------------------------------------------------------
+SYSTEM DESIGN QUESTION 5: DRIVER UPDATE MANAGEMENT SYSTEM
+--------------------------------------------------------------------
+
+Requirements:
+Manage driver packages (upload, version, platform compatibility). Distribute updates to devices. Rollback capability. Update status tracking.
+
+Architecture:
+Admin Portal (React) → Driver Management API (ASP.NET Core)
+Device Agent → Update Check API → Update Download (CDN)
+                              → Reporting API
+
+Components:
+Driver Registry: Store driver metadata, versions, compatibility matrix.
+Package Storage: Azure Blob Storage / S3 for binary packages.
+Update Orchestrator: Decide which devices need which update.
+CDN: Distribute binary packages globally close to devices.
+Reporting: Track update success/failure per device.
+
+Database Design:
+driver_packages: id, name, version, platform, architecture, min_fw_version, file_url, hash, created_at
+devices: id, device_type, current_driver_version, firmware_version, last_checkin
+update_jobs: id, device_id, package_id, status, started_at, completed_at, error_message
+rollback_history: id, device_id, from_version, to_version, reason, timestamp
+
+Update Check Flow:
+Device POSTs: { deviceId, currentVersion, platform, arch, firmwareVersion }
+Server responds: { hasUpdate: true, packageUrl, packageHash, version } or { hasUpdate: false }
+
+Rollback Flow:
+Admin selects device + target version
+System creates rollback job
+Device agent downloads old package
+Verifies hash, installs, reports status
+
+Safety:
+Staged rollout: % of devices per day. Canary deployment: test on 1% first. Automatic rollback on high failure rate. Package signing verification on device.
+
+--------------------------------------------------------------------
+SYSTEM DESIGN QUESTIONS 6-20 (BRIEF)
+--------------------------------------------------------------------
+
+Q6: Design a chat application.
+Key: WebSocket/SignalR for real-time. Message storage in Cassandra (append-only, time-series). User presence via Redis. Message queue for delivery guarantees. End-to-end encryption.
+
+Q7: Design a distributed rate limiter.
+Key: Token bucket or sliding window. Redis with INCR + EXPIRE for distributed counting. Lua scripts for atomic operations. Per-user, per-IP, per-endpoint limits.
+
+Q8: Design an API gateway.
+Key: Reverse proxy (nginx/Yarp). Authentication plugin. Rate limiting. Circuit breaker per upstream. Request transformation. Load balancing. SSL termination.
+
+Q9: Design a notification system.
+Key: Templates in DB. Channel dispatch (email, SMS, push). Priority queues in RabbitMQ. Retry with backoff. Delivery tracking. User preferences (opt-out). Digest batching.
+
+Q10: Design an order management system.
+Key: Order state machine. Idempotency keys. Saga for distributed transactions. Event sourcing for audit. CQRS for read/write scaling.
+
+Q11: Design a file storage service.
+Key: Metadata in SQL (filename, size, owner, ACL). Binaries in S3/Blob. Chunked upload for large files. Presigned URLs for direct download. Deduplication via content hash.
+
+Q12: Design a search autocomplete.
+Key: Trie in memory for fast prefix matching. Redis sorted sets with scores. Ingest popular queries. Personalization layer. Cache top N completions per prefix.
+
+Q13: Design a distributed job scheduler.
+Key: Cron-like scheduling. Job metadata in DB. Leader election via ZooKeeper/Redis. Missed job recovery. Monitoring dashboard.
+
+Q14: Design a social media feed.
+Key: Fan-out on write (push model) vs fan-out on read (pull). Hybrid for celebrities. Redis sorted sets for feed. Pagination with cursor. Ranking algorithm.
+
+Q15: Design a multi-tenant SaaS system.
+Key: Tenant isolation strategies: separate DB, separate schema, shared DB with tenant_id filter. Subdomain routing. Feature flags per tenant. Billing integration.
+
+Q16: Design an authentication system.
+Key: Password hashing (bcrypt/Argon2). JWT + refresh tokens. MFA (TOTP). OAuth2/OIDC. Session management. Account lockout. Audit log.
+
+Q17: Design an event streaming platform (like Kafka).
+Key: Partitioned topics. Consumer groups. Offset tracking. Retention policy. Replication for durability. Producer batching.
+
+Q18: Design a time-series database.
+Key: Append-only writes. Column-oriented storage. Compression (delta encoding, run-length). Automatic partitioning by time. Continuous aggregation. Downsampling old data.
+
+Q19: Design a CI/CD pipeline.
+Key: Git webhook trigger. Build agents (containers). Artifact storage. Stage gates (test, security scan). Deployment strategies (blue-green, canary). Rollback mechanism.
+
+Q20: Design a reporting system.
+Key: Separate reporting DB (read replica or data warehouse). ETL pipeline. Pre-computed aggregates. Scheduled report generation. Export (PDF, Excel). Subscription/email delivery.
+
+
+==================================================================

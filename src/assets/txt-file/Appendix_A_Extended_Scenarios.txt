@@ -1,0 +1,251 @@
+APPENDIX A: SECTION 10 EXTENDED — SCENARIO-BASED QUESTIONS (S31–S100)
+==================================================================
+
+TROUBLESHOOTING SCENARIOS (CONTINUED)
+--------------------------------------
+
+S31. Your ASP.NET Core application works locally but fails in Docker with "connection refused" to SQL Server.
+Answer: Classic container networking issue. "localhost" inside a container refers to the container itself, not the host machine. Fix: use the host machine's IP (host.docker.internal on Windows/Mac) or the SQL Server container's service name in docker-compose (e.g., "db"). Check: connection string in appsettings vs environment variable override. Also check: SQL Server container is on same Docker network, port 1433 exposed.
+
+S32. A third-party NuGet package causes assembly conflicts after upgrading.
+Answer: Check error: "Could not load file or assembly" with version mismatch. Use dotnet list package --vulnerable or NuGet package manager to identify conflict. Solutions: binding redirect in app.config/web.config, externally alias the assembly, pin the transitive dependency explicitly in .csproj. Use ILSpy to inspect which version is actually loaded at runtime.
+
+S33. Your API's Swagger UI shows no endpoints after upgrading to .NET 8.
+Answer: Common causes: AddEndpointsApiExplorer() missing (needed for minimal APIs alongside AddSwaggerGen()), controller registration changed, [ApiController] missing, route attribute missing. Also check: Swashbuckle version compatibility with .NET 8. Verify middleware order: UseSwagger() before UseSwaggerUI().
+
+S34. EF Core migration fails with "There is already an object named 'X' in the database."
+Answer: Migration history (EF __MigrationsHistory table) is out of sync with actual schema. Causes: manual DB changes, migration applied directly via SQL. Fix: if schema matches what migration would create, add migration row manually to __MigrationsHistory. Or: use dotnet ef migrations script --idempotent to generate IF NOT EXISTS scripts. Never run migrations on production without backup.
+
+S35. Your ASP.NET Core app throws "Cannot access a disposed object" on DbContext.
+Answer: DbContext injected as Scoped but used inside a Singleton service (captive dependency). Fix: inject IServiceScopeFactory into the Singleton, create a scope inside the method: using var scope = factory.CreateScope(); var db = scope.ServiceProvider.GetRequiredService<AppDbContext>(). Alternatively, change the Singleton to Scoped. Also happens in background services — use IDbContextFactory<T>.
+
+S36. Unit tests pass locally but fail on the CI pipeline with timezone-related failures.
+Answer: Tests using DateTime.Now (local time) instead of DateTime.UtcNow. CI server is likely in UTC; local machine is not. Fix: always use UTC internally. For testability, inject IClock or TimeProvider (ASP.NET Core 8+) abstraction. Verify: CI server timezone with TZ environment variable. Dates in database: always store as UTC.
+
+S37. Your React SPA gets CORS errors when calling your ASP.NET Core API.
+Answer: Check browser console for exact CORS error: missing Allow-Origin header. Verify: AddCors() + UseCors() both present and in correct middleware order (UseCors before UseAuthorization). Check: policy allows the exact origin (http://localhost:3000 not http://localhost:3000/). Production: ensure production domain is in allowed origins. Preflight OPTIONS request must also succeed.
+
+S38. Application runs fine for hours then crashes with OutOfMemoryException.
+Answer: Memory leak. Profile with dotnet-gcdump or PerfView. Common culprits: static Dictionary growing unboundedly (audit log, metrics buffer), event subscriptions never removed (publisher holds subscriber), HttpClient created per request (socket exhaustion then OOM), IMemoryCache without size limit, SignalR connections not cleaned up. Add memory metric alerts: > 1.5GB → investigate.
+
+S39. Your API suddenly starts returning empty JSON arrays where it used to return data.
+Answer: Likely serialization issue. Causes: property names changed (case sensitivity — JsonPropertyName attribute), circular reference in model (JSON serializer default in .NET throws on cycles), interface properties not serialized (only concrete type properties), private setters preventing deserialization. Check: System.Text.Json vs Newtonsoft — different defaults. Enable JsonSerializerOptions.WriteIndented for debugging.
+
+S40. Background Service's ExecuteAsync stopped without any logged error.
+Answer: Unhandled exception inside ExecuteAsync stops the method silently (the host continues). Wrap the entire body in try/catch and log all exceptions. Re-throw or restart strategy: restart with exponential backoff. Use IHostApplicationLifetime.StopApplication() for unrecoverable errors. Monitor with health checks: if ExecuteAsync not running, report unhealthy.
+
+PERFORMANCE SCENARIOS (CONTINUED)
+-----------------------------------
+
+S41. Your API endpoint takes 2 seconds on first call, then 50ms after. What's happening?
+Answer: Cold start / JIT compilation issue. First request triggers JIT compilation of code paths. Solutions: ReadyToRun compilation (dotnet publish -r linux-x64 -p:PublishReadyToRun=true), NativeAOT for extreme cases, warm-up middleware that calls endpoints during startup, tiered compilation (enabled by default in .NET 6+). For application cache warm-up, use IHostedService.StartAsync().
+
+S42. Your LINQ query is fast in tests but slow in production with real data.
+Answer: Classic statistics/cardinality issue. Test data: 100 rows; production: 10M rows. Check: missing index on WHERE column, EF Core generating inefficient SQL (log with LogTo), parameter sniffing in SQL Server (query plan optimized for first execution's parameter value). Fix: add indexes, use .AsNoTracking() for read-only, split complex queries, use raw SQL for complex reports.
+
+S43. Response payload is large — 5MB JSON responses causing slow clients.
+Answer: Payload optimization: enable response compression (Brotli/gzip — 70-80% reduction for JSON). Implement projection (return only requested fields — GraphQL-style or field selection query param). Implement pagination. Use sparse fieldsets: ?fields=id,name. For binary data: use binary format (MessagePack, Protocol Buffers) instead of JSON. Stream response with IAsyncEnumerable.
+
+S44. Your application's startup time is 45 seconds. How do you reduce it?
+Answer: Profile startup with dotnet-trace. Common causes: reflection-heavy DI registration (scan entire assemblies), database migrations on startup, external service warmup calls, loading large configuration/seed data, slow middleware initialization. Fixes: lazy registration, move migration to deployment step, use source-generated DI (Roslyn-based), parallel warmup, ReadyToRun compilation.
+
+S45. Thread pool starvation causing timeouts under high load.
+Answer: Threads exhausted — all doing blocking I/O. Diagnosis: ThreadPool.ThreadCount near max. Causes: sync-over-async (.Result/.Wait()), blocking DB calls, long CPU-bound work on pool threads. Fix: make all I/O async. For CPU work: Task.Run with dedicated thread. Increase min thread count: ThreadPool.SetMinThreads(100, 100) as temporary fix. True fix: eliminate blocking.
+
+CONCURRENCY SCENARIOS (CONTINUED)
+------------------------------------
+
+S46. Two microservices are updating the same entity simultaneously. Data is getting corrupted.
+Answer: No distributed locking. Solutions: (1) Assign ownership — only one service modifies this entity. (2) Optimistic concurrency with version check via API: GET with ETag, PUT with If-Match. (3) Distributed lock (Redis SETNX with TTL). (4) Serialise via a message queue — all updates become events processed sequentially. (5) Event sourcing — append-only; no concurrent updates.
+
+S47. Your timer-based background service fires twice on a two-instance deployment.
+Answer: No leader election or distributed locking. Each instance runs its own timer. Solutions: (1) Hangfire/Quartz.NET with SQL-backed scheduler — distributed coordination built-in. (2) Redis-based distributed lock: acquire before running, skip if already held. (3) Leader election via Kubernetes lease. (4) Event-driven trigger instead of timer — single message triggers single consumer.
+
+S48. ConcurrentDictionary is causing unexpected behavior when value update depends on existing value.
+Answer: Common mistake: dict[key]++ is NOT atomic even with ConcurrentDictionary. Fix: use AddOrUpdate(key, 1, (k, old) => old + 1) — atomic update. Or use ConcurrentDictionary<K, SemaphoreSlim> for per-key locking. Understand: ConcurrentDictionary makes individual operations atomic, not compound operations.
+
+S49. Your async method is running slower than the synchronous version.
+Answer: Async overhead for fast operations. Causes: small awaits (< 1ms sync work wrapped in Task.Run), excessive state machine allocations, ValueTask used incorrectly (awaited multiple times). Fix: if operation completes synchronously > 95% of time, return ValueTask or cached completed task (Task.CompletedTask, Task.FromResult(value)). Use async only for true I/O.
+
+S50. Parallel.ForEach processes 1000 items but only finishes 998 — 2 items missing.
+Answer: Exception swallowed. Parallel.ForEach collects exceptions and rethrows as AggregateException after all iterations. If exception in one iteration, other iterations continue. Unhandled AggregateException after loop? Some items failed silently. Fix: wrap loop body in try/catch, log each failure. Check AggregateException.InnerExceptions for all failures.
+
+PRODUCTION INCIDENTS (CONTINUED)
+----------------------------------
+
+S51. Deployment succeeded but some users see the old UI and some see the new UI.
+Answer: CDN or browser caching issue. Old static files (JS/CSS bundles) still cached. Fix: cache-busting in file names (webpack contenthash: app.a1b2c3d4.js). Set Cache-Control: no-cache for HTML (so browser always checks), long cache for versioned static assets. Ensure CDN invalidation on deployment. Blue-green deployment with proper cache headers solves this long-term.
+
+S52. Your API returns 503 during a deployment with zero-downtime expectations.
+Answer: Health check timing issue. New instance not ready when old one killed. Fix: (1) Readiness probe — only mark ready after initialization complete. (2) Graceful shutdown — drain existing requests before dying (IHostApplicationLifetime.ApplicationStopping + delay). (3) Rolling deployment with minReadySeconds. (4) Startup probe in Kubernetes. Configure ASP.NET Core's graceful shutdown: hostOptions.ShutdownTimeout.
+
+S53. A vendor API you depend on returns inconsistent data formats.
+Answer: Defensive deserialization: use nullable types, handle missing fields, validate before use. Adapter pattern: wrap vendor API in your own IVendorClient interface with a normalized model. Log raw responses for debugging. Circuit breaker (Polly) for unreliable vendor. Versioned API contracts: pin to specific API version. Integration tests against real vendor sandbox.
+
+S54. Your application is being attacked with SQL injection attempts.
+Answer: If using parameterized queries/EF Core — you're protected (parameters never treated as SQL). Verify: EF Core always parameterizes. Review raw SQL usage (FromSqlRaw — must use parameters, not string concat). Add WAF (Web Application Firewall) at infrastructure level. Log suspicious patterns (', OR 1=1, --). Input validation at API level (not as SQL injection defense — that's defense in depth).
+
+S55. A junior developer accidentally deleted a production table. What do you do?
+Answer: Immediate: stop writes to affected area (put service in maintenance mode). Check: automated backups — restore to point just before deletion. If no backups: check transaction logs (SQL Server: fn_dblog). Communicate: status page update, inform stakeholders. Root cause: developers shouldn't have DROP permission on production. Fix: least-privilege DB accounts, no DDL permissions for app service account. Add automated backup verification.
+
+ARCHITECTURE DECISIONS (CONTINUED)
+-------------------------------------
+
+S56. You need to share code between a C# backend and a TypeScript frontend. What's your approach?
+Answer: Option 1: OpenAPI spec as source of truth — generate C# server stubs and TypeScript client from spec (NSwag, OpenAPI Generator). Option 2: C# source generators emit TypeScript type definitions. Option 3: share JSON schema files. Never share code directly between backend and frontend — maintain the API contract as the boundary. Test: contract tests verify backend matches generated client.
+
+S57. Your application needs to send 100,000 emails per day. How do you design this?
+Answer: Never synchronous — use a message queue (Hangfire jobs, Azure Service Bus). Email service (SendGrid/SES) handles actual delivery. Queue: email job with template + data. Worker: dequeue, render template, send via provider. Handle: rate limits (provider throttles), retries (transient failures), duplicate prevention (idempotency key per email). Monitor: delivery rates, bounces, unsubscribes. Batch non-urgent emails.
+
+S58. You need to implement soft delete. What are the tradeoffs?
+Answer: Soft delete: IsDeleted flag, filter in all queries. Pros: recoverable, audit trail, referential integrity preserved. Cons: queries more complex (EF Global Query Filter helps), indexes include deleted rows (wasted space), UNIQUE constraints include deleted rows (can't re-add same email after soft delete). Alternative: archive table. EF Core global filter: .HasQueryFilter(e => !e.IsDeleted) — applied to all queries automatically.
+
+S59. Your monolith needs to be split but you can't rewrite it. What's your strategy?
+Answer: Strangler Fig: route traffic for new feature to new service; keep old feature in monolith. Identify seams: find bounded contexts by looking at team boundaries, DB schema groupings, change frequency. Extract by duplicating data initially (read from monolith, write to both), then cut over writes, then reads, then remove from monolith. Branch by abstraction: introduce an abstraction in the monolith, implement it externally, switch.
+
+S60. How do you handle breaking changes in a public API?
+Answer: Versioning strategy: URL versioning (/v1/, /v2/) for major changes. Never break existing clients without versioning. Deprecation lifecycle: announce 6-12 months before sunset, Deprecation header in responses, documentation updates. Additive changes (new optional fields, new endpoints) are backward compatible — no versioning needed. Consumer-driven contract tests detect breaking changes in CI. Keep old version running until adoption metrics show safe to remove.
+
+DRIVER-RELATED SCENARIOS (CONTINUED)
+---------------------------------------
+
+S61. Your Windows driver works on Windows 10 but crashes on Windows 11 with different hardware.
+Answer: Check if Windows 11 changed HAL behavior for that hardware class. Review WDK release notes for API changes. Check: Secure Boot / VBS (Virtualization-Based Security) — some kernel memory tricks no longer work. Enable Driver Verifier on Win11 test machine. Check hardware-specific: ACPI table differences, interrupt routing changes. Review: does your driver hardcode any hardware addresses or resources that changed?
+
+S62. Your Linux driver module loads fine but the device doesn't work.
+Answer: Diagnostic flow: dmesg for probe errors. Check probe() return value — returning non-zero prevents binding. Verify: IRQ registered correctly (free_irq on error path). Check: ioremap address correct per datasheet. Verify device tree node (if ARM): compatible string matches MODULE_DEVICE_TABLE. Check power state — device might need power enable GPIO. Add printk at each initialization step to find where it stops.
+
+S63. Your driver causes 100% CPU usage after loading.
+Answer: Infinite loop or polling without sleep. Check: interrupt handler stuck in loop, DPC/workqueue rescheduling itself immediately, timer firing continuously. In Windows: check DPC time in WinDbg (!dpcs), PerfMon for DPC time. In Linux: perf top shows which function consuming CPU, check if workqueue/timer callback reschedules before sleeping. Fix: use interrupt-driven I/O instead of polling, add sleep in polling loops.
+
+S64. After a driver update, devices stop being detected.
+Answer: Device ID mismatch. The updated INF/driver may have changed supported device IDs. Check: new driver's Hardware IDs list vs devices in Device Manager. PnP re-match triggers on driver update — if IDs changed, device uses old driver or goes to "Unknown Device." Windows: devcon update to force. Also check: GUID for device class, INF [Manufacturer] section. Roll back and compare INF files.
+
+S65. Your character device driver's read() function is called in an infinite loop.
+Answer: read() must return 0 to signal EOF to user space. If always returning data (even 0 bytes with count > 0 return), cat /dev/mydevice loops forever. Fix: track position with file->f_pos, return 0 when all data consumed. For continuous stream devices (like sensors), block with wait_event_interruptible until data available, then return it.
+
+SECURITY SCENARIOS
+-------------------
+
+S66. Your JWT tokens are being stolen and replayed. How do you mitigate?
+Answer: Short access token TTL (15 min). HTTPS-only (prevents interception). Secure + HttpOnly cookies for token storage (prevents XS theft). Token binding to client fingerprint (IP, device ID — balance with proxy/mobile issues). Refresh token rotation: each refresh invalidates old token. Revocation list in Redis for emergency invalidation. Monitor: unusual locations/devices for same token.
+
+S67. A penetration test found your API exposes internal stack traces.
+Answer: Never expose stack traces to clients. ASP.NET Core: UseExceptionHandler middleware with ProblemDetails (no details in production). Configure: builder.Services.AddProblemDetails() — remove stack trace from error response. Differentiate: Development (show details), Production (generic message). Log full error server-side. Return: generic 500 with error reference ID for support.
+
+S68. Mass assignment vulnerability found — users can set admin = true on their profile.
+Answer: Never bind user input directly to entity model. Use DTOs/ViewModels with only allowed fields. In ASP.NET Core: [Bind(Include="Name,Email")] or separate input model. For sensitive properties: explicit assignment only in business logic (not model binding). Add: authorization check before any privilege escalation field change. Test: send unexpected fields in JSON body — ensure they're ignored.
+
+S69. Your API is leaking user data through error messages (e.g., "User john@example.com not found").
+Answer: Information disclosure vulnerability. Fix: generic error messages to clients ("Authentication failed", not "User not found"). Log detailed messages server-side with correlation ID. For timing attacks: constant-time comparison for sensitive lookups. Review all error messages for PII. Particularly important: password reset flow should not confirm if email exists.
+
+S70. How do you securely store API keys for third-party services your app calls?
+Answer: Never in source code (git history is permanent). Never in appsettings.json committed to repo. Use: Azure Key Vault / AWS Secrets Manager / HashiCorp Vault. Local development: user secrets (dotnet user-secrets, stored outside project directory). CI/CD: secure environment variables / pipeline secrets. Access: via IConfiguration with Key Vault provider. Rotation: automate key rotation, app reads fresh on each request or with cache expiry.
+
+CODE QUALITY SCENARIOS
+------------------------
+
+S71. Code review shows a colleague's Pull Request has 2000-line methods. How do you handle?
+Answer: Constructive approach: don't reject — suggest specific refactoring. Identify: what are the natural sub-steps? Can each become a method? Apply: Extract Method, single level of abstraction per method. Ask questions in code review: "What does this 50-line block do? Could we name it?" Set team standard: methods < 20 lines, files < 300 lines, as guidelines. Offer to pair program on the refactor.
+
+S72. Technical debt is slowing new feature development to a crawl. How do you address it?
+Answer: Quantify: measure lead time, cycle time, bug rate — show business impact. Prioritize debt: address debt in the path of new features (Boy Scout Rule). Negotiate: 20% of sprint capacity for tech debt. Strangler Fig for legacy subsystems. Don't rewrite all at once — incremental improvement. Track: "debt backlog" as visible work items. Frame to stakeholders as risk reduction, not perfectionism.
+
+S73. Your codebase has no tests and you need to add a critical feature safely.
+Answer: Characterization tests first: write tests that document current behavior (even if wrong). Cover the code paths you'll change. Then change code, watching characterization tests catch regressions. Golden master testing: capture output before change, compare after. Refactor toward testability incrementally. Don't add tests for everything before shipping the feature — focus on the changed paths.
+
+S74. A new team member keeps pushing code that breaks the build. How do you help?
+Answer: Systemic fix, not blame. Check: do they have pre-commit hooks (dotnet build, dotnet test) configured? Is the CI pipeline fast enough for feedback? Pair: sit with them during a PR to show process. Review: their setup — editor, build tools. Mentorship: walk through the PR process. Most build breaks are environment/process issues, not competence issues. Blameless culture.
+
+S75. How do you ensure code quality in a fast-moving startup environment?
+Answer: Automate non-negotiables: CI runs build + tests + static analysis (mandatory pass). PR review: even one reviewer is better than none. Standards: agree on a style guide (editorconfig, .NET Roslyn analyzers), enforce via CI. Pragmatic: 70% test coverage on business logic, not test everything. Architecture docs: ADRs (Architecture Decision Records) for key decisions. Don't let the pipeline be optional.
+
+INTEGRATION & TESTING SCENARIOS
+---------------------------------
+
+S76. Your integration tests are flaky — sometimes pass, sometimes fail.
+Answer: Root causes: shared mutable state between tests, test-order dependency, timing issues (Thread.Sleep), external service availability. Fix: isolated database per test (EF Core with in-memory or SQLite, or Testcontainers for real SQL). Mock external services. No shared static state. Retry flaky tests with Polly in CI (mask the problem — fix first). Use WireMock.NET for HTTP service mocking.
+
+S77. How do you test code that depends on DateTime.Now?
+Answer: Inject time abstraction. ASP.NET Core 8+: TimeProvider (built-in). Custom: public interface IClock { DateTime UtcNow { get; } } with SystemClock and FakeClock. Tests use FakeClock.SetTime(expectedTime). Never use DateTime.Now directly in business logic. This also solves timezone issues by always using UTC internally.
+
+S78. Your test database is polluting data between test runs.
+Answer: Test isolation strategies: (1) Transaction rollback: wrap each test in transaction, rollback after — fast but limited. (2) Testcontainers: fresh Docker container per test run/class — slow but truly isolated. (3) EF Core InMemory: fast but not production-equivalent. (4) SQLite in-memory: closer to real SQL, fast. (5) Database respawn: NRespawn library truncates tables between tests. Best: Testcontainers for integration tests.
+
+S79. How do you test a driver?
+Answer: Unit tests: driver logic in user-mode test (mock kernel APIs). KMDF driver testing: WDTF (Windows Driver Test Framework), HLK (Hardware Lab Kit) for certification tests. Linux: kselftest, or user-space test programs via /dev entry. Simulation: QEMU with emulated hardware. Fault injection: Driver Verifier (Windows), KASAN/fault injection (Linux). Integration: real hardware on CI machine.
+
+S80. You need to test an email sending feature without sending real emails.
+Answer: Options: (1) IEmailSender interface + mock in tests (verify Send() called with correct params). (2) Mailhog or smtp4dev: local SMTP server that catches emails for inspection. (3) SendGrid/Mailgun sandbox mode: sends to inbox but not real recipients. (4) Email interception in test environment: override IEmailSender with a logging implementation. Always verify: correct recipient, subject, template rendering.
+
+CLOUD & DEVOPS SCENARIOS
+--------------------------
+
+S81. Your Kubernetes deployment keeps OOMKilled. How do you fix?
+Answer: Diagnose: kubectl describe pod shows OOMKilled. Check: memory limits (resources.limits.memory) vs actual usage (kubectl top pod). .NET: check GC heap size, LOH growth. Fix: increase memory limit if legitimate need. Reduce: tune GC with DOTNET_GCHeapHardLimit env var. Fix memory leak if growth is unbounded. Set requests == limits for memory (Burstable → Guaranteed QoS). Monitor with Prometheus + memory alerts.
+
+S82. CI/CD pipeline takes 45 minutes. How do you speed it up?
+Answer: Profile: which steps are slowest? Parallelization: test sharding (run test projects in parallel). Cache: NuGet packages (restore from cache if packages.lock.json unchanged), Docker layer cache. Incremental builds: only rebuild changed projects. Test optimization: remove integration tests from main PR check (run nightly). Docker: multi-stage builds, minimize layers. Target: < 10 minutes for PR checks.
+
+S83. How do you handle secrets in a CI/CD pipeline?
+Answer: Never hardcode in pipeline YAML. Use: GitHub Actions Secrets / Azure DevOps secure variables / HashiCorp Vault with dynamic secrets. Inject as environment variables at runtime. Service connections (Azure DevOps) for cloud credentials. Rotate secrets regularly. Audit secret access. Masked in logs: CI systems redact registered secrets from log output. Principle: pipeline agents have minimum permissions.
+
+S84. Your Docker image is 4GB. How do you reduce it?
+Answer: Multi-stage build: separate build stage (SDK image ~800MB) from runtime stage (runtime image ~200MB). Alpine-based images: mcr.microsoft.com/dotnet/aspnet:8.0-alpine (~100MB vs ~200MB). Trim unused assemblies: dotnet publish --self-contained --trimmed. Remove debug symbols. .dockerignore: exclude bin/obj/node_modules. Layer optimization: combine RUN commands to reduce layers. Target: < 200MB for ASP.NET Core API.
+
+S85. Application logs in production are unreadable — just raw exception text.
+Answer: Implement structured logging. Replace Console.WriteLine with ILogger<T>. Use Serilog with structured output: Log.Information("Order {OrderId} created for {CustomerId}", orderId, customerId). Output format: JSON for log aggregators (ELK, Datadog). Add correlation ID middleware. Include: timestamp, level, service name, trace ID, user ID (no PII). Ship to centralized logging platform.
+
+REAL-WORLD ARCHITECTURE SCENARIOS
+------------------------------------
+
+S86. You're building an e-commerce checkout. How do you handle the payment and inventory steps?
+Answer: Saga pattern. Steps: (1) Reserve inventory, (2) Create pending order, (3) Process payment, (4) Confirm order + release inventory reservation. Each step has compensating action: (1) Release reservation, (2) Cancel order, (3) Refund, (4) N/A. Orchestrated saga: CheckoutOrchestrator calls each service and handles failures. Idempotency keys on payment call. Timeout: release reservation after 15 minutes if payment not received.
+
+S87. You need to implement a feature flag system. How?
+Answer: Start simple: config file flags. Scale: feature flag service (LaunchDarkly, Azure App Configuration, Unleash). Flag types: on/off, percentage rollout, user targeting, A/B test. ASP.NET Core: IFeatureManager from Microsoft.FeatureManagement. Store flags: DB or config service for runtime updates without deploy. Flags in code: if (await featureManager.IsEnabledAsync("NewCheckout")) { ... } Clean up: remove old flags after full rollout.
+
+S88. Your search feature is too slow with SQL LIKE '%keyword%'.
+Answer: LIKE with leading wildcard (%) can't use index — full table scan. Solutions: (1) Full-text search: SQL Server CONTAINS/FREETEXT with full-text indexes. (2) Elasticsearch: purpose-built for full-text search, inverted index, relevance scoring. (3) PostgreSQL: tsvector/tsquery or pg_trgm index. (4) Azure Cognitive Search for managed option. For simple prefix match: LIKE 'keyword%' (no leading %) CAN use index.
+
+S89. How do you implement audit logging for a healthcare application?
+Answer: All data access and changes must be logged. Interceptors: EF Core ISaveChangesInterceptor captures before/after values. Middleware: log all API requests with user identity. Store: separate audit database (don't co-mingle with operational data), append-only. Fields: WHO (userId, ipAddress), WHAT (entity, operation, old/new values), WHEN (UTC timestamp), WHY (optional reason). Compliance: HIPAA requires 6-year retention. Tamper-proof: consider blockchain anchoring for legal defensibility.
+
+S90. Your multi-tenant SaaS is leaking data between tenants.
+Answer: Critical security incident. Immediate: identify affected tenants and data. Disable feature. Root cause: global query filter missing or bypassed (IgnoreQueryFilters() called unintentionally), TenantId not set correctly in DI scope, caching shared across tenants. Fix: EF Core global query filter (mandatory, not opt-in). Test: automated test verifying each endpoint returns only tenant's data. Architecture: consider schema-per-tenant for stronger isolation.
+
+S91. You're asked to build a reporting module. Reports take minutes to generate.
+Answer: Move reports off OLTP database. Options: (1) Scheduled pre-computation: run reports nightly, store results. (2) Separate read model: ETL to a reporting DB with denormalized schema. (3) CQRS: async query generates report, notifies user when ready. (4) Data warehouse (Azure Synapse, Redshift) for complex analytics. For on-demand: async job + polling or webhook notification. Never run ad-hoc aggregation queries on production OLTP DB during peak hours.
+
+S92. How do you migrate a SQL Server database with 100M rows and zero downtime?
+Answer: Online operations only. Add column: ALTER TABLE ADD COLUMN WITH DEFAULT is online in SQL Server. Backfill data in small batches (1000 rows at a time) with delays — avoids locking. Rename: online with schema change. Index: CREATE INDEX ONLINE. Expand-Contract for column renames: add new column, dual-write old+new, backfill, switch reads to new, remove old. Test each step in staging first. Maintenance window for unavoidable operations.
+
+S93. Design a retry strategy for calling an unreliable external API.
+Answer: Polly policy stack: Retry(3, exponentialBackoff, jitter) + CircuitBreaker(5failures, 30s) + Timeout(5s) + Fallback. Retry: exponential backoff (1s, 2s, 4s) + jitter (random offset to prevent thundering herd). Circuit breaker: stop calling after repeated failures — protect external service and your own resources. Timeout: don't wait indefinitely. Fallback: return cached data or degraded response. Log each retry with attempt number.
+
+S94. Your application needs to handle file uploads of up to 5GB. What changes?
+Answer: Streaming, not buffering. ASP.NET Core: disable request body buffering, stream directly to blob storage. Azure/AWS SDK: multipart upload. RequestSizeLimit: remove default 30MB limit. Timeout: increase for large uploads. Progress: track bytes received, expose progress endpoint. Resume: support range-based resume (if connection drops). Virus scan: async after upload. UI: chunked upload with pause/resume (tus protocol).
+
+S95. How do you handle configuration management across 20 microservices?
+Answer: Central configuration: Azure App Configuration, Consul, Spring Cloud Config. Per-service: service-specific config with shared common values. Secret management: Key Vault / Vault for sensitive values (never in config service). Hot reload: services subscribe to config changes (IOptionsMonitor). Environments: dev/staging/prod as separate config stores or namespaces. Version config: track changes, enable rollback. Validate: test config changes in staging before production.
+
+BEHAVIORAL AND CROSS-CUTTING SCENARIOS
+-----------------------------------------
+
+S96. You find a severe security vulnerability in code that ships in 2 days. What do you do?
+Answer: Assess severity first: is it exploitable in production? By whom? With what impact? Immediately escalate: security lead, engineering manager, product owner. Don't fix quietly — document the vulnerability, proposed fix, risk of delaying. Decision: delay release if risk is critical (data breach, financial loss). Fix + security test + regression test before release. Post-release: monitor for exploitation. Post-mortem: how did vulnerability get through review?
+
+S97. A senior engineer on the team writes code that consistently ignores your team's standards.
+Answer: Address directly and privately first. "I noticed X pattern in your last few PRs — our standard is Y for Z reason. Is there a reason you're preferring X?" Listen — maybe standard is wrong/outdated. If valid reason: update standard. If ego/resistance: involve tech lead. Document standards in ADRs with rationale — makes it team decision, not personal. Enforce via linting/CI where possible (remove human element from repetitive debates).
+
+S98. You're given an impossible deadline. How do you handle it?
+Answer: Break it down: what specifically is needed by the deadline? Can scope be reduced? Identify: critical vs nice-to-have features. Negotiate: "We can deliver A, B, C by the date. D and E would take 2 more weeks." Risk: be transparent about quality tradeoffs. Never silently work 80-hour weeks and ship untested code. Document: scope reductions in writing. Set expectations: if cutting corners, note the technical debt taken on.
+
+S99. You're asked to estimate a feature you've never built before (e.g., driver development).
+Answer: Break it down to known sub-problems. Research unknowns: spike for 1-2 days to reduce uncertainty. Give a range: "My best estimate is 3-5 weeks — with driver work I've never done, I'd add 50% buffer for unknown unknowns." Milestone checkpoints: "Week 2, we'll know if the driver approach works — I can refine estimate then." Never give a single-point estimate for uncertain work. This honesty builds trust.
+
+S100. Production is on fire — multiple systems failing simultaneously. What's your process?
+Answer: Incident command. Assign roles: commander (coordinates), scribe (timeline), communicator (updates). First: stop the bleeding — can we roll back? Is there a simple kill switch? Communicate: status page update within 5 minutes, even if just "Investigating." Parallel tracks: don't have 10 engineers all debugging same thing. Data collection before changing anything — understand before fixing. Postmortem: blameless, focus on systemic fixes. Timeline reconstruction: from logs, what happened and when.
+
+
+==================================================================

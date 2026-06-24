@@ -1,0 +1,105 @@
+APPENDIX F: QUICK-REFERENCE ACRONYMS AND TERMS
+==================================================================
+
+.NET / C# TERMS:
+CLR — Common Language Runtime (executes .NET code)
+IL — Intermediate Language (compiled bytecode before JIT)
+JIT — Just-In-Time compiler (IL → native code at runtime)
+AOT — Ahead-of-Time compilation (native code before run)
+GC — Garbage Collector
+BCL — Base Class Library
+TPL — Task Parallel Library
+DLR — Dynamic Language Runtime
+CTS — Common Type System
+CLS — Common Language Specification
+
+ASP.NET CORE TERMS:
+DI — Dependency Injection
+IoC — Inversion of Control
+MVC — Model-View-Controller
+DTO — Data Transfer Object
+POCO — Plain Old CLR Object
+JWT — JSON Web Token
+CORS — Cross-Origin Resource Sharing
+HSTS — HTTP Strict Transport Security
+CSRF — Cross-Site Request Forgery
+
+EF CORE TERMS:
+ORM — Object-Relational Mapper
+LINQ — Language-Integrated Query
+DTB — Data Transfer Object
+FK — Foreign Key
+PK — Primary Key
+
+ARCHITECTURE TERMS:
+SOLID — Single Responsibility, Open/Closed, Liskov, Interface Segregation, Dependency Inversion
+DRY — Don't Repeat Yourself
+KISS — Keep It Simple, Stupid
+YAGNI — You Aren't Gonna Need It
+CQRS — Command Query Responsibility Segregation
+DDD — Domain-Driven Design
+BDD — Behavior-Driven Development
+TDD — Test-Driven Development
+ADR — Architecture Decision Record
+SLA — Service Level Agreement
+SLO — Service Level Objective
+RTO — Recovery Time Objective (max downtime after failure)
+RPO — Recovery Point Objective (max data loss acceptable)
+
+DRIVER TERMS:
+WDK — Windows Driver Kit
+WDM — Windows Driver Model
+KMDF — Kernel-Mode Driver Framework
+UMDF — User-Mode Driver Framework
+IRP — I/O Request Packet
+IRQ — Interrupt Request
+IRQL — Interrupt Request Level
+DPC — Deferred Procedure Call
+HAL — Hardware Abstraction Layer
+BSOD — Blue Screen of Death
+PnP — Plug and Play
+GPIO — General Purpose Input/Output
+ISR — Interrupt Service Routine
+MDL — Memory Descriptor List (Windows)
+
+LINUX DRIVER TERMS:
+VFS — Virtual File System
+GFP — Get Free Pages (allocation flags)
+KASAN — Kernel Address SANitizer
+DTS — Device Tree Source
+DTB — Device Tree Blob
+TTY — TeletYpewriter (serial terminal)
+URB — USB Request Block
+PCI — Peripheral Component Interconnect
+I2C — Inter-Integrated Circuit (serial bus)
+SPI — Serial Peripheral Interface
+
+C++ TERMS:
+RAII — Resource Acquisition Is Initialization
+STL — Standard Template Library
+SFINAE — Substitution Failure Is Not An Error
+RVO — Return Value Optimization
+PGO — Profile-Guided Optimization
+ABI — Application Binary Interface
+UB — Undefined Behavior
+POD — Plain Old Data
+
+CLOUD / DEVOPS:
+CI/CD — Continuous Integration / Continuous Deployment
+IaC — Infrastructure as Code
+SRE — Site Reliability Engineering
+MTTR — Mean Time To Recovery
+MTTF — Mean Time To Failure
+K8s — Kubernetes
+VPC — Virtual Private Cloud
+CDN — Content Delivery Network
+WAF — Web Application Firewall
+RBAC — Role-Based Access Control
+mTLS — Mutual TLS
+
+DESIGN PATTERNS (GOF):
+GoF — Gang of Four (Design Patterns book authors)
+23 canonical patterns split into Creational, Structural, Behavioral (see Section 4)
+
+
+==================================================================

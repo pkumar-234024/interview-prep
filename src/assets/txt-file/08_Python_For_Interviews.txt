@@ -1,0 +1,207 @@
+SECTION 8: PYTHON FOR INTERVIEWS
+==================================================================
+
+--------------------------------------------------------------------
+PYTHON BASICS FOR C# DEVELOPERS
+--------------------------------------------------------------------
+
+SYNTAX COMPARISON
+C#                              | Python
+--------------------------------|---------------------------------
+int x = 5;                      | x = 5
+string s = "hello";             | s = "hello"
+bool b = true;                  | b = True
+// comment                      | # comment
+/* block */                     | ''' block ''' or """ """
+if (x > 0) { }                  | if x > 0:
+for (int i=0; i<10; i++) { }    | for i in range(10):
+while (condition) { }           | while condition:
+using System;                   | import sys
+Console.WriteLine(x);           | print(x)
+var list = new List<int>();      | my_list = []
+var dict = new Dictionary<K,V>();| my_dict = {}
+
+KEY PYTHON FEATURES
+Dynamic typing — no type declarations needed (though type hints exist in Python 3.5+).
+Indentation defines blocks (no braces).
+Everything is an object — even functions, classes.
+Duck typing — "if it walks like a duck and quacks like a duck, it's a duck."
+First-class functions — functions passed as arguments, returned from functions.
+Comprehensions — concise syntax for creating collections.
+
+DATA TYPES
+int, float, complex, bool, str, bytes, bytearray
+list [1,2,3] — mutable, like List<T>
+tuple (1,2,3) — immutable, like ValueTuple
+dict {'key': 'value'} — like Dictionary<K,V>
+set {1,2,3} — unique elements, like HashSet<T>
+frozenset — immutable set
+
+STRING OPERATIONS
+s.upper(), s.lower(), s.strip(), s.split(','), ','.join(list)
+f"Hello, {name}" — f-strings (like C# $"Hello, {name}")
+s.startswith(), s.endswith(), s.replace(), s.find()
+
+LIST COMPREHENSIONS (Python's equivalent of LINQ Select+Where)
+squares = [x**2 for x in range(10) if x % 2 == 0]
+# C# equivalent: range(10).Where(x => x%2==0).Select(x => x*x)
+
+Dict comprehension:
+word_lengths = {word: len(word) for word in words}
+
+--------------------------------------------------------------------
+PYTHON INTERVIEW QUESTIONS (50)
+--------------------------------------------------------------------
+
+Q1. What is Python and what are its key features?
+Answer: Python is a high-level, interpreted, dynamically-typed language. Key features: readable syntax, indentation-based blocks, dynamic typing, garbage collection, extensive standard library, multi-paradigm (OOP, functional, procedural), cross-platform.
+
+Q2. What is the difference between Python 2 and Python 3?
+Answer: Python 2 (EOL 2020): print as statement, integer division returns int, strings are bytes. Python 3: print as function, integer division returns float (use // for integer), strings are Unicode by default, better async support. Always use Python 3.
+
+Q3. What are Python's data types?
+Answer: Numeric: int (unlimited precision), float, complex. Sequences: str, list, tuple, range. Mapping: dict. Set: set, frozenset. Boolean: bool (subclass of int). None: NoneType. Binary: bytes, bytearray.
+
+Q4. What is the difference between list and tuple?
+Answer: List: mutable, defined with [], can be modified after creation. Tuple: immutable, defined with (), cannot be changed. Tuples are faster and hashable (can be dict keys). Use tuple for data that shouldn't change.
+
+Q5. What is a dictionary in Python?
+Answer: Key-value store, hash table. {key: value}. Keys must be hashable (immutable). Access: d[key] (KeyError if missing), d.get(key, default). Methods: keys(), values(), items(). Python 3.7+: maintains insertion order.
+
+Q6. What is a list comprehension?
+Answer: Concise syntax to create lists: [expression for item in iterable if condition]. More readable and faster than equivalent for loop. Dict comprehension: {k: v for k, v in items}. Set comprehension: {x for x in items}.
+
+Q7. What are generators?
+Answer: Functions that yield values lazily — produce one item at a time, not all at once. def gen(): yield 1; yield 2. Creates iterator without storing all in memory. Generator expressions: (x**2 for x in range(100)). Like IEnumerable with yield return in C#.
+
+Q8. What is the difference between range and xrange?
+Answer: Python 2: range() returns list; xrange() is lazy. Python 3: range() is always lazy (like Python 2's xrange). range(1000000) creates object without allocating million integers.
+
+Q9. What are *args and **kwargs?
+Answer: *args captures extra positional arguments as a tuple. **kwargs captures extra keyword arguments as a dict. def f(*args, **kwargs). Call: f(1, 2, name="Alice"). Useful for flexible function signatures, decorators.
+
+Q10. What is a lambda function?
+Answer: Anonymous single-expression function: lambda x, y: x + y. Like C# lambda but more limited (single expression only). Used with map(), filter(), sorted(key=). Prefer named functions for anything non-trivial.
+
+Q11. What are Python decorators?
+Answer: Functions that wrap other functions to add behavior. @decorator syntax sugar for func = decorator(func). Used for: logging, timing, authentication, caching (functools.lru_cache). Like C# attributes but functional.
+
+Q12. What is the difference between @staticmethod and @classmethod?
+Answer: @staticmethod: belongs to class but receives neither self nor cls. @classmethod: receives cls (class itself) as first argument — can access/modify class state. Instance method: receives self. Like C# static vs instance methods but classmethod is unique.
+
+Q13. What is Python's MRO (Method Resolution Order)?
+Answer: Order Python searches for a method in class hierarchy. Uses C3 linearization algorithm. Viewable with Class.mro(). Python supports multiple inheritance — MRO resolves ambiguity correctly (unlike C++ diamond problem).
+
+Q14. What is __init__ and __new__?
+Answer: __init__: initializer called after object created — like C# constructor body. __new__: called to create the object instance — like C# static factory. __init__ receives already-created instance. Override __new__ for singletons or immutable types.
+
+Q15. What are Python's dunder (magic) methods?
+Answer: Special methods with double underscores. __str__ (print), __repr__ (debugging), __len__, __getitem__, __setitem__, __iter__, __next__, __eq__, __lt__, __add__, __enter__, __exit__ (context manager). Like C# operator overloading + interfaces.
+
+Q16. What is a context manager?
+Answer: Implements __enter__ and __exit__ for with statement: with open('file.txt') as f: read. __exit__ called even on exception. Like C# using statement. contextlib.contextmanager decorator: create with generator function.
+
+Q17. What is Python's GIL (Global Interpreter Lock)?
+Answer: Mutex ensuring only one thread executes Python bytecode at a time. Prevents true CPU parallelism in threads. Impact: CPU-bound threading doesn't scale across cores. Solutions: multiprocessing (separate processes), asyncio (I/O-bound), C extensions (release GIL).
+
+Q18. What is asyncio?
+Answer: Python's async framework. async def defines coroutine. await suspends. asyncio.run() or event loop runs coroutines. Like C# async/await. I/O-bound tasks benefit; CPU-bound still limited by GIL. aiohttp for async HTTP.
+
+Q19. What is the difference between threading and multiprocessing in Python?
+Answer: threading: threads share memory (limited by GIL for CPU tasks), good for I/O. multiprocessing: separate Python processes (true parallelism for CPU tasks), separate memory (use Queue/Pipe for communication). Like C# Thread vs Process.
+
+Q20. What is a decorator factory?
+Answer: A decorator that takes arguments: @retry(max_attempts=3). Creates decorator that creates wrapper: def retry(max): def decorator(func): def wrapper(*a, **k): ... return wrapper return decorator. Three levels of nesting.
+
+Q21. What is functools.lru_cache?
+Answer: Memoization decorator — caches function results by arguments. @functools.lru_cache(maxsize=128). Subsequent calls with same args return cached result. functools.cache (Python 3.9+) is unlimited size. Like building a simple cache.
+
+Q22. What is a Python module vs package?
+Answer: Module: single .py file. Package: directory with __init__.py. Import: import mymodule or from mypackage.submodule import MyClass. __init__.py can expose package-level symbols. Namespace packages: no __init__.py (Python 3.3+).
+
+Q23. What is pip and virtual environments?
+Answer: pip: Python package manager (install, uninstall). venv: isolated Python environment with own packages. python -m venv myenv; source myenv/bin/activate (Linux). Prevents package conflicts between projects. Like .NET separate project dependencies.
+
+Q24. What are Python exceptions?
+Answer: try/except/else/finally. Except: except ValueError as e. Raise: raise ValueError("msg"). Multiple: except (TypeError, ValueError). Custom: class AppError(Exception): pass. Unlike C#: finally runs even after return.
+
+Q25. What is the difference between == and is in Python?
+Answer: == checks value equality (calls __eq__). is checks object identity (same object in memory). None checks: always use is None, not == None. Small integers (-5 to 256) and interned strings may share objects — is can give surprising True.
+
+Q26. What is slicing?
+Answer: my_list[start:stop:step] — extracts sub-sequence. s[1:4] items 1,2,3. s[::-1] reverse. s[::2] every other. Returns new list/string. C# equivalent: LINQ Skip/Take or Span<T> slicing. Works on lists, tuples, strings, bytes.
+
+Q27. What is zip() and enumerate()?
+Answer: zip(a, b) pairs elements from two iterables: for x, y in zip(list1, list2). enumerate(a) adds index: for i, val in enumerate(mylist). Both return lazy iterators. Like C#'s Zip extension method and LINQ Select with index.
+
+Q28. What is map() and filter()?
+Answer: map(func, iterable) applies function to each element — like LINQ Select. filter(func, iterable) keeps elements where func returns True — like LINQ Where. Both return iterators; wrap with list() to materialize. List comprehensions are often clearer.
+
+Q29. What is Python's collections module?
+Answer: Counter (count occurrences), defaultdict (auto-creates missing keys), OrderedDict (insertion-ordered, less relevant in 3.7+), deque (double-ended queue, O(1) append/pop both ends), namedtuple (tuple with named fields), ChainMap.
+
+Q30. What is a namedtuple?
+Answer: from collections import namedtuple; Point = namedtuple('Point', ['x', 'y']); p = Point(1, 2); p.x. Immutable, memory-efficient, readable. Python 3.6+: typing.NamedTuple with type hints. Like C# record or ValueTuple with names.
+
+Q31. What is dataclasses?
+Answer: from dataclasses import dataclass; @dataclass class Point: x: float; y: float. Auto-generates __init__, __repr__, __eq__. @dataclass(frozen=True) for immutable. Like C# records. Reduce boilerplate for data classes significantly.
+
+Q32. What is type hinting?
+Answer: def greet(name: str) -> str: optional type annotations. Not enforced at runtime. mypy static type checker validates. Better IDE support. Like C# types but optional. List[int], Dict[str, int], Optional[str], Union[int, str], from typing module.
+
+Q33. What is __slots__?
+Answer: Restricts instance attributes to fixed set; replaces __dict__. class Point: __slots__ = ['x', 'y']. Benefits: reduced memory (~40% for many instances), faster attribute access. Limitation: can't add arbitrary attributes dynamically.
+
+Q34. What is the difference between deep copy and shallow copy?
+Answer: copy.copy(obj) — shallow: new object, references same nested objects. copy.deepcopy(obj) — deep: recursively creates new objects. Same as C# MemberwiseClone vs serialization-based deep copy. Mutating shallow copy's nested objects affects original.
+
+Q35. What is a Python property?
+Answer: @property makes method look like attribute: @property def age(self): return self._age. @age.setter. @age.deleter. Like C# property with get/set. Allows validation, computed values while maintaining clean attribute access syntax.
+
+Q36. What is abstract class in Python?
+Answer: from abc import ABC, abstractmethod; class Shape(ABC): @abstractmethod def area(self): pass. Cannot instantiate abstract class. Subclass must implement all abstract methods. Like C# abstract class with abstract methods.
+
+Q37. What is multiple inheritance in Python?
+Answer: class C(A, B): inherits from both A and B. MRO resolves method order. Common use: mixins — reusable behavior without full base class. class LogMixin: def log(self): ... class Service(LogMixin, BaseService): ...
+
+Q38. What is a mixin?
+Answer: Small class providing specific functionality to add to multiple classes. No own __init__, not standalone. class TimestampMixin: def timestamp(self): return datetime.now(). class Order(TimestampMixin, BaseModel): ... Like C# extension methods but OOP-style.
+
+Q39. What is Python's iterator protocol?
+Answer: Implement __iter__ (returns self) and __next__ (returns next value, raises StopIteration when done). for loop uses iterator protocol. iter(obj), next(obj). Like C# IEnumerable/IEnumerator.
+
+Q40. What is os and sys modules?
+Answer: os: OS interaction — os.path, os.getcwd(), os.listdir(), os.environ, os.makedirs(). sys: Python runtime — sys.argv (command args), sys.path (import paths), sys.exit(), sys.version. Like C# System.IO + System.Environment.
+
+Q41. What is file handling in Python?
+Answer: with open('file.txt', 'r') as f: content = f.read(). Modes: r (read), w (write), a (append), rb (binary). f.readline(), f.readlines(). open() with context manager auto-closes. Like C# File.ReadAllText or StreamReader with using.
+
+Q42. What is JSON handling in Python?
+Answer: import json. json.dumps(obj) — Python object to JSON string. json.loads(string) — JSON string to Python. json.dump/load for files. default parameter for custom serialization. Like C# System.Text.Json or Newtonsoft.Json.
+
+Q43. What is re (regex) module?
+Answer: import re. re.search(pattern, string) — find anywhere. re.match — beginning only. re.findall — all occurrences. re.sub — replace. re.compile for reuse. Groups: (pattern). Named groups: (?P<name>pattern). Like C# Regex class.
+
+Q44. What is subprocess module?
+Answer: import subprocess; result = subprocess.run(['ls', '-la'], capture_output=True, text=True). stdout, stderr, returncode. subprocess.Popen for more control. Like C# Process.Start with redirected I/O. Security: avoid shell=True with user input.
+
+Q45. What is pathlib?
+Answer: from pathlib import Path; p = Path('/home/user/file.txt'). p.exists(), p.is_dir(), p.name, p.suffix, p.parent, p.read_text(), p.write_text(). Like C# FileInfo/DirectoryInfo. OOP approach to file paths; preferred over os.path.
+
+Q46. What is logging module?
+Answer: import logging; logging.basicConfig(level=logging.INFO). logging.info("message"). Levels: DEBUG, INFO, WARNING, ERROR, CRITICAL. Logger hierarchy. Handlers (file, console). Formatters. Like C# ILogger but simpler setup.
+
+Q47. What is argparse?
+Answer: import argparse; parser = argparse.ArgumentParser(); parser.add_argument('--verbose', action='store_true'); args = parser.parse_args(). Parses command-line arguments with validation, help generation. Like C# CommandLine library.
+
+Q48. What is Python's unittest?
+Answer: import unittest; class TestOrder(unittest.TestCase): def test_total(self): self.assertEqual(order.total, 100). setUp/tearDown for fixtures. Run: python -m unittest. pytest is more popular: def test_total(): assert order.total == 100.
+
+Q49. What is pytest?
+Answer: Popular Python testing framework. def test_function(): assert result == expected. Fixtures with @pytest.fixture. Parameterize: @pytest.mark.parametrize. Better output than unittest. Plugins for coverage, mocking (pytest-mock).
+
+Q50. What is a Python script vs module?
+Answer: Script: intended to be run directly. Module: intended to be imported. if __name__ == '__main__': guard — code runs only when script is executed, not when imported. Best practice: always add this guard. Like C# Program.cs entry point.
+
+
+==================================================================

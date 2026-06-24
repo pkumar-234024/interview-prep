@@ -1,0 +1,69 @@
+APPENDIX G: RECOMMENDED RESOURCES
+==================================================================
+
+BOOKS:
+"C# in Depth" — Jon Skeet (definitive C# reference)
+"CLR via C#" — Jeffrey Richter (deep .NET internals)
+"Clean Architecture" — Robert C. Martin
+"Domain-Driven Design" — Eric Evans
+"Designing Data-Intensive Applications" — Martin Kleppmann (system design bible)
+"Windows Internals" — Yosifovich, Ionescu (Windows kernel and driver concepts)
+"Linux Device Drivers" (free online at lwn.net/Kernel/LDD3/) — Corbet, Rubini, Kroah-Hartman
+"The C++ Programming Language" — Bjarne Stroustrup
+"Effective C++" — Scott Meyers
+"Clean Code" — Robert C. Martin
+
+ONLINE RESOURCES:
+https://docs.microsoft.com/en-us/windows-hardware/drivers/ — Official WDK docs
+https://www.osr.com/ — OSR Online (Windows driver community, must-read)
+https://linux-kernel-labs.github.io/ — Linux Kernel Labs (excellent driver tutorial)
+https://bootlin.com/training/ — Bootlin (Linux kernel/driver training materials)
+https://devblogs.microsoft.com/dotnet/ — .NET Blog
+https://learn.microsoft.com/en-us/ef/core/ — EF Core docs
+https://github.com/microsoft/Windows-driver-samples — Official WDK samples
+https://elixir.bootlin.com/linux/latest/source — Linux kernel source browser
+https://stephen-cleary.com/ — Stephen Cleary (async/.NET patterns)
+https://khalidabuhakmeh.com/ — Khalid Abuhakmeh (ASP.NET Core practical)
+https://www.algoexpert.io/ — Algorithm practice
+https://leetcode.com/ — Coding interview practice
+https://systemdesignprimer.com/ — System design primer
+
+TOOLS TO INSTALL AND PRACTICE WITH:
+Visual Studio 2022 with WDK extension (Windows driver development)
+WSL2 with Ubuntu (Linux driver development)
+WinDbg (Windows kernel debugger)
+VMware/VirtualBox (test VMs for driver installation)
+Docker Desktop (containerization practice)
+Redis Desktop Manager (Redis inspection)
+Postman (API testing)
+dotnet CLI tools: dotnet-trace, dotnet-counters, dotnet-dump
+
+
+==================================================================
+FINAL NOTES FOR INTERVIEW SUCCESS
+==================================================================
+
+THE 3 THINGS INTERVIEWERS ARE REALLY EVALUATING:
+1. Can you do the job? (technical competence)
+2. Will you do the job? (motivation, work ethic)
+3. Will you fit with the team? (communication, attitude)
+
+For this specific role — all three matter, but #2 and #3 matter MORE because of the driver experience gap. Show genuine enthusiasm for systems programming. Ask smart questions about their hardware. Demonstrate that you've already started learning (bring up the echo sample or character driver you built).
+
+YOUR BIGGEST COMPETITIVE ADVANTAGE:
+5 years of C# + architecture + ASP.NET Core expertise is rare in the driver world. Most driver developers don't know how to build scalable APIs, design clean architectures, or build modern .NET applications. You bring complementary skills — the role likely involves more than just driver code. Lean into that.
+
+THE DRIVER GAP:
+Be honest but positive. "I've never shipped a production driver" is better than implying you have. Show the work you've done to bridge the gap. Ask how long it typically takes a new hire to get productive on driver work — this shows realistic self-awareness and respect for the domain.
+
+REMEMBER:
+The goal of an interview is not to prove you know everything.
+It's to demonstrate how you think, communicate, and approach problems.
+Be curious. Be honest. Be enthusiastic.
+
+Good luck.
+
+==================================================================
+END OF COMPLETE GUIDE — ALL SECTIONS + APPENDICES
+Total: ~100 Scenarios | 500+ Q&A | 14 Sections | 7 Appendices
+==================================================================

@@ -1,0 +1,772 @@
+SECTION 2: C# INTERVIEW QUESTIONS
+==================================================================
+
+--------------------------------------------------------------------
+BEGINNER QUESTIONS (1-50)
+--------------------------------------------------------------------
+
+Q1. What is C#?
+Answer: C# is a statically typed, object-oriented, managed programming language developed by Microsoft. It runs on the .NET runtime (CLR), which provides garbage collection, type safety, and JIT compilation. It combines power of C++ with the productivity of Java.
+Follow-up: How does C# differ from Java?
+Real-world: Used to build everything from web APIs to Windows desktop apps.
+
+Q2. What is the difference between value types and reference types?
+Answer: Value types (int, struct, bool, enum) are stored on the stack (or inline within the containing type). They are copied on assignment. Reference types (class, string, arrays) are stored on the heap; variables hold a reference (pointer) to the data. Assigning a reference type copies the reference, not the data.
+Follow-up: What happens when you box a value type?
+Real-world: Boxing occurs in legacy code using ArrayList or when passing int to a method expecting object.
+
+Q3. What are the access modifiers in C#?
+Answer: public (accessible anywhere), private (same class only), protected (same class + derived), internal (same assembly), protected internal (same assembly OR derived), private protected (same assembly AND derived).
+Follow-up: What is the default modifier for a class member?
+Real-world: Keep fields private and expose via properties to control invariants.
+
+Q4. What is a class vs a struct?
+Answer: Class is a reference type; struct is a value type. Classes support inheritance; structs do not (except implementing interfaces). Structs are value-copied; classes are reference-copied. Classes live on the heap; structs on the stack.
+Follow-up: When would you prefer a struct?
+Real-world: System.Drawing.Point is a struct because it's small and frequently copied.
+
+Q5. What is the difference between == and .Equals()?
+Answer: For value types, both compare values. For reference types, == by default compares references (object identity), while .Equals() can be overridden to compare content. String overrides both to compare content.
+Follow-up: How does string interning affect this?
+Real-world: Two string variables with same content: == returns true because string overrides ==.
+
+Q6. What is a constructor?
+Answer: A constructor is a special method called when an object is instantiated. It initializes the object's state. C# supports default constructors, parameterized constructors, static constructors, and copy constructors.
+Follow-up: What is a static constructor used for?
+Real-world: Static constructors are used to initialize static fields or perform one-time setup logic.
+
+Q7. What is inheritance in C#?
+Answer: Inheritance allows a class (derived/child) to acquire properties and methods of another class (base/parent) using the : symbol. C# supports single inheritance for classes but multiple inheritance via interfaces.
+Follow-up: What does the 'sealed' keyword do?
+Real-world: A Vehicle base class can be inherited by Car and Truck, sharing common drive logic.
+
+Q8. What is an interface?
+Answer: An interface defines a contract — a set of method/property signatures without implementation (in older C#; C# 8+ allows default implementations). Classes that implement an interface must provide implementations for all members.
+Follow-up: Can an interface have fields?
+Real-world: IRepository<T> defines CRUD contract — SQL and InMemory repositories both implement it.
+
+Q9. What is an abstract class?
+Answer: An abstract class cannot be instantiated directly. It may contain abstract methods (no implementation, must be overridden) and concrete methods. It provides a partial implementation shared by derived classes.
+Follow-up: When would you choose an abstract class over an interface?
+Real-world: An Animal abstract class with an abstract Speak() method — Dog and Cat override it.
+
+Q10. What is polymorphism?
+Answer: Polymorphism means "many forms." In C#, it appears as compile-time (method overloading) and runtime (method overriding with virtual/override keywords). A base class reference can hold a derived class object and call overridden methods.
+Follow-up: What is the difference between overloading and overriding?
+Real-world: IPayment reference calls Process() — at runtime it executes CreditCardPayment or PayPalPayment.
+
+Q11. What are properties in C#?
+Answer: Properties are members that provide flexible access to private fields via get and set accessors. They allow validation logic inside set, and computed values in get. Auto-properties generate a backing field automatically.
+Follow-up: What is a read-only property?
+Real-world: public decimal Price { get; private set; } — set only within the class.
+
+Q12. What is encapsulation?
+Answer: Encapsulation bundles data (fields) and methods that operate on that data within a class, and restricts direct access to internal state using access modifiers. It protects object integrity.
+Follow-up: How do you enforce encapsulation in C#?
+Real-world: Making Order._total private and exposing it via a read-only TotalAmount property.
+
+Q13. What is a namespace?
+Answer: A namespace organizes classes and other types into a logical hierarchy, preventing naming conflicts. Declared with the namespace keyword; accessed with using directive or fully qualified name.
+Follow-up: Can two classes have the same name in the same namespace?
+Real-world: System.Collections vs System.Collections.Generic — both contain List but in different namespaces.
+
+Q14. What is the using statement?
+Answer: Two usages: (1) using directive for importing namespaces. (2) using statement for resource management — calls Dispose() automatically on IDisposable objects when the block exits, even if an exception occurs.
+Follow-up: What is the 'using declaration' in C# 8+?
+Real-world: using var conn = new SqlConnection(cs) — connection is auto-closed at end of scope.
+
+Q15. What is the difference between string and StringBuilder?
+Answer: string is immutable — every modification creates a new object, causing GC pressure. StringBuilder is mutable and efficient for repeated string manipulation. Use StringBuilder when concatenating in loops.
+Follow-up: At what point does StringBuilder become more efficient?
+Real-world: Building a CSV string from 10,000 rows — use StringBuilder to avoid O(n²) allocations.
+
+Q16. What are generics?
+Answer: Generics allow writing type-safe code that works with any data type without boxing. They provide compile-time type checking and code reuse. Example: List<T>, Dictionary<TKey, TValue>.
+Follow-up: What are generic constraints?
+Real-world: public T Max<T>(T a, T b) where T : IComparable<T> — works for int, double, string.
+
+Q17. What is the difference between List<T> and Array?
+Answer: Array has fixed size, defined at creation. List<T> is dynamic — it grows automatically. List<T> has richer methods (Add, Remove, LINQ). Arrays are slightly faster for fixed-size access.
+Follow-up: When would you choose an array over List<T>?
+Real-world: Pixel buffer for image processing — fixed size, performance-critical: use array.
+
+Q18. What is LINQ?
+Answer: LINQ (Language Integrated Query) allows querying collections, databases, XML, and other sources using a unified syntax. Supports two forms: query syntax (SQL-like) and method syntax (lambda-based).
+Follow-up: What is deferred execution in LINQ?
+Real-world: var result = dbContext.Orders.Where(o => o.Total > 100).ToList() — executed on .ToList().
+
+Q19. What is a delegate?
+Answer: A delegate is a type-safe function pointer. It holds a reference to a method and allows methods to be passed as parameters. Foundation for events and LINQ's Func/Action types.
+Follow-up: What is a multicast delegate?
+Real-world: Passing a sorting strategy as a delegate to a sort method.
+
+Q20. What is an event?
+Answer: An event is a mechanism for communication between objects based on publisher-subscriber pattern. Built on delegates. The publisher raises the event; subscribers react. The event keyword restricts external callers from raising or clearing the event.
+Follow-up: What is the EventHandler<TEventArgs> delegate?
+Real-world: Button.Click event — multiple UI handlers subscribed to a single user action.
+
+Q21. What are lambda expressions?
+Answer: Lambda expressions are anonymous functions written inline. Syntax: (parameters) => expression or { statements }. Used extensively with LINQ, delegates, events, and Tasks.
+Follow-up: What is a closure?
+Real-world: orders.Where(o => o.Status == status) — status captured from outer scope (closure).
+
+Q22. What is exception handling?
+Answer: Exception handling uses try/catch/finally blocks. try wraps risky code. catch catches specific exceptions. finally always executes (cleanup). throw rethrows; throw ex loses stack trace.
+Follow-up: What is the difference between throw and throw ex?
+Real-world: Catching SqlException specifically to handle database connection errors differently from NullReferenceException.
+
+Q23. What is the difference between int? and int?
+Answer: int is a non-nullable value type (cannot be null). int? (Nullable<int>) wraps int to allow null. Useful for database columns or optional values. Use .HasValue and .Value or null-coalescing ?? operator.
+Follow-up: What is the null-conditional operator ?.?
+Real-world: Database columns that may be NULL — map to int? in C# model.
+
+Q24. What is the var keyword?
+Answer: var is an implicitly typed local variable. The compiler infers the type at compile time — it is NOT dynamic. Once assigned, the type is fixed. Use when the type is obvious from context; avoid when it reduces clarity.
+Follow-up: What is the difference between var and dynamic?
+Real-world: var query = dbContext.Orders.Where(...) — type is IQueryable<Order>, compiler knows it.
+
+Q25. What is object initializer syntax?
+Answer: Object initializer syntax allows setting properties at creation without a separate constructor: new Person { Name = "Alice", Age = 30 }. Works with any accessible setter; runs after the constructor.
+Follow-up: What is collection initializer syntax?
+Real-world: Cleaner test data setup — new Order { Id = 1, Total = 500m }.
+
+Q26. What is the difference between const and readonly?
+Answer: const is compile-time constant, must be initialized at declaration, implicitly static. readonly is runtime constant, initialized at declaration or in constructor, can be instance or static. Use const for truly fixed values; readonly for values known only at runtime.
+Follow-up: Can a readonly field be a reference type?
+Real-world: private readonly ILogger _logger — injected via constructor, never reassigned.
+
+Q27. What is a static class?
+Answer: A static class cannot be instantiated and can only contain static members. Useful for utility/helper methods. Example: Math, Console, File.
+Follow-up: What are the limitations of a static class?
+Real-world: StringExtensions static class with Truncate, ToTitleCase extension methods.
+
+Q28. What are extension methods?
+Answer: Extension methods add methods to existing types without modifying them. Defined as static methods in a static class with the this keyword on the first parameter.
+Follow-up: Can you override a method using extension methods?
+Real-world: string.IsNullOrWhiteSpace() is similar to an extension — adds capability to string type.
+
+Q29. What is the difference between IEnumerable and IQueryable?
+Answer: IEnumerable executes queries in memory — data is fetched then filtered. IQueryable translates expressions to the data source query (e.g., SQL) — filtering occurs at database level. Always use IQueryable for EF Core queries to avoid over-fetching.
+Follow-up: What happens if you return IEnumerable from an EF Core query?
+Real-world: .AsEnumerable() on EF query loads all rows before filtering — performance issue.
+
+Q30. What is the ternary operator?
+Answer: condition ? valueIfTrue : valueIfFalse — a shorthand for simple if/else. Returns one of two values based on a boolean condition.
+Follow-up: What is the null-coalescing operator ??
+Real-world: string display = name ?? "Unknown" — default if null.
+
+Q31. What are named and optional parameters?
+Answer: Named parameters allow passing arguments by name regardless of order. Optional parameters have default values and can be omitted by callers. Both improve API readability.
+Follow-up: What is the difference between optional parameters and method overloading?
+Real-world: public void Log(string msg, LogLevel level = LogLevel.Info) — caller can omit level.
+
+Q32. What is method overloading?
+Answer: Defining multiple methods with the same name but different parameter lists (number, type, or order of parameters). Return type alone is not sufficient for overloading.
+Follow-up: Can async and non-async methods have the same name?
+Real-world: Console.Write(string), Console.Write(int), Console.Write(char) — same name, different params.
+
+Q33. What is the foreach loop?
+Answer: foreach iterates over any IEnumerable<T> collection. It calls GetEnumerator() internally. The loop variable is read-only within the loop body. Simpler than for when index is not needed.
+Follow-up: What happens if you modify a collection inside foreach?
+Real-world: foreach (var order in orders) — throws InvalidOperationException if orders is modified.
+
+Q34. What is a switch expression (C# 8+)?
+Answer: Switch expressions are a concise form of switch for returning values. Uses => instead of case/break. Supports pattern matching, when guards, and discard _.
+Follow-up: What is pattern matching in switch?
+Real-world: var label = status switch { OrderStatus.Pending => "Awaiting", OrderStatus.Shipped => "On Way", _ => "Unknown" };
+
+Q35. What is string interpolation?
+Answer: String interpolation uses $ prefix to embed expressions directly in strings: $"Hello, {name}!". Compiled to string.Format() calls. Supports format specifiers: $"{price:C2}".
+Follow-up: What is a verbatim string literal (@)?
+Real-world: $"Invoice #{invoice.Id} for {customer.Name} totaling {invoice.Total:C}" — readable log message.
+
+Q36. What is the difference between while and do-while?
+Answer: while checks condition before first iteration — may never execute. do-while executes at least once, checking condition after each iteration.
+Follow-up: When would you prefer do-while over while?
+Real-world: Retry logic — do { attempt(); } while (!success && retries-- > 0);
+
+Q37. What are partial classes?
+Answer: Partial classes split a class definition across multiple files using the partial keyword. The compiler merges them. Used by code generators (e.g., Windows Forms designer, EF migrations).
+Follow-up: Can partial classes be in different assemblies?
+Real-world: EF Core migrations generate partial context classes you can extend with your own code.
+
+Q38. What is a tuple?
+Answer: Tuples are lightweight data structures that group multiple values. C# 7+ supports value tuples with named elements: (string Name, int Age) person = ("Alice", 30). More readable than Tuple<T1,T2>.
+Follow-up: What is the difference between ValueTuple and Tuple<T>?
+Real-world: Returning two values from a method without creating a class: (bool Success, string Error) Validate(...)
+
+Q39. What is pattern matching?
+Answer: Pattern matching tests a value against a pattern and extracts information. Supports: type patterns (is int n), property patterns ({ Name: "Alice" }), positional patterns, switch expressions, and when clauses.
+Follow-up: What are relational patterns (C# 9)?
+Real-world: if (shape is Circle { Radius: > 5 }) — cleaner than casting and property access.
+
+Q40. What is records in C# 9?
+Answer: record is a reference type designed for immutable data. It provides value-based equality, a with expression for non-destructive mutation, and auto-generated ToString(). record struct is a value type.
+Follow-up: When should you use record over class?
+Real-world: public record Point(int X, int Y); — DTOs, value objects, immutable data transfer.
+
+Q41. What is the difference between ToString() and Convert.ToString()?
+Answer: ToString() can throw NullReferenceException if called on null. Convert.ToString(null) returns empty string. Both convert to string representation. Convert.ToString() is null-safe.
+Follow-up: What is string.Format() vs interpolation?
+Real-world: Safe null-to-string conversion in logging: Convert.ToString(obj).
+
+Q42. What are enums?
+Answer: Enums are value types that define a set of named integer constants. They improve readability and type safety over magic numbers. Flags attribute allows bitwise combination.
+Follow-up: What is the [Flags] attribute on an enum?
+Real-world: public enum DayOfWeek { Mon=1, Tue=2, Wed=4, Thu=8, Fri=16 } — [Flags] allows Mon|Wed.
+
+Q43. What is a null check operator (??=)?
+Answer: ??= (null-coalescing assignment) assigns a value only if the variable is null. x ??= defaultValue is equivalent to if (x == null) x = defaultValue. Introduced in C# 8.
+Follow-up: What is the difference between ?? and ??=?
+Real-world: _cache ??= new Dictionary<string, string>() — lazy initialization.
+
+Q44. What are indexers?
+Answer: Indexers allow objects to be accessed using array-like syntax with []. Defined with this[type param] syntax. Useful for custom collection classes.
+Follow-up: Can indexers be overloaded?
+Real-world: A Matrix class: matrix[row, col] = value — natural array-like access.
+
+Q45. What is the difference between is and as operators?
+Answer: is tests if an object is of a type, returns bool. as performs a safe cast — returns null if cast fails instead of throwing. Use is for type checking; as or direct cast for actual conversion.
+Follow-up: How does 'is' with pattern matching differ from classic 'is'?
+Real-world: if (obj is Order order && order.Total > 100) — test and cast in one expression.
+
+Q46. What is method hiding (new keyword)?
+Answer: The new keyword hides a base class method instead of overriding it. The method to call depends on the declared type of the reference, not the actual type (no runtime polymorphism).
+Follow-up: What is the difference between override and new?
+Real-world: Hide a logging method in a derived class without virtual — base reference calls base version.
+
+Q47. What is object cloning (shallow vs deep)?
+Answer: Shallow clone copies field values — reference types still point to same objects. Deep clone creates new instances of all referenced objects. Object.MemberwiseClone() does shallow copy.
+Follow-up: How do you implement deep copy in C#?
+Real-world: Copying an Order object — shallow copy means Items list is shared; deep copy gives independent Items.
+
+Q48. What is the IDisposable pattern?
+Answer: IDisposable provides a Dispose() method for deterministic cleanup of unmanaged resources (file handles, DB connections, network sockets). Implement with try/finally or using statement.
+Follow-up: What is the Dispose pattern with a finalizer?
+Real-world: SqlConnection, FileStream — implement IDisposable to release resources immediately.
+
+Q49. What is the difference between String.Empty and ""?
+Answer: String.Empty is a static read-only field; "" is a string literal. Both represent empty strings. At runtime, they are the same object due to string interning. Prefer String.Empty for clarity and to avoid typos.
+Follow-up: What is String.IsNullOrEmpty vs IsNullOrWhiteSpace?
+Real-world: Validating form input — IsNullOrWhiteSpace catches spaces-only submissions.
+
+Q50. What are attributes in C#?
+Answer: Attributes add metadata to code elements (classes, methods, properties). Applied with [AttributeName] syntax. Read at runtime via reflection. Common: [Obsolete], [Serializable], [Required], [HttpGet].
+Follow-up: How do you create a custom attribute?
+Real-world: [Required], [MaxLength] in ASP.NET model validation — data annotations are attributes.
+
+--------------------------------------------------------------------
+INTERMEDIATE QUESTIONS (51-100)
+--------------------------------------------------------------------
+
+Q51. Explain the IEnumerable<T> and IEnumerator<T> relationship.
+Answer: IEnumerable<T> exposes GetEnumerator() which returns IEnumerator<T>. IEnumerator<T> provides MoveNext(), Current, and Reset(). foreach calls GetEnumerator() and iterates via MoveNext()/Current. Implementing IEnumerable<T> makes your class foreach-able.
+Follow-up: What is yield return?
+Real-world: Custom paged collection that lazily fetches data from database in chunks.
+
+Q52. What is the difference between Task and Thread?
+Answer: Thread is a low-level OS thread — high overhead, hard to manage. Task is a higher-level abstraction from the TPL, represents async work that may or may not use a thread. Tasks support continuations, cancellation, exception propagation. Use Task unless you need explicit thread control.
+Follow-up: What is a ThreadPool?
+Real-world: Web server handling 1000 concurrent requests — Tasks reuse ThreadPool threads efficiently.
+
+Q53. What is async/await?
+Answer: async/await enables writing asynchronous code that looks synchronous. async marks a method as asynchronous. await suspends execution until the awaited Task completes without blocking the thread. Returns Task, Task<T>, or ValueTask.
+Follow-up: What happens to the thread during await?
+Real-world: await httpClient.GetAsync(url) — releases thread to handle other requests while waiting for HTTP response.
+
+Q54. What is the difference between Task.Run() and Task.Factory.StartNew()?
+Answer: Task.Run is a simplified wrapper — uses ThreadPool, default scheduler, unwraps nested tasks. Task.Factory.StartNew has more options (scheduler, creation options, cancellation token) but requires explicit unwrapping for async lambdas.
+Follow-up: What is Task.Run vs async void?
+Real-world: Task.Run(() => heavyComputation()) offloads CPU work from UI/ASP.NET thread.
+
+Q55. What is ConfigureAwait(false)?
+Answer: By default, await captures the synchronization context and resumes on the same thread (important in UI/ASP.NET Framework). ConfigureAwait(false) skips context capture — more efficient in library code. In ASP.NET Core, there is no sync context, so it matters less.
+Follow-up: When should you NOT use ConfigureAwait(false)?
+Real-world: Library code awaiting HTTP calls — use ConfigureAwait(false) to avoid deadlocks in Framework callers.
+
+Q56. Explain the SOLID principles.
+Answer:
+S - Single Responsibility: A class should have only one reason to change.
+O - Open/Closed: Open for extension, closed for modification.
+L - Liskov Substitution: Derived types must be substitutable for base types.
+I - Interface Segregation: Clients should not depend on interfaces they don't use.
+D - Dependency Inversion: Depend on abstractions, not concretions.
+Follow-up: Give an example of violating LSP.
+Real-world: Square extending Rectangle breaks LSP because setting width also changes height.
+
+Q57. What is a closure in C#?
+Answer: A closure is a function that captures variables from its enclosing scope. In C#, lambda expressions can capture local variables, which are "closed over" — they live beyond the scope of the enclosing method because the delegate holds a reference.
+Follow-up: What is the common closure bug in loops?
+Real-world: Capturing loop variable i in a lambda — use int temp = i; to capture by value.
+
+Q58. What is covariance and contravariance?
+Answer: Covariance (out) allows using a more derived type where a base is expected: IEnumerable<Derived> is assignable to IEnumerable<Base>. Contravariance (in) allows using a base type where derived is expected: Action<Base> assignable to Action<Derived>.
+Follow-up: Which C# interfaces support covariance?
+Real-world: IEnumerable<Dog> assigned to IEnumerable<Animal> — covariance enables this.
+
+Q59. What is reflection?
+Answer: Reflection allows runtime inspection and manipulation of types, methods, properties, and attributes. System.Reflection namespace. Use Type.GetType(), GetMethods(), GetProperties(). Powerful but slow — cache reflected members.
+Follow-up: What are the performance implications of reflection?
+Real-world: AutoMapper uses reflection to map properties. Plugin architectures use reflection to load and invoke types.
+
+Q60. What are generics constraints?
+Answer: where T : class (reference type), where T : struct (value type), where T : new() (default constructor), where T : BaseClass (inheritance), where T : IInterface (contract), where T : unmanaged (C# 8, unmanaged type).
+Follow-up: Can you combine multiple constraints?
+Real-world: Generic repository: public class Repository<T> where T : class, IEntity, new()
+
+Q61. What is the difference between Func<T> and Action<T>?
+Answer: Func<T> represents a method that returns a value (last type parameter is return type). Action<T> represents a void method. Predicate<T> is a special case of Func<T, bool>.
+Follow-up: What is Expression<Func<T>>?
+Real-world: LINQ Where takes Func<T, bool> for in-memory, Expression<Func<T, bool>> for EF (translates to SQL).
+
+Q62. What are immutable types?
+Answer: Immutable types cannot be modified after creation. C# string is immutable. Create immutable classes by: readonly fields, private setters, no mutating methods. C# 9 records with init-only properties. Benefits: thread-safety, predictability.
+Follow-up: What is the difference between immutable and frozen objects?
+Real-world: public record Money(decimal Amount, string Currency) — immutable value object.
+
+Q63. What is thread safety and how do you achieve it?
+Answer: Thread-safe code produces correct results when accessed concurrently. Techniques: lock keyword (Monitor), Interlocked for atomic operations, ConcurrentDictionary/ConcurrentQueue, volatile for visibility, Mutex, Semaphore, ReaderWriterLockSlim.
+Follow-up: What is a race condition?
+Real-world: Incrementing a counter from multiple threads — use Interlocked.Increment() or lock.
+
+Q64. Explain the Garbage Collector generations.
+Answer: GC organizes objects into three generations: Gen0 (short-lived, collected frequently), Gen1 (survived one GC), Gen2 (long-lived, collected rarely). Large Object Heap (LOH) holds objects >= 85KB — collected with Gen2.
+Follow-up: What is GC pressure and how do you reduce it?
+Real-world: Reusing large arrays via ArrayPool<T> to avoid LOH allocations and Gen2 collections.
+
+Q65. What is the difference between shallow copy and deep copy in the context of serialization?
+Answer: Serialization-based deep copy: serialize to JSON/binary and deserialize back — simple but slow. Manual deep copy: create new instances and copy fields recursively — fast but tedious. For mutable complex graphs, explicit deep copy is usually necessary.
+Follow-up: What is BinaryFormatter and why is it deprecated?
+Real-world: Cloning entity for audit trail before modification — JSON round-trip is simplest.
+
+Q66. What are named tuples vs anonymous types?
+Answer: Anonymous types (new { Name = "Alice" }) are reference types, inferred at compile time, scope limited to method. Named tuples ((string Name, int Age)) are value types, can be returned from methods, have named members. Tuples are more flexible.
+Follow-up: Can you use anonymous types across methods?
+Real-world: Grouping LINQ results in a method and returning — named tuple is appropriate.
+
+Q67. What is the IComparable and IComparer interfaces?
+Answer: IComparable<T>.CompareTo() lets a type define its natural ordering. IComparer<T> is an external comparison strategy. Use IComparable for default sort; IComparer for alternate sort strategies (e.g., sort by name or by price).
+Follow-up: How does List<T>.Sort() use these?
+Real-world: Sorting products by multiple criteria — create PriceComparer : IComparer<Product>.
+
+Q68. What is a memory leak in C# and when can it occur?
+Answer: C# GC prevents classic leaks, but logical leaks occur: event subscriptions not removed (subscriber keeps publisher alive), static dictionaries holding objects, long-lived caches, unmanaged resources not disposed, closures capturing large objects.
+Follow-up: How do you use WeakReference to avoid memory leaks?
+Real-world: Event handler in UI — if subscriber doesn't unsubscribe, publisher keeps it alive forever.
+
+Q69. What are expression trees?
+Answer: Expression trees represent code as a tree of data (Expression<Func<T>>). They can be analyzed and compiled at runtime. EF Core translates them to SQL. LINQ providers use them to convert C# to query languages.
+Follow-up: How is Expression<Func<T>> different from Func<T>?
+Real-world: EF Core: where => where.Age > 18 is an expression tree translated to WHERE Age > 18 in SQL.
+
+Q70. What is the dynamic keyword?
+Answer: dynamic bypasses compile-time type checking — resolved at runtime via DLR (Dynamic Language Runtime). Useful for COM interop, JSON, and reflection-heavy code. No IntelliSense; runtime errors instead of compile-time.
+Follow-up: What is the performance cost of dynamic?
+Real-world: Reading JSON properties in older code: dynamic json = JsonConvert.DeserializeObject(str); json.Name.
+
+Q71. What is the difference between checked and unchecked?
+Answer: checked throws OverflowException on arithmetic overflow. unchecked (default) silently wraps around. Use checked when overflow indicates a bug; unchecked for performance in known-safe code.
+Follow-up: How do you enable checked globally?
+Real-world: checked { int result = int.MaxValue + 1; } — throws, prevents silent data corruption.
+
+Q72. What is a weak reference?
+Answer: WeakReference<T> lets you hold a reference to an object without preventing GC from collecting it. The object may be collected; use TryGetTarget() to check if still alive.
+Follow-up: What is the difference between WeakReference and WeakReference<T>?
+Real-world: Cache implementation — hold weak references to cached objects; GC can reclaim under pressure.
+
+Q73. What is operator overloading?
+Answer: Operator overloading allows defining custom behavior for operators (+, -, ==, etc.) for your types. Use public static ReturnType operator+(Type a, Type b). Only makes sense when semantics are intuitive.
+Follow-up: Which operators can NOT be overloaded?
+Real-world: Vector struct with + overloaded for vector addition: v1 + v2.
+
+Q74. What is the volatile keyword?
+Answer: volatile ensures that reads/writes to a field are not reordered by the compiler or CPU, and that all threads see the most recent value. Weaker than lock — no atomicity guarantee for compound operations.
+Follow-up: When is volatile insufficient?
+Real-world: private volatile bool _running; — simple flag read by multiple threads.
+
+Q75. What is a lazy initialization (Lazy<T>)?
+Answer: Lazy<T> defers creation of an expensive object until first use. Thread-safe by default. Access via .Value. Once initialized, returns the same instance.
+Follow-up: What are the thread-safety modes of Lazy<T>?
+Real-world: Lazy<HeavyService> — service created only if code path that needs it is actually reached.
+
+Q76. What is Span<T> and Memory<T>?
+Answer: Span<T> is a stack-only type representing a contiguous region of memory (array slice, stack memory, unmanaged). No heap allocation. Memory<T> is the heap-safe version. Both avoid copies for performance-critical code.
+Follow-up: Why can't Span<T> be used as a class field?
+Real-world: Parsing a byte stream — use Span<byte> to slice without allocating new arrays.
+
+Q77. What are nullable reference types (C# 8)?
+Answer: Nullable reference types add compile-time null-safety. Enabled with <Nullable>enable</Nullable>. string is non-nullable; string? is nullable. Compiler warns on potential null dereferences. Does not affect runtime.
+Follow-up: How do you handle migrating existing code to nullable reference types?
+Real-world: API parameter: string name (never null), string? description (optional). Catch null bugs at compile time.
+
+Q78. What are source generators?
+Answer: Source generators run during compilation and produce additional C# code. Roslyn-based. Used by EF Core (model snapshots), System.Text.Json (serialization), AutoMapper. No runtime reflection — zero-overhead generated code.
+Follow-up: How are source generators different from T4 templates?
+Real-world: System.Text.Json uses source generators to produce serialization code at compile time.
+
+Q79. What is the difference between ICollection<T> and IList<T>?
+Answer: ICollection<T> adds Count, Add, Remove, Contains to IEnumerable<T>. IList<T> adds index-based access (this[int], IndexOf, Insert, RemoveAt) to ICollection<T>. Use the least-specific interface that satisfies your needs.
+Follow-up: What does ReadOnlyCollection<T> give you?
+Real-world: Return IReadOnlyList<Order> from a repository — caller cannot modify the collection.
+
+Q80. Explain memory allocation for value types inside classes.
+Answer: When a value type (struct, int) is a field of a class, it is allocated inline on the heap as part of the class object. Stack allocation only occurs for local variables and method parameters. Boxing occurs when a value type is assigned to object or interface reference.
+Follow-up: What is the GC cost of boxing?
+Real-world: Dictionary<string, int> — int is stored inline in the value slot, no boxing.
+
+Q81. What is CancellationToken?
+Answer: CancellationToken enables cooperative cancellation of async operations. A CancellationTokenSource creates and controls the token. Pass the token to async methods; they check IsCancellationRequested or call ThrowIfCancellationRequested().
+Follow-up: What happens if you don't honor a cancellation token?
+Real-world: HTTP request handler — accept CancellationToken from Request.HttpContext.RequestAborted.
+
+Q82. What is the difference between Parallel.ForEach and async foreach?
+Answer: Parallel.ForEach uses multiple threads for CPU-bound work (data parallelism). async/await foreach (IAsyncEnumerable<T>) is for I/O-bound async streams. Don't use Parallel.ForEach with async lambdas — use Task.WhenAll instead.
+Follow-up: What is Parallel.For vs Parallel.ForEach?
+Real-world: Image processing — Parallel.ForEach to resize 1000 images using all CPU cores.
+
+Q83. What is the Observer pattern and how does C# events implement it?
+Answer: Observer pattern: subject (publisher) notifies observers (subscribers) of state changes. C# events are built-in observer implementation. event keyword wraps a delegate, restricts external +=/−= only, publisher-only raise.
+Follow-up: What are the pitfalls of C# events?
+Real-world: INotifyPropertyChanged — raises PropertyChanged event when ViewModel properties change.
+
+Q84. What is the Repository pattern?
+Answer: Repository abstracts data access logic behind an interface. Clients depend on IRepository<T> not on DbContext directly. Benefits: testability (mock repositories), separation of concerns, consistent data access API.
+Follow-up: What is the Unit of Work pattern?
+Real-world: IOrderRepository with Add, GetById, GetAll methods — SQL/InMemory implementations interchangeable.
+
+Q85. What is Dependency Injection (DI)?
+Answer: DI is passing dependencies into a class rather than creating them internally. Promotes loose coupling. ASP.NET Core has built-in IoC container. Register services as Transient (new each time), Scoped (per request), Singleton (application lifetime).
+Follow-up: What is the difference between constructor injection and property injection?
+Real-world: OrderService receives IOrderRepository via constructor — decoupled, testable with mocks.
+
+Q86. What is the difference between Transient, Scoped, and Singleton lifetimes?
+Answer: Transient: new instance every time requested. Scoped: same instance per HTTP request (web) or scope. Singleton: one instance for the app lifetime. Caution: injecting Transient into Singleton ("captive dependency") causes bugs.
+Follow-up: What is a "captive dependency"?
+Real-world: DbContext is typically Scoped — one per request to track changes correctly.
+
+Q87. What are IOptions<T>, IOptionsMonitor<T>, IOptionsSnapshot<T>?
+Answer: IOptions<T>: singleton, reads config once. IOptionsSnapshot<T>: scoped, reloads per request. IOptionsMonitor<T>: singleton with change notification. Use IOptionsMonitor<T> for background services that need live config updates.
+Follow-up: How do you validate options on startup?
+Real-world: Feature flags via IOptionsMonitor<T> — service reacts to config file changes without restart.
+
+Q88. What is middleware in ASP.NET Core?
+Answer: Middleware is a pipeline of components that handle HTTP requests and responses. Each component calls next() to pass to the next or short-circuits. Built-in: routing, auth, logging, CORS. Custom: implements Invoke(HttpContext, RequestDelegate).
+Follow-up: What is the order of middleware execution?
+Real-world: Request logging middleware — log before processing, log response after all other middleware.
+
+Q89. What is the difference between IActionResult and ActionResult<T>?
+Answer: IActionResult is the base interface — return any result type (Ok, NotFound, BadRequest). ActionResult<T> (ASP.NET Core 2.1+) allows returning T directly or an IActionResult — better for Swagger generation and type safety.
+Follow-up: What is ProducesResponseType attribute?
+Real-world: ActionResult<OrderDto> — either returns 200 with order or 404 — Swagger generates accurate schema.
+
+Q90. What is model validation in ASP.NET Core?
+Answer: Data annotations ([Required], [Range], [MaxLength]) on model properties. ModelState.IsValid checks validation. [ApiController] attribute automatically returns 400 for invalid models. Custom: IValidatableObject or FluentValidation.
+Follow-up: What is FluentValidation and when would you use it over data annotations?
+Real-world: OrderRequest validation — complex cross-field rules (if PaymentType == CreditCard, then CardNumber required).
+
+Q91. What is CORS and how do you configure it in ASP.NET Core?
+Answer: CORS (Cross-Origin Resource Sharing) controls which origins can call your API. Configured via builder.Services.AddCors() with policies. Applied globally (UseRouting/UseCors order matters) or per-controller with [EnableCors].
+Follow-up: What is the difference between simple and preflight CORS requests?
+Real-world: React SPA on localhost:3000 calling API on localhost:5000 — CORS policy needed.
+
+Q92. What is JWT authentication?
+Answer: JWT (JSON Web Token) is a stateless token containing header.payload.signature. ASP.NET Core: install Microsoft.AspNetCore.Authentication.JwtBearer, configure AddAuthentication+AddJwtBearer, use [Authorize] attribute. Validate signature, expiry, issuer, audience.
+Follow-up: What is the difference between authentication and authorization?
+Real-world: User logs in → receives JWT → sends JWT in Authorization header → API validates → grants access.
+
+Q93. What is Entity Framework Core change tracking?
+Answer: EF Core tracks entities in four states: Added, Modified, Deleted, Unchanged. DbContext.ChangeTracker records changes. SaveChanges() generates SQL based on state. AsNoTracking() disables tracking for read-only queries (performance).
+Follow-up: What are the dangers of attaching entities to multiple contexts?
+Real-world: Admin dashboard read-only queries — use AsNoTracking() for 30% performance improvement.
+
+Q94. What is a migration in EF Core?
+Answer: Migrations are code files that represent incremental database schema changes. Add-Migration creates a migration class with Up() and Down() methods. Update-Database applies migrations. MigrationHistory table tracks applied migrations.
+Follow-up: How do you handle migrations in production?
+Real-world: Adding a new column via Add-Migration AddOrderStatus; Update-Database — EF generates ALTER TABLE.
+
+Q95. What is lazy loading vs eager loading in EF Core?
+Answer: Lazy loading: related data loaded on first access (requires proxies, N+1 risk). Eager loading: Include() fetches related data in single query. Explicit loading: Load() fetches on demand. Prefer eager loading for known required data.
+Follow-up: What is the N+1 query problem?
+Real-world: Loading orders with customers — without Include(o => o.Customer): N+1 queries. With Include: 1 query.
+
+Q96. What is caching and how do you implement it in ASP.NET Core?
+Answer: Caching stores computed results to avoid recomputation. In-memory: IMemoryCache (single server). Distributed: IDistributedCache with Redis (multi-server). Response caching: cache entire HTTP responses. Cache-aside pattern is most common.
+Follow-up: What is cache eviction policy?
+Real-world: Product catalog — cache in Redis with 5-minute sliding expiration; on update, invalidate cache key.
+
+Q97. What is the difference between AddDbContext and AddDbContextFactory?
+Answer: AddDbContext: one DbContext per scope (HTTP request). AddDbContextFactory: creates contexts on demand — useful for background services, Blazor, or when you need multiple contexts per scope.
+Follow-up: Why is DbContext not thread-safe?
+Real-world: Background job service using IDbContextFactory to create a new context for each batch.
+
+Q98. What are indexes in SQL Server and how do EF Core fluent APIs configure them?
+Answer: Clustered index (one per table, physical row order), non-clustered (separate B-tree). EF Core: modelBuilder.Entity<Order>().HasIndex(o => o.CustomerId) creates non-clustered index. Include columns for covering indexes.
+Follow-up: What is an index covering query?
+Real-world: Index on Orders.CustomerId for customer order lookup — prevents full table scan.
+
+Q99. What is AutoMapper and when would you use it?
+Answer: AutoMapper maps properties from one object to another (entity to DTO and vice versa). Reduces boilerplate mapping code. Configure with CreateMap<Source, Dest>(). Use ProjectTo<T>() for EF queries to avoid loading unnecessary columns.
+Follow-up: What are the drawbacks of AutoMapper?
+Real-world: OrderEntity → OrderDto mapping — keeps API contract separate from database model.
+
+Q100. What is MediatR and CQRS?
+Answer: MediatR is a mediator library implementing CQRS (Commands/Queries sent through IMediator.Send()). Commands change state; Queries return data. Decouples sender from handler. Supports pipeline behaviors for cross-cutting concerns (logging, validation).
+Follow-up: What is the difference between MediatR and a service layer?
+Real-world: CreateOrderCommand → CreateOrderCommandHandler — handler validates, saves, raises domain event.
+
+--------------------------------------------------------------------
+ADVANCED QUESTIONS (101-150)
+--------------------------------------------------------------------
+
+Q101. How does the CLR JIT compiler work?
+Answer: CLR compiles IL (Intermediate Language) to native machine code at runtime via JIT (Just-In-Time) compilation. First call to a method triggers JIT; subsequent calls use cached native code. RyuJIT is the current JIT for .NET. .NET 6+ includes tiered compilation: initially interpreted or tier-0 JIT, then optimized tier-1 JIT for hot methods.
+Follow-up: What is ahead-of-time (AOT) compilation in .NET?
+Real-world: .NET Native for UWP, NativeAOT in .NET 7+, ReadyToRun — reduce startup time.
+
+Q102. Explain the .NET memory model and CPU cache coherency.
+Answer: .NET memory model defines rules for how threads observe memory writes. volatile, Interlocked, lock, and Thread.MemoryBarrier() create memory barriers (fences) that prevent compiler/CPU reordering. Needed because CPUs have private caches; writes may not be immediately visible to other cores.
+Follow-up: What is the difference between acquire and release semantics?
+Real-world: Lock-free data structures — release fence after write, acquire fence before read.
+
+Q103. What is the difference between Monitor, Mutex, and Semaphore?
+Answer: Monitor (lock keyword): fast, in-process, single thread at a time. Mutex: OS-level, cross-process synchronization, slower. Semaphore/SemaphoreSlim: allows N concurrent threads. SemaphoreSlim supports async (WaitAsync). Use Monitor for intra-process; Mutex for cross-process.
+Follow-up: What is Monitor.TryEnter used for?
+Real-world: SemaphoreSlim(10) to limit concurrent external API calls to 10 at a time.
+
+Q104. What is unsafe code in C#?
+Answer: unsafe blocks allow pointer arithmetic, direct memory access, and interfacing with unmanaged code. Enabled with AllowUnsafeBlocks compiler option. Requires pinning managed objects with fixed statement to prevent GC from moving them during pointer operations.
+Follow-up: What is the fixed statement and when do you need it?
+Real-world: High-performance image processing — directly manipulate pixel bytes via pointer for orders-of-magnitude speedup.
+
+Q105. Explain how EF Core query translation works.
+Answer: EF Core uses IQueryable<T> with LINQ expression trees. QueryTranslationPreprocessor normalizes expressions. RelationalQueryTranslatingExpressionVisitor converts to relational expression. SqlExpressionFactory generates SQL AST. IQuerySqlGenerator renders final SQL string with parameters.
+Follow-up: What are the limitations of EF Core query translation?
+Real-world: Complex LINQ that can't be translated — AsEnumerable() to bring into memory, then filter.
+
+Q106. What is the garbage collector's tri-color marking algorithm?
+Answer: The GC uses tri-color marking: White (not yet visited — candidates for collection), Gray (discovered but children not yet processed), Black (fully processed — referenced by roots). Starts from roots (stack, statics), marks reachable objects. White objects remaining after traversal are garbage.
+Follow-up: What is the write barrier in GC?
+Real-world: Understanding card tables and write barriers helps diagnose GC pauses in high-throughput services.
+
+Q107. What is a lock-free data structure?
+Answer: Lock-free structures use atomic operations (Interlocked.CompareExchange) instead of locks. No thread blocks — threads retry on contention. ConcurrentQueue<T>, ConcurrentStack<T> use lock-free algorithms internally. Harder to implement correctly; avoid unless profiling shows lock contention.
+Follow-up: What is the ABA problem?
+Real-world: High-frequency trading — ConcurrentQueue for order events to avoid lock overhead.
+
+Q108. What is the difference between IAsyncEnumerable<T> and Task<IEnumerable<T>>?
+Answer: Task<IEnumerable<T>>: completes when all data is available — buffered in memory. IAsyncEnumerable<T>: streams items one at a time asynchronously — lower memory, faster first-item latency. Use with await foreach. EF Core 3+ supports IAsyncEnumerable.
+Follow-up: How does backpressure work with IAsyncEnumerable?
+Real-world: Streaming 1M database rows — IAsyncEnumerable processes row-by-row, not loading all into RAM.
+
+Q109. Explain the ASP.NET Core request pipeline internals.
+Answer: Kestrel (or IIS) receives socket data, passes to HttpContext. Middleware pipeline processes in registration order. Endpoint routing matches URL to controller/action. Model binding, action filters, action execution, result filters, exception filters. Response written back through the pipeline.
+Follow-up: What is the difference between middleware and action filters?
+Real-world: Auth middleware runs before routing; action filters run around controller actions only.
+
+Q110. What is gRPC and when would you use it over REST?
+Answer: gRPC uses HTTP/2 and Protocol Buffers (binary serialization). Faster than JSON REST (binary + multiplexing). Supports streaming (server, client, bidirectional). Use when: inter-service communication, performance-critical, streaming needed. Not browser-friendly without grpc-web.
+Follow-up: What is Protocol Buffers and how does it differ from JSON?
+Real-world: Microservice-to-microservice communication — gRPC reduces payload size and latency vs REST/JSON.
+
+Q111. What is SignalR and WebSockets?
+Answer: WebSocket: full-duplex persistent TCP connection over HTTP port. SignalR is ASP.NET Core library abstracting WebSockets, Server-Sent Events, Long Polling. Supports Hubs (RPC-like) and groups. Use for real-time features: chat, live dashboards, notifications.
+Follow-up: What is the difference between Hub and persistent connection in SignalR?
+Real-world: Live driver status dashboard — SignalR pushes updates to all connected browsers instantly.
+
+Q112. What is source-generated serialization in System.Text.Json?
+Answer: C# source generators create serialization code at compile time via [JsonSourceGenerationOptions] and JsonSerializerContext. Eliminates runtime reflection — faster startup, better AOT compatibility, reduced allocations. Required for NativeAOT scenarios.
+Follow-up: What are the trade-offs of source-generated vs reflection-based serialization?
+Real-world: High-throughput API serializing millions of responses — source-generated JSON is 2-3x faster.
+
+Q113. Explain the Channel<T> data structure.
+Answer: System.Threading.Channels.Channel<T> is a thread-safe producer-consumer queue. CreateBounded (backpressure) or CreateUnbounded. ChannelWriter<T> for producers, ChannelReader<T> for consumers. Supports async reading/writing. More efficient than BlockingCollection<T> for async scenarios.
+Follow-up: When would you use Channel<T> vs ConcurrentQueue<T>?
+Real-world: Log aggregation pipeline — producers write log entries, consumer batches writes to disk.
+
+Q114. What is the actor model and how can it be applied in C#?
+Answer: Actor model: each actor is an isolated unit with its own state, communicating only via messages. No shared state — eliminates locks. In C#: Orleans (virtual actors/grains), Akka.NET. Actors process one message at a time, no concurrency within actor.
+Follow-up: What is Microsoft Orleans?
+Real-world: Online game server — each player is an Orleans grain with own state, handling events sequentially.
+
+Q115. What is the difference between SemaphoreSlim and RateLimiter (ASP.NET Core 7)?
+Answer: SemaphoreSlim controls concurrent access count. System.Threading.RateLimiting (ASP.NET Core 7) provides: TokenBucketRateLimiter (burst), FixedWindowRateLimiter, SlidingWindowRateLimiter, ConcurrencyLimiter. RateLimiter is more expressive and designed for API rate limiting.
+Follow-up: How do you implement per-user rate limiting?
+Real-world: API gateway — RateLimiter.AcquireAsync() before forwarding external requests.
+
+Q116. What is the MemoryMarshal class and how is it used?
+Answer: MemoryMarshal (System.Runtime.InteropServices) provides zero-copy reinterpretation of memory: MemoryMarshal.Cast<byte, int> reinterprets byte span as int span without copying. GetReference() gets a managed pointer to span start. Used for high-performance binary parsing.
+Follow-up: What are the safety considerations with MemoryMarshal?
+Real-world: Network packet parsing — reinterpret byte buffer as struct layout without copying.
+
+Q117. Explain how EF Core handles concurrency conflicts.
+Answer: Optimistic concurrency: add [ConcurrencyCheck] or rowversion/timestamp column. EF Core generates WHERE clause including the original value. If row changed by another transaction, SaveChanges() throws DbUpdateConcurrencyException. Retry with refreshed values or report conflict.
+Follow-up: What is pessimistic concurrency?
+Real-world: Two users editing same order — rowversion prevents silent data overwrite; user shown "record was modified."
+
+Q118. What are IHostedService and BackgroundService?
+Answer: IHostedService defines Start/Stop for background work. BackgroundService is a base class implementing IHostedService with an ExecuteAsync(CancellationToken) method. Register with AddHostedService<T>(). Runs alongside the web server. Use for polling, message consuming, scheduled tasks.
+Follow-up: What is the Quartz.NET alternative?
+Real-world: Order status sync background service — runs every minute, fetches shipping API, updates database.
+
+Q119. What is the difference between throw and ExceptionDispatchInfo.Capture().Throw()?
+Answer: throw; rethrows preserving stack trace. ExceptionDispatchInfo.Capture(ex).Throw() rethrows with original stack trace even from a different location/thread. Useful when catching an exception, storing it, and rethrowing from a different async context.
+Follow-up: When does await lose the original exception stack trace?
+Real-world: Aggregating exceptions from parallel tasks — preserve original stack trace when rethrowing.
+
+Q120. What is Roslyn and how can you write code analyzers?
+Answer: Roslyn is the .NET compiler platform with public APIs for syntax trees, semantic models, and symbol analysis. Write DiagnosticAnalyzers to report code issues at compile time. CodeFixProviders suggest fixes. Deployed as NuGet packages. StyleCop, Roslynator are examples.
+Follow-up: What is a syntax tree in Roslyn?
+Real-world: Enforce company coding standards — analyzer warns when async methods don't have Async suffix.
+
+Q121. What is the difference between ValueTask and Task?
+Answer: Task always allocates heap memory. ValueTask avoids allocation when result is already available (synchronously completed path). Use ValueTask for hot paths where most calls complete synchronously. Don't await ValueTask more than once; don't cache unless converting to Task.
+Follow-up: What is PooledValueTask?
+Real-world: High-frequency cache lookup — ValueTask<T> returns cached value synchronously without allocation.
+
+Q122. What is the purpose of [SkipLocalsInit] attribute?
+Answer: By default, .NET zero-initializes stack-allocated memory. [SkipLocalsInit] (requires unsafe) skips this initialization for performance in tight loops. Risky — read uninitialized memory. Use only in well-analyzed hot paths. Introduced in C# 9.
+Follow-up: What other low-level attributes affect codegen?
+Real-world: Parsing millions of network packets — avoid zero-init cost for temporary buffers.
+
+Q123. Explain how P/Invoke works.
+Answer: P/Invoke (Platform Invocation Services) allows calling native DLL functions from C#. [DllImport("kernel32.dll")] attribute on extern method declaration. Marshaler converts .NET types to native types automatically or via custom MarshalAs attributes. Calling convention, entry point, charset configurable.
+Follow-up: What is the LibraryImport attribute (C# 11)?
+Real-world: Call WinAPI CreateFile for low-level file access not exposed by .NET BCL.
+
+Q124. What is the difference between Thread.Abort() and CancellationToken?
+Answer: Thread.Abort() (deprecated in .NET Core) throws ThreadAbortException anywhere — unsafe, leaves resources uncleaned, unpredictable. CancellationToken is cooperative — code checks voluntarily. Cannot force cancellation but respects resource cleanup and exception safety.
+Follow-up: Why was Thread.Abort removed in .NET Core?
+Real-world: Long-running database query — pass CancellationToken; query checks at safe yield points.
+
+Q125. What is tiered compilation in .NET?
+Answer: Tiered compilation improves startup time by initially using fast, unoptimized code (Tier-0) and later recompiling hot methods with full optimizations (Tier-1) in background. Profile-guided optimization (PGO) in .NET 6+ further improves by optimizing based on actual runtime behavior.
+Follow-up: What is Dynamic PGO in .NET 6+?
+Real-world: ASP.NET Core startup — tiered compilation lets the process start fast, optimize hot paths later.
+
+Q126. Explain the concept of phantom reads, dirty reads, and non-repeatable reads.
+Answer: Dirty read: read uncommitted data. Non-repeatable read: read same row twice, get different values (another transaction modified it). Phantom read: query returns different rows because another transaction inserted/deleted rows matching criteria. SQL isolation levels address these.
+Follow-up: What isolation levels does SQL Server support?
+Real-world: Inventory system — phantom reads cause over-selling; SERIALIZABLE or SNAPSHOT prevents it.
+
+Q127. What is CQRS and how does it scale?
+Answer: CQRS separates command (write) and query (read) models. Command side: handles writes, strong consistency. Query side: denormalized read models, eventually consistent. Scales independently — read replicas for queries, write primary for commands. Event sourcing often paired with CQRS.
+Follow-up: What are the downsides of CQRS?
+Real-world: E-commerce: writes go to SQL Server; reads from Elasticsearch read model — 10x query performance.
+
+Q128. What is event sourcing?
+Answer: Event sourcing stores all state changes as immutable events. Current state = replay of all events. Benefits: complete audit trail, time travel (replay to any point), event-driven integration. Challenges: eventual consistency, schema evolution, projection performance.
+Follow-up: What is a projection in event sourcing?
+Real-world: Bank account — store Deposited, Withdrawn events rather than current balance; replay for balance.
+
+Q129. What is the difference between optimistic and pessimistic locking at the application level?
+Answer: Optimistic: read data, process, check at save time if data was changed (rowversion). No lock held during processing — good for low-contention. Pessimistic: lock row at read time (SELECT FOR UPDATE / UPDLOCK) — hold lock until save. Good for high-contention, but reduces concurrency.
+Follow-up: What is SNAPSHOT isolation in SQL Server?
+Real-world: High-concurrency ticket booking — optimistic concurrency prevents double booking without lock contention.
+
+Q130. What are common performance anti-patterns in C#?
+Answer: String concatenation in loops (use StringBuilder). Select N+1 in EF (use Include). Synchronous I/O in async context. Boxing/unboxing in hot paths. Unnecessary ToList() on IQueryable. Not using IAsyncEnumerable for large result sets. Holding locks too long. Missing indexes. Reflection in hot paths.
+Follow-up: How do you profile a .NET application?
+Real-world: API response time increased — profile with dotnet-trace, find 80% time in string formatting.
+
+Q131. What is a memory pool (ArrayPool<T>)?
+Answer: ArrayPool<T>.Shared.Rent(minLength) returns a pooled array from a shared pool. Return with Return(array). Avoids repeated heap allocations for temporary buffers. Critical for high-throughput scenarios to reduce GC pressure.
+Follow-up: What is MemoryPool<T>?
+Real-world: Network protocol parsing — rent byte arrays for each packet, return after processing.
+
+Q132. What is the difference between abstract factory and factory method patterns?
+Answer: Factory Method: defines an interface for creating an object but lets subclasses decide which class to instantiate. Abstract Factory: provides interface for creating families of related objects. Abstract Factory uses composition; Factory Method uses inheritance.
+Follow-up: When would you prefer one over the other?
+Real-world: Abstract Factory: UI toolkit factory for Windows/Linux (Button, ScrollBar families). Factory Method: Logger factory (FileLogger, ConsoleLogger).
+
+Q133. What is the Decorator pattern and how does ASP.NET Core middleware use it?
+Answer: Decorator wraps an object with additional behavior without modifying it, implementing the same interface. ASP.NET Core middleware is a form of decorator — each middleware wraps the next, adding request/response processing. Also used in retry policies, logging, caching wrappers.
+Follow-up: How does Scrutor library simplify decorator registration in .NET DI?
+Real-world: CachingRepository wraps Repository — adds caching without modifying Repository.
+
+Q134. What is the Strategy pattern?
+Answer: Strategy defines a family of algorithms, encapsulates each, and makes them interchangeable. Clients select strategy at runtime. Eliminates conditionals. Common in sorting, payment processing, compression.
+Follow-up: How does the Strategy pattern relate to Func<T>?
+Real-world: PaymentService with IPaymentStrategy — CreditCard, PayPal, Crypto strategies swappable.
+
+Q135. What is the Builder pattern?
+Answer: Builder separates complex object construction from its representation. A Builder class has methods for each part; Build() returns the final object. Enables step-by-step construction with validation. Common in test data, HTTP client configuration, query builders.
+Follow-up: What is a fluent builder?
+Real-world: IHostBuilder in ASP.NET Core — chain ConfigureServices, Configure, UseKestrel.
+
+Q136. What is Circuit Breaker pattern?
+Answer: Prevents cascade failures by monitoring failures. States: Closed (normal, calls pass through), Open (failure threshold exceeded, calls fail fast), Half-Open (trial call to test recovery). Polly library implements Circuit Breaker for .NET.
+Follow-up: What is the difference between Retry and Circuit Breaker?
+Real-world: External payment API circuit breaker — after 5 failures, reject calls for 30 seconds without hitting API.
+
+Q137. What is Polly and resilience in .NET?
+Answer: Polly is a .NET resilience library. Policies: Retry (with backoff), Circuit Breaker, Timeout, Bulkhead (concurrent call limit), Fallback, Hedging. Microsoft.Extensions.Resilience in .NET 8 wraps Polly. Combine policies with PolicyWrap.
+Follow-up: What is exponential backoff with jitter?
+Real-world: HTTP client calling external API — Retry(3) with exponential backoff + circuit breaker + timeout.
+
+Q138. What is the difference between synchronous and asynchronous exceptions?
+Answer: Synchronous exceptions propagate through call stack normally. Async exceptions are stored in the Task. When you await the task, they are re-thrown. Unobserved task exceptions (not awaited, Task not checked) trigger TaskScheduler.UnobservedTaskException. Always await or handle all tasks.
+Follow-up: What is AggregateException in TPL?
+Real-world: Task.WhenAll — all exceptions collected in AggregateException; iterate InnerExceptions to handle each.
+
+Q139. What is a domain event and how does it differ from an integration event?
+Answer: Domain event: within a bounded context, raised by domain model, processed in-process (synchronously in same transaction or via in-process mediator). Integration event: crosses bounded context boundaries, typically via message bus (async, durable). Both implement event-driven patterns.
+Follow-up: How do you implement domain events with MediatR?
+Real-world: OrderPlaced domain event → triggers inventory reservation in same transaction. Integration event → notifies shipping service via RabbitMQ.
+
+Q140. What is the Outbox pattern?
+Answer: Outbox pattern ensures at-least-once delivery of integration events. Instead of publishing directly to message bus (two-phase commit problem), save event to Outbox table in same database transaction. A background process polls Outbox and publishes to bus, then marks as published.
+Follow-up: How does Wolverine or MassTransit implement the Outbox pattern?
+Real-world: Order service saves order + publishes OrderCreated to Outbox atomically — no lost events.
+
+Q141. What is a saga in microservices?
+Answer: Saga manages distributed transactions via a sequence of local transactions. Choreography: each service publishes events that trigger next step. Orchestration: central orchestrator tells each service what to do. Both handle rollback via compensating transactions.
+Follow-up: What is the difference between choreography and orchestration sagas?
+Real-world: Order fulfillment saga: Reserve Inventory → Charge Payment → Ship Order — each step compensatable.
+
+Q142. What is HATEOAS in REST API design?
+Answer: HATEOAS (Hypermedia as the Engine of Application State) — API responses include links to related actions/resources. Client discovers actions dynamically; no hardcoded URLs. True REST Level 3. Rarely implemented fully in practice.
+Follow-up: What are the Richardson Maturity Model levels?
+Real-world: Order response includes links: rel=cancel href=/orders/1/cancel, rel=ship href=/orders/1/ship.
+
+Q143. What is OpenTelemetry and how does it differ from legacy monitoring?
+Answer: OpenTelemetry is a vendor-neutral standard for traces, metrics, and logs. Three pillars: traces (distributed request tracking), metrics (quantitative measurements), logs (events). Exporters send to Jaeger, Prometheus, Datadog, etc. Replaces app-specific instrumentation.
+Follow-up: What is a distributed trace span?
+Real-world: Request from React → API → EF Core → SQL → external API — single trace shows full path and timing.
+
+Q144. What is the difference between push and pull metrics in Prometheus/OpenTelemetry?
+Answer: Push: application sends metrics to collector actively. Pull: Prometheus scrapes /metrics endpoint. OpenTelemetry Collector bridges both. Push is simpler for containerized apps; pull is more Prometheus-native and reduces coupling.
+Follow-up: What is a histogram metric type?
+Real-world: API latency histogram — measure request duration distribution, compute P50/P95/P99.
+
+Q145. What are primary constructors in C# 12?
+Answer: Primary constructors allow constructor parameters directly on the class declaration: class OrderService(IOrderRepository repo). Parameters are in scope throughout the class. Reduces boilerplate for simple classes. Note: parameters are captured as fields implicitly when used in instance methods.
+Follow-up: How do primary constructors interact with DI?
+Real-world: class ProductService(IProductRepository repo, ILogger<ProductService> logger) — clean DI syntax.
+
+Q146. What is collection expressions in C# 12?
+Answer: Collection expressions use [] syntax to create lists, arrays, spans, and other collections uniformly: int[] arr = [1, 2, 3]. Spread operator .. embeds another collection: [..existing, 4, 5]. Compiler chooses most efficient implementation.
+Follow-up: How does the spread operator work?
+Real-world: List<int> combined = [..listA, ..listB, 0] — clean, efficient collection creation.
+
+Q147. What is Interceptors in C# 12?
+Answer: Interceptors are a preview feature allowing source generators to redirect method calls to a different method. Applied by specifying file path and line/column of call site. Enables zero-overhead aspect-like behavior. Used internally by EF Core for query interception.
+Follow-up: How do interceptors relate to source generators?
+Real-world: EF Core 8 uses interceptors to redirect LINQ calls to source-generated materializers.
+
+Q148. What is the difference between IClonable and copy constructors for cloning?
+Answer: ICloneable is ambiguous (shallow or deep not specified) and returns object (unsafe). Prefer: copy constructors (new Order(existingOrder)), IDeepCloneable<T> custom interface, or with expression for records. Records provide with for non-destructive mutation out of the box.
+Follow-up: How does the with expression work for records?
+Real-world: var updated = order with { Status = OrderStatus.Shipped } — immutable update without full copy code.
+
+Q149. What is the managed thread abort issue and how is it solved in modern .NET?
+Answer: Thread.Abort() could inject ThreadAbortException at arbitrary points — corrupting state, bypassing finally blocks. .NET Core removed it (throws PlatformNotSupportedException). Solution: cooperative cancellation via CancellationToken, or structured concurrency patterns.
+Follow-up: How do you timeout a synchronous operation in .NET Core?
+Real-world: CancellationTokenSource(TimeSpan.FromSeconds(5)) + cooperative checks in the sync loop.
+
+Q150. What is the difference between Process and AppDomain isolation?
+Answer: AppDomain (deprecated in .NET Core) provided in-process isolation in .NET Framework for plugin systems. .NET Core/5+ removed multi-AppDomain — single AppDomain per process. Use AssemblyLoadContext for plugin isolation now. Full process isolation gives true memory separation.
+Follow-up: What is AssemblyLoadContext used for?
+Real-world: Plugin architecture — load each plugin in separate AssemblyLoadContext; unload without affecting host.
+
+
+==================================================================

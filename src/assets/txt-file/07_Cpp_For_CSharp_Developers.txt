@@ -1,0 +1,372 @@
+SECTION 7: C++ FOR C# DEVELOPERS
+==================================================================
+
+--------------------------------------------------------------------
+OVERVIEW: C# DEVELOPER'S GUIDE TO C++
+--------------------------------------------------------------------
+
+KEY DIFFERENCES AT A GLANCE
+Feature             | C#                         | C++
+--------------------|----------------------------|-----------------------------
+Memory management   | Automatic GC               | Manual (new/delete) or smart pointers
+Compilation         | IL → JIT native            | Direct to native code
+Null safety         | Nullable<T>, ? operator    | Raw pointers, undefined behavior on null
+Undefined behavior  | None (managed)             | Extensive (UB is a real concern)
+Header files        | Not needed                 | .h declaration + .cpp definition
+Build system        | MSBuild/dotnet CLI         | Make, CMake, Ninja
+Runtime             | .NET CLR                   | None (or C runtime library)
+Templates           | Generics (runtime)         | Templates (compile-time, more powerful)
+String type         | System.String (class)      | std::string or C-style char*
+Inheritance         | Single (class), multiple   | Full multiple inheritance
+                    | (interface)                |
+
+POINTERS vs REFERENCES
+----
+
+Pointers (C++):
+int x = 10;
+int* p = &x;  // p holds address of x
+*p = 20;      // dereference: sets x to 20
+p = nullptr;  // null pointer
+
+References (C++):
+int x = 10;
+int& ref = x;  // ref IS x (alias, not a copy)
+ref = 20;      // sets x to 20
+// References cannot be null, cannot be reassigned
+
+C# equivalent:
+- C++ pointer ≈ C# unsafe pointer or ref parameter (loosely)
+- C++ reference ≈ C# `ref` parameter or class (reference type) variable
+
+MEMORY MANAGEMENT
+----
+
+Heap allocation:
+int* p = new int(42);    // allocate
+delete p;                 // MUST free or memory leak
+p = nullptr;              // good practice
+
+Array:
+int* arr = new int[100];
+delete[] arr;             // MUST use delete[], not delete
+
+No GC in C++ — every new must be matched with delete!
+
+SMART POINTERS (Modern C++)
+----
+
+unique_ptr<T>: sole owner — automatic delete on scope exit. Like C# using with owned resource.
+#include <memory>
+std::unique_ptr<Order> order = std::make_unique<Order>(id);
+// Automatically deleted when order goes out of scope
+
+shared_ptr<T>: reference-counted shared ownership. Like Java/C# reference semantics.
+std::shared_ptr<Customer> cust = std::make_shared<Customer>(name);
+auto cust2 = cust;  // Both own it; deleted when last shared_ptr destroyed
+
+weak_ptr<T>: non-owning reference to shared_ptr managed object. Prevents circular reference.
+std::weak_ptr<Customer> weakRef = cust;
+
+RAII (Resource Acquisition Is Initialization):
+Resource acquired in constructor, released in destructor. Smart pointers implement RAII.
+Like C# IDisposable with using, but automatic — destructor called when scope exits.
+
+TEMPLATES (C++ Generics)
+----
+
+Template function:
+template<typename T>
+T Max(T a, T b) { return a > b ? a : b; }
+int m = Max<int>(3, 5);  // or Max(3, 5) — compiler deduces T
+
+Template class:
+template<typename T>
+class Stack {
+    std::vector<T> items;
+public:
+    void push(const T& item) { items.push_back(item); }
+    T pop() { T top = items.back(); items.pop_back(); return top; }
+};
+
+Key difference from C# generics:
+- C# generics: single compiled version, runtime type info, constraints
+- C++ templates: instantiated separately for each type (compile-time), more powerful but larger binary
+
+STL (Standard Template Library)
+----
+
+Containers:
+std::vector<T> — dynamic array (like List<T>)
+std::map<K,V> — sorted key-value (like SortedDictionary<K,V>)
+std::unordered_map<K,V> — hash map (like Dictionary<K,V>)
+std::list<T> — doubly linked list
+std::set<T> — sorted unique elements
+std::queue<T>, std::stack<T>, std::deque<T>
+
+Algorithms (like LINQ but function-based):
+#include <algorithm>
+std::sort(vec.begin(), vec.end());
+auto it = std::find_if(vec.begin(), vec.end(), [](int x){ return x > 5; });
+std::transform(vec.begin(), vec.end(), out.begin(), [](int x){ return x * 2; });
+
+Iterators: like C# IEnumerator; begin()/end() return iterators.
+
+MULTITHREADING IN C++
+----
+
+#include <thread>
+#include <mutex>
+#include <atomic>
+#include <future>
+
+Thread:
+std::thread t([]{ /* work */ });
+t.join();  // Wait for thread; MUST join or detach (else terminate)
+
+Mutex:
+std::mutex mtx;
+{
+    std::lock_guard<std::mutex> lock(mtx);  // RAII lock (like C# lock{})
+    // critical section
+}
+
+Atomic:
+std::atomic<int> counter = 0;
+counter++;  // atomic, thread-safe (like Interlocked.Increment)
+
+Future/Promise (like C# Task):
+std::future<int> f = std::async(std::launch::async, []{ return compute(); });
+int result = f.get();  // wait and get result
+
+--------------------------------------------------------------------
+C++ INTERVIEW QUESTIONS FOR C# DEVELOPERS (75)
+--------------------------------------------------------------------
+
+Q1. What is the difference between C++ and C# at a fundamental level?
+Answer: C++ compiles to native machine code directly; no runtime required (or minimal C runtime). No garbage collector — manual memory management. No bounds checking by default. Closer to hardware — used for OS, drivers, games, embedded. C# has CLR safety net; C++ has raw performance and control.
+
+Q2. What is a pointer in C++?
+Answer: A variable holding the memory address of another variable. Declare: int* p = &x. Dereference: *p. Pointer arithmetic: p++ moves to next element. Dangling pointers (pointing to freed memory) cause undefined behavior.
+
+Q3. What is a reference in C++?
+Answer: An alias for another variable — syntactic sugar for pointer. Must be initialized at declaration. Cannot be null. Cannot be rebound. Better than pointers for function parameters: void Process(Order& order) — modifies original.
+
+Q4. What is the difference between pass by value, pointer, and reference in C++?
+Answer: By value: copy — original unaffected. By pointer (void f(int* p)): caller passes address, function modifies via *p. By reference (void f(int& r)): alias — function modifies original. Prefer references over pointers for parameters.
+
+Q5. What is new and delete in C++?
+Answer: new allocates heap memory and calls constructor. delete deallocates and calls destructor. new[] for arrays, delete[] for arrays. Not matching causes undefined behavior. Modern C++ uses smart pointers instead.
+
+Q6. What is a destructor?
+Answer: Special member function called when object is destroyed. ~ClassName(). Releases resources (memory, file handles, locks). Called automatically at end of scope (stack objects) or when delete is called (heap objects). C# analog: finalizer (~T()) but destructors in C++ are deterministic.
+
+Q7. What is the Rule of Three/Five/Zero?
+Answer: Rule of Three: if you define destructor, copy constructor, or copy assignment operator, define all three. Rule of Five (C++11): add move constructor and move assignment. Rule of Zero: use smart pointers and STL; compiler-generated defaults suffice.
+
+Q8. What is a copy constructor?
+Answer: Creates a new object as a copy of an existing one. MyClass(const MyClass& other). Called when object passed by value, returned by value, or explicitly copied. Default: shallow copy. If class owns heap memory, implement deep copy.
+
+Q9. What is a move constructor (C++11)?
+Answer: Creates object by moving resources from an rvalue. MyClass(MyClass&& other) noexcept. Transfers ownership instead of copying — no allocation. std::vector resize uses move constructors. std::move() converts lvalue to rvalue.
+
+Q10. What is RAII?
+Answer: Resource Acquisition Is Initialization — acquire resource in constructor, release in destructor. Object lifetime manages resource lifetime. Examples: std::unique_ptr, std::lock_guard, std::fstream. Like C# IDisposable with using, but automatic.
+
+Q11. What is a smart pointer?
+Answer: Wrapper around raw pointer that manages lifetime. unique_ptr (sole ownership), shared_ptr (shared ownership via ref count), weak_ptr (non-owning). Prevent memory leaks and dangling pointers. Preferred over raw pointers in modern C++.
+
+Q12. What is unique_ptr?
+Answer: Sole ownership of a heap object. Automatically deletes on destruction (RAII). Cannot be copied — only moved. make_unique<T>(args) is the factory. Transfers ownership with std::move(ptr).
+
+Q13. What is shared_ptr?
+Answer: Shared ownership — reference counted. Copies increment count; destructions decrement. Deletes when count reaches 0. make_shared<T>(args). Overhead: atomic ref count. Circular references cause leaks — use weak_ptr to break cycles.
+
+Q14. What is weak_ptr?
+Answer: Non-owning reference to shared_ptr-managed object. Does not increment reference count. lock() returns shared_ptr (empty if object deleted). Used for: cache entries, back-pointers in tree/graph (prevents circular reference leak).
+
+Q15. What is the difference between stack and heap in C++?
+Answer: Stack: fixed size (~1-8MB), automatically managed, LIFO, very fast. Heap: large, manually managed (new/delete), flexible lifetime, slower allocation. Local variables: stack. Dynamic/large objects: heap. Unlike C#, C++ struct/class can be on either.
+
+Q16. What is a null pointer dereference in C++ and how is it different from C#?
+Answer: In C#: throws NullReferenceException (controlled). In C++: undefined behavior — likely segfault/crash, but could silently corrupt memory. No safety net. Always check pointer before dereferencing or use references which cannot be null.
+
+Q17. What is undefined behavior (UB) in C++?
+Answer: Code that the C++ standard says has no defined behavior — compiler can generate anything. Examples: null dereference, signed integer overflow, accessing out-of-bounds array, use-after-free, reading uninitialized variable. C# has no UB in safe code.
+
+Q18. What are header files?
+Answer: .h/.hpp files contain declarations (class definitions, function signatures, templates). .cpp files contain definitions (implementations). #include copies header content. Separate compilation: each .cpp compiled independently; linker combines objects. No equivalent in C#.
+
+Q19. What is the include guard (#pragma once)?
+Answer: Prevents a header file from being included multiple times. #pragma once (non-standard but widely supported) or #ifndef MY_HEADER_H / #define / #endif (traditional). Double inclusion causes duplicate definition errors.
+
+Q20. What is a namespace in C++?
+Answer: Logical grouping for names to avoid conflicts. namespace MyLib { void foo(); }. Access: MyLib::foo() or using namespace MyLib. Nested namespaces: namespace A::B (C++17). Similar to C# namespaces.
+
+Q21. What is const in C++?
+Answer: const variable: value cannot change. const pointer: pointer value (address) cannot change. Pointer to const: pointed-to value cannot change. const method: does not modify object state (int Get() const). Like C# readonly but more nuanced.
+
+Q22. What is constexpr?
+Answer: Expression evaluated at compile time. constexpr int MAX = 100. constexpr functions: called at compile time if possible. Better than #define macros — type-safe. Like const but guarantees compile-time evaluation for performance.
+
+Q23. What is the difference between struct and class in C++?
+Answer: Technically identical — except default member access: struct = public, class = private. Convention: struct for simple data (POD types), class for objects with encapsulation. Unlike C# where struct is a value type.
+
+Q24. What is multiple inheritance?
+Answer: C++ allows a class to inherit from multiple classes: class C : public A, public B. Diamond problem: if A and B both inherit D, C has ambiguous D. Solved with virtual inheritance. C# avoids this by only allowing multiple interface inheritance.
+
+Q25. What is virtual inheritance?
+Answer: Solves diamond problem — ensures only one copy of base class subobject. class B : virtual public A. class C : virtual public A. class D : public B, public C — single A instance in D. Adds vptr overhead.
+
+Q26. What is a virtual function?
+Answer: Member function that can be overridden in derived class. virtual void Speak(). Override with override keyword (C++11). Resolved at runtime via vtable (virtual dispatch). Like C# virtual/override. Without virtual, base version always called.
+
+Q27. What is a pure virtual function?
+Answer: virtual void Draw() = 0; — must be overridden in derived class; makes class abstract (cannot be instantiated). Like C# abstract method. Abstract class = class with any pure virtual function.
+
+Q28. What is the vtable?
+Answer: Hidden table of function pointers for virtual functions. Each class with virtual functions has a vtable. Each object has a vptr pointing to its class's vtable. Virtual dispatch: look up function via vptr→vtable. Small overhead vs non-virtual calls.
+
+Q29. What is operator overloading in C++?
+Answer: Define custom behavior for operators. operator+(const T& a, const T& b). Can overload: +,-,*,/,==,!=,<,<<,>>,[],(). Cannot overload: .,(::),?:. Vector + Vector is intuitive; overloading for non-obvious semantics is bad practice.
+
+Q30. What is the Rule of Zero?
+Answer: Prefer to write classes where compiler-generated copy/move/destructor are correct — by using RAII types (unique_ptr, vector, string) as members. No manual resource management code needed. Most modern C++ classes follow Rule of Zero.
+
+Q31. What is move semantics?
+Answer: Move semantics (C++11) allow transferring resources from temporary objects without copying. rvalue references: int&&. std::move() casts to rvalue. Move constructors/assignment operators transfer ownership. Eliminates expensive copies of vectors, strings in return values.
+
+Q32. What is RVO (Return Value Optimization)?
+Answer: Compiler optimization that eliminates copy/move when returning a local object. Named RVO (NRVO for named). Object constructed directly in the caller's memory — zero copy/move. C# has equivalent optimizations for value types.
+
+Q33. What is a lambda in C++?
+Answer: Anonymous function: [capture](params) -> return_type { body }. Capture: [=] by value, [&] by reference, [x] specific variable. Like C# lambda but explicit capture semantics. Used with STL algorithms, std::function.
+
+Q34. What is std::function?
+Answer: Type-erased callable wrapper: can hold any callable (function, lambda, functor, member pointer). std::function<int(int,int)> f = [](int a, int b){ return a+b; }. Overhead vs raw function pointer. Like C# Func<T>/Action<T>.
+
+Q35. What is auto keyword in C++?
+Answer: Type deduction — compiler infers type from initializer. auto x = 5 (int). auto it = vec.begin(). Does not make variable dynamic — type is fixed at compile time. Like C# var. C++14: auto return type deduction.
+
+Q36. What is range-based for loop?
+Answer: for (const auto& elem : container) { } — iterates any container with begin/end. Like C# foreach. auto& avoids copy; const auto& for read-only. Works with arrays, STL containers, custom types with begin/end.
+
+Q37. What is std::vector?
+Answer: Dynamic array — like C# List<T>. Elements contiguous in memory. Amortized O(1) push_back. Random access O(1). reserve(n) pre-allocates. Invalidates iterators on reallocation. Most commonly used container.
+
+Q38. What is std::map vs std::unordered_map?
+Answer: std::map: sorted (red-black tree), O(log n) access, keys must be comparable. std::unordered_map: hash table, O(1) average access, keys must be hashable. Like C# SortedDictionary vs Dictionary.
+
+Q39. What are STL iterators?
+Answer: Objects that abstract traversal. begin() returns iterator to first element; end() to past-last. Input, output, forward, bidirectional, random access iterator categories. Range-based for uses iterators. Like C# IEnumerator but value-type-based.
+
+Q40. What is placement new?
+Answer: Constructs object at a specific memory location: new(ptr) MyClass(args). Used for memory pools (allocate large buffer, construct objects within). Must call destructor explicitly: obj->~MyClass(). Not common in application code.
+
+Q41. What is std::optional (C++17)?
+Answer: Holds either a value or nothing (nullopt). Like C# Nullable<T> for value types, but works for any type. optional<string> name = "Alice"; *name accesses value. has_value() checks. value_or("default") with fallback.
+
+Q42. What is std::variant (C++17)?
+Answer: Type-safe union — holds one of several types. variant<int, string, double>. std::get<int>(v) extracts. std::visit with lambda for pattern matching. Like C# discriminated union (F# or third-party in C#). Safer than C union.
+
+Q43. What is std::string_view (C++17)?
+Answer: Non-owning reference to a string — no copy. Like Span<char> in C#. string_view sv = "hello"; substr(0,3) returns another view (no allocation). Cannot be used after original string is destroyed. Use for read-only string parameters.
+
+Q44. What are structured bindings (C++17)?
+Answer: Destructure a struct/pair/tuple: auto [x, y] = point; auto [key, value] = *mapIt. Like C# deconstruction (var (a, b) = tuple). Cleaner than .first/.second on pairs.
+
+Q45. What is if constexpr (C++17)?
+Answer: Compile-time conditional — branches discarded at compile time based on compile-time expression. if constexpr(sizeof(T) > 4) { /* only compiled for large T */ }. Like #if but type-aware. Enables cleaner template specialization.
+
+Q46. What is SFINAE?
+Answer: Substitution Failure Is Not An Error — if a template substitution fails, it's not an error; that overload is just removed from consideration. Enables template metaprogramming tricks. std::enable_if uses SFINAE. C++20 concepts replace SFINAE with clearer syntax.
+
+Q47. What are C++20 concepts?
+Answer: Named type constraints for templates: template<typename T> requires Sortable<T>. Or: template<Sortable T>. Clearer error messages than SFINAE. Like C# generic constraints but more expressive. Ranges library uses concepts extensively.
+
+Q48. What is C++20 ranges?
+Answer: Composable, lazy range operations: namespace std::ranges. std::ranges::sort(vec) — range-based sort. Pipeline: vec | views::filter(...) | views::transform(...). Like LINQ in C# — lazy, composable. Range adaptors: filter, transform, take, drop.
+
+Q49. What is C++20 coroutines?
+Answer: Asynchronous programming mechanism. co_await, co_yield, co_return keywords. Coroutine functions return special types (std::generator, std::task). Like C# async/await. Still complex — libraries like cppcoro simplify usage.
+
+Q50. What is memory alignment?
+Answer: Data must be stored at addresses that are multiples of its alignment (int: 4-byte aligned). CPU accesses aligned data faster. alignof(T) returns alignment. alignas(N) specifies alignment. Misaligned access: undefined behavior on some architectures, penalty on x86.
+
+Q51. What is a union in C++?
+Answer: All members share the same memory location. Only one member is "active" at a time. Reading wrong member: undefined behavior. Used for type punning, saving memory. Modern C++: use std::variant instead (type-safe).
+
+Q52. What is bit fields?
+Answer: Struct members with specified bit width: struct Flags { unsigned int active : 1; unsigned int level : 3; }. Packs multiple small values. Common in hardware register definitions, network protocols. Useful in driver code.
+
+Q53. What is volatile in C++ vs C#?
+Answer: C++ volatile: prevents compiler from optimizing away reads/writes — for hardware registers, signal handlers. Not sufficient for thread synchronization (use atomics/mutex). C# volatile: similar but also enforces memory barrier semantics. Different semantics!
+
+Q54. What is the difference between C-style cast and C++ casts?
+Answer: C++ casts are explicit about intent: static_cast<T>(x) — safe compile-time cast. dynamic_cast<T*>(ptr) — runtime check (polymorphic, returns null if fail). const_cast — remove const. reinterpret_cast — raw bit reinterpretation. C-style (T)x is dangerous — does any of the above silently.
+
+Q55. What is dynamic_cast?
+Answer: Runtime checked downcast for polymorphic types (base with virtual functions). dynamic_cast<Derived*>(base) returns nullptr if base is not actually Derived. dynamic_cast<Derived&> throws std::bad_cast. Use when you don't know the derived type at compile time.
+
+Q56. What is an abstract class in C++?
+Answer: Class with at least one pure virtual function (= 0). Cannot be instantiated. Derived classes must override all pure virtual functions. Like C# abstract class. virtual ~Base() = 0 with provided body: pure virtual destructor for abstract base.
+
+Q57. What is the diamond problem in detail?
+Answer: D inherits from B and C which both inherit A. D has two copies of A's data. Ambiguous: which A::method() does D use? Virtual inheritance solves: D has single A instance. Complex but necessary for deep hierarchies.
+
+Q58. What is a functor?
+Answer: An object that acts like a function — overloads operator(). struct Adder { int op; int operator()(int x){ return x + op; } }. Used with STL algorithms: std::sort(v.begin(), v.end(), MyComparator()). Lambdas are syntactic sugar for functors.
+
+Q59. What is std::bind?
+Answer: Partially applies function arguments: auto add5 = std::bind(add, _1, 5) — creates new callable with 5 bound as second arg. std::placeholders::_1, _2 for unbound args. Modern C++: prefer lambdas over bind for clarity.
+
+Q60. What is perfect forwarding?
+Answer: std::forward<T>(arg) preserves value category (lvalue/rvalue) when passing to another function. template<typename T> void Wrapper(T&& arg) { inner(std::forward<T>(arg)); }. T&& is a forwarding reference (universal reference). Enables move semantics through wrappers.
+
+Q61. What is an initializer list?
+Answer: Constructs objects with a list syntax: MyClass obj{1, 2, 3}. std::initializer_list<T> parameter accepts braced lists. vector<int> v{1,2,3,4}. Uniform initialization syntax (C++11). Use {} for initialization to avoid narrowing conversions.
+
+Q62. What is in-class member initialization?
+Answer: class Point { int x = 0; int y = 0; }; — default values. Overridden by constructors. Like C# field initializers. Combined with aggregate initialization: Point p{3, 4}. Simplifies constructor code.
+
+Q63. What is decltype?
+Answer: Yields the type of an expression: decltype(x + y). Preserves const/reference qualifiers. decltype(auto) for perfect return type deduction. Used in complex generic code where auto is insufficient.
+
+Q64. What is type_traits?
+Answer: Compile-time type information: std::is_integral<T>::value, std::is_pointer<T>, std::is_same<A,B>. std::remove_reference<T>, std::add_const<T>. Foundation for template metaprogramming. Like C# reflection but at compile time.
+
+Q65. What is noexcept?
+Answer: Specifies function won't throw exceptions. void f() noexcept. Compiler optimizes accordingly. noexcept(expression) — conditional. Move constructors should be noexcept for performance (otherwise std::vector can't use them safely).
+
+Q66. What is exception safety?
+Answer: Basic guarantee: no resource leaks even if exception thrown. Strong guarantee: operation either completes or has no effect (atomic). No-throw guarantee: never throws. Design for at least basic exception safety using RAII.
+
+Q67. What is std::chrono?
+Answer: Time library: std::chrono::steady_clock::now(), std::chrono::duration<double>. Like C# Stopwatch and TimeSpan. std::this_thread::sleep_for(std::chrono::milliseconds(100)).
+
+Q68. What is std::filesystem (C++17)?
+Answer: Portable file system operations: std::filesystem::path, exists(), is_directory(), directory_iterator. Like C# System.IO. std::filesystem::copy_file, remove, rename.
+
+Q69. What is std::regex?
+Answer: Regular expressions: std::regex pattern("[0-9]+"); std::regex_search/regex_match/regex_replace. Like C# Regex class. Performance can be poor — prefer other string processing when possible.
+
+Q70. What is std::thread vs std::async?
+Answer: std::thread: explicit OS thread, must join() or detach(). std::async: may run on thread pool or deferred. Returns std::future for result. Like C# Thread vs Task. Prefer std::async for simple async work.
+
+Q71. What is condition_variable?
+Answer: Allows threads to wait for a condition: cv.wait(lock, []{ return ready; }). Another thread: ready = true; cv.notify_one() or cv.notify_all(). Like C# Monitor.Wait/Pulse. Used with unique_lock<mutex>.
+
+Q72. What is std::promise and std::future?
+Answer: One-time channel: promise holds value/exception to be set; future retrieves it. Like C# TaskCompletionSource. future.get() blocks until value available. std::shared_future for multiple waiters.
+
+Q73. What is memory model in C++11?
+Answer: Defines how threads interact with shared memory. std::atomic with memory_order: relaxed, acquire, release, acq_rel, seq_cst. Establishes happens-before relationships. Critical for lock-free programming. More explicit than C#'s simpler model.
+
+Q74. What is undefined behavior sanitizer (UBSan)?
+Answer: Compile-time instrumentation detecting undefined behavior at runtime: null dereference, overflow, shift issues, misaligned access. Compile with -fsanitize=undefined. Essential for catching bugs that C# would make impossible.
+
+Q75. What is AddressSanitizer (ASan)?
+Answer: Runtime tool detecting memory errors: buffer overflow, use-after-free, heap use after return, use of uninitialized memory. Compile with -fsanitize=address. Equivalent of valgrind but faster. Essential for driver/system code development.
+
+
+==================================================================

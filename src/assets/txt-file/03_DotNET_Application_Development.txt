@@ -1,0 +1,347 @@
+SECTION 3: .NET AND APPLICATION DEVELOPMENT
+==================================================================
+
+--------------------------------------------------------------------
+ASP.NET CORE INTERVIEW QUESTIONS (50)
+--------------------------------------------------------------------
+
+Q1. What is ASP.NET Core and how does it differ from ASP.NET MVC 5?
+Answer: ASP.NET Core is a cross-platform, high-performance, open-source framework running on .NET Core. Unlike ASP.NET MVC (Windows-only, System.Web dependency, IIS-hosted), ASP.NET Core is modular, runs on Linux/Mac, uses Kestrel (or IIS), has unified MVC/Web API, built-in DI, and is significantly faster.
+
+Q2. What is the difference between Kestrel and IIS in ASP.NET Core?
+Answer: Kestrel is ASP.NET Core's cross-platform HTTP server — fast, lightweight, built-in. IIS acts as a reverse proxy in front of Kestrel on Windows (in-process or out-of-process hosting). In production, put Kestrel behind nginx/IIS for SSL termination, load balancing, static file serving.
+
+Q3. What is the Program.cs entry point in ASP.NET Core 6+?
+Answer: ASP.NET Core 6 uses top-level statements — no Main method. WebApplication.CreateBuilder(args) creates the builder. builder.Services configures DI. builder.Build() creates the WebApplication. app.Use* configures middleware. app.MapControllers()/MapGet() registers endpoints. app.Run() starts the server.
+
+Q4. What is the IApplicationBuilder interface?
+Answer: IApplicationBuilder is used to configure the HTTP request pipeline (middleware). Available in Startup.Configure() or passed to app.Use* in modern apps. Use(middleware), Run(terminal), Map(branch), UseMiddleware<T>() are the core methods.
+
+Q5. What is routing in ASP.NET Core?
+Answer: Routing maps incoming URLs to endpoint handlers. Attribute routing: [Route("api/orders/{id}")]. Conventional routing: app.MapControllerRoute. Endpoint routing (ASP.NET Core 3+) is the modern approach — middleware-agnostic, resolved at routing middleware. Route constraints: {id:int}, {slug:regex(...)}.
+
+Q6. What are route constraints?
+Answer: Route constraints restrict what values a route parameter accepts: {id:int} (integer), {id:guid} (GUID), {name:minlength(3)}, {id:range(1,100)}, {id:alpha} (letters only). Custom: implement IRouteConstraint. Prevent wrong types from reaching action before model binding.
+
+Q7. What is model binding in ASP.NET Core?
+Answer: Model binding maps HTTP request data (route, query string, body, headers, form) to action method parameters. Attributes: [FromRoute], [FromQuery], [FromBody], [FromHeader], [FromForm], [FromServices]. Custom binders implement IModelBinder.
+
+Q8. What is action result and content negotiation?
+Answer: Content negotiation selects response format based on Accept header. AddControllers().AddXmlSerializerFormatters() adds XML support. JSON is default. Client sends Accept: application/xml — server responds with XML. FormatFilter attribute allows format in URL: /orders.xml.
+
+Q9. What is the difference between [ApiController] and ControllerBase?
+Answer: [ApiController] adds: automatic model validation (400 for invalid), binding source inference ([FromBody] for complex types, [FromRoute] for route params), ProblemDetails error responses. ControllerBase is for Web API (no view support). Controller (inherits ControllerBase) adds View() for MVC.
+
+Q10. What is minimal APIs in ASP.NET Core 6+?
+Answer: Minimal APIs define endpoints without controllers: app.MapGet("/orders/{id}", (int id) => ...). Simpler than MVC for microservices. Supports filters, DI, route groups. Less ceremony for simple CRUD APIs. Comparable performance to controllers.
+
+Q11. What is middleware pipeline order importance?
+Answer: Order is critical. Correct order: UseExceptionHandler, UseHsts, UseHttpsRedirection, UseStaticFiles, UseRouting, UseCors, UseAuthentication, UseAuthorization, UseEndpoints. Auth after routing (route must match for auth decisions). CORS before auth. Static files before routing (bypass auth for public files).
+
+Q12. What is IHostedService vs Controller lifecycle?
+Answer: Controllers are transient — new instance per request. IHostedService runs continuously for app lifetime. Use IHostedService/BackgroundService for: message bus consumers, scheduled jobs, cache warming, health monitoring. Access services via IServiceScopeFactory (can't inject Scoped directly into Singleton).
+
+Q13. What is the Options pattern?
+Answer: Options pattern binds configuration sections to strongly-typed classes. services.Configure<MailSettings>(config.GetSection("Mail")). Inject IOptions<MailSettings>. IOptionsSnapshot reloads per request. IOptionsMonitor notifies of changes. Validation: services.AddOptions<MailSettings>().ValidateDataAnnotations().
+
+Q14. What is health checks in ASP.NET Core?
+Answer: Built-in health check framework. services.AddHealthChecks().AddDbContextCheck<AppDbContext>().AddUrlGroup(new Uri("https://api.external.com")). app.MapHealthChecks("/health"). UI dashboard available. Kubernetes uses liveness and readiness probes against these endpoints.
+
+Q15. What is rate limiting in ASP.NET Core 7?
+Answer: System.Threading.RateLimiting + ASP.NET Core integration. builder.Services.AddRateLimiter(options => options.AddFixedWindowLimiter("api", o => { o.PermitLimit = 100; o.Window = TimeSpan.FromMinutes(1); })). app.UseRateLimiter(). [EnableRateLimiting("api")] on controllers.
+
+Q16. What is problem details in ASP.NET Core?
+Answer: RFC 7807 standard for HTTP error responses. {type, title, status, detail, instance} JSON structure. [ApiController] returns ProblemDetails for 4xx errors. builder.Services.AddProblemDetails() enables it globally for unhandled exceptions. Consistent error format for API clients.
+
+Q17. What is output caching in ASP.NET Core 7?
+Answer: Output caching caches complete HTTP responses. services.AddOutputCache(). app.UseOutputCache(). [OutputCache(Duration = 60)] on action or app.MapGet(...).CacheOutput(). More powerful than Response Caching middleware — supports vary by tags, custom policies, programmatic invalidation.
+
+Q18. What is request throttling vs rate limiting?
+Answer: Rate limiting: maximum number of requests per time window per client. Throttling: slow down requests (queue/delay) rather than reject. ASP.NET Core 7 Rate Limiter rejects at limit (429 Too Many Requests). Polly's Bulkhead throttles concurrent calls.
+
+Q19. What is the difference between UseAuthentication and UseAuthorization?
+Answer: UseAuthentication: determines WHO the user is — validates token/cookie, populates HttpContext.User. UseAuthorization: determines WHAT the user can do — checks policies, roles, claims. Both required; authentication must come first. [Authorize] attribute uses authorization.
+
+Q20. What are authorization policies?
+Answer: Policies combine multiple requirements: services.AddAuthorization(options => options.AddPolicy("Senior", policy => policy.RequireClaim("Age", "18+").RequireRole("Employee"))). Custom: IAuthorizationRequirement + AuthorizationHandler<T>. [Authorize(Policy = "Senior")] on controller.
+
+Q21. What is IExceptionHandler in ASP.NET Core 8?
+Answer: IExceptionHandler (ASP.NET Core 8) provides a cleaner exception handling mechanism. Implement IExceptionHandler, register with AddExceptionHandler<T>(). UseExceptionHandler() invokes them in order. Return false to let next handler try. Replaces complex UseExceptionHandler lambda patterns.
+
+Q22. What is the difference between REST and RPC API styles?
+Answer: REST: resource-oriented (nouns), HTTP verbs semantics, stateless, cacheable, uniform interface. RPC: action-oriented (verbs), method calls over HTTP. gRPC is RPC. GraphQL is neither pure REST nor RPC. REST is better for public APIs; gRPC for internal service communication.
+
+Q23. What is Swagger/OpenAPI in ASP.NET Core?
+Answer: Swashbuckle or NSwag generates OpenAPI spec from C# code. AddSwaggerGen() + UseSwagger() + UseSwaggerUI(). XML comments become descriptions. [ProducesResponseType] enriches schema. OpenAPI spec enables API client code generation (NSwag, OpenAPI Generator).
+
+Q24. What is the difference between [FromBody] and [FromForm]?
+Answer: [FromBody]: reads request body as JSON (or XML) — uses registered formatters. One [FromBody] per action. [FromForm]: reads application/x-www-form-urlencoded or multipart/form-data. For file uploads, use [FromForm] with IFormFile. Cannot use both on the same action.
+
+Q25. What is file upload in ASP.NET Core?
+Answer: Single file: IFormFile parameter with [FromForm]. Multiple: IFormFileCollection or List<IFormFile>. Stream large files: form.ReadStreamAsync(). Set request size limits: [RequestSizeLimit(52428800)] (50MB). Streaming large files avoids buffering in memory.
+
+Q26. What is background job processing in ASP.NET Core?
+Answer: Options: IHostedService/BackgroundService (in-process, simple). Hangfire (persistent, dashboard, retry, scheduling). Quartz.NET (CRON scheduling). Mass Transit (message bus + consumer). For distributed, reliable jobs, use Hangfire or a message bus.
+
+Q27. What is the difference between AddScoped and AddTransient for DbContext?
+Answer: AddDbContext registers as Scoped (one per HTTP request) — correct for web apps (tracks changes per request). Adding as Transient causes issues with change tracking consistency. Use IDbContextFactory<T> for background services needing multiple contexts per scope.
+
+Q28. What is API versioning in ASP.NET Core?
+Answer: Microsoft.AspNetCore.Mvc.Versioning. Version via URL (/api/v1/orders), query string (?version=1.0), or header (X-API-Version). ApiVersionAttribute on controllers. Sunset deprecated versions. MapToApiVersion for per-action versioning.
+
+Q29. What is the difference between redirect and forward in ASP.NET Core?
+Answer: Redirect (301/302): client makes new request to new URL — URL changes in browser. RedirectToAction(), Redirect(). Forward (internal): server forwards to different handler internally — URL stays same. UseRewriter() for URL rewriting.
+
+Q30. How do you implement pagination in ASP.NET Core?
+Answer: Standard query params: ?page=1&pageSize=20. Create PagedResult<T>: { Items, TotalCount, Page, PageSize, TotalPages }. EF Core: query.Skip((page-1)*pageSize).Take(pageSize). Return Link header or metadata for navigation. Cursor-based pagination for large datasets.
+
+Q31. What is SignalR Hub?
+Answer: Hub is the central SignalR class. Clients connect to Hub URL. Hub methods callable by clients: Clients.All.SendAsync("ReceiveMessage", message). Clients can call hub methods from JS. Groups allow targeting subsets. Hub is transient; state via IHubContext.
+
+Q32. What is IHttpClientFactory?
+Answer: IHttpClientFactory manages HttpClient lifetimes and DNS refresh. Named clients: services.AddHttpClient("payment", c => c.BaseAddress = ...). Typed clients: services.AddHttpClient<PaymentClient>(). Polly integration: .AddPolicyHandler(retryPolicy). Avoids socket exhaustion from manual HttpClient.
+
+Q33. What is response compression in ASP.NET Core?
+Answer: services.AddResponseCompression() + app.UseResponseCompression(). Supports gzip, Brotli. Add CompressionLevel options. Exclude small responses (overhead > benefit). Check Accept-Encoding request header. Significant bandwidth reduction for JSON APIs.
+
+Q34. What is the difference between cookie and JWT authentication?
+Answer: Cookie: server maintains session; cookie sent automatically; CSRF protection needed; stateful. JWT: stateless; client stores token; sent in Authorization header; no CSRF; larger request overhead; scales horizontally easily. JWT preferred for APIs/SPAs.
+
+Q35. What is refresh token?
+Answer: Refresh token is a long-lived token used to obtain new access tokens when they expire (short TTL: 15min). Stored securely (httpOnly cookie or secure storage). Refresh endpoint: exchange valid refresh token for new access + refresh token. Rotate refresh tokens; maintain revocation list.
+
+Q36. What is ASP.NET Core Data Protection API?
+Answer: Data Protection provides cryptographic APIs for protecting data (cookies, tokens, anti-forgery). IDataProtector.Protect()/Unprotect(). Keys managed automatically with rotation. Configure key storage (file system, Azure Key Vault). Used by Cookie authentication, TempData, ViewState replacement.
+
+Q37. What is anti-forgery (CSRF protection) in ASP.NET Core?
+Answer: Anti-forgery generates a token embedded in forms and validated on POST. HTML helper @Html.AntiForgeryToken(). [ValidateAntiForgeryToken] on POST actions. For SPAs, use X-XSRF-TOKEN header. APIs using JWT don't need CSRF protection (cookie not used).
+
+Q38. What is the difference between TempData and ViewBag?
+Answer: ViewBag/ViewData: pass data from controller to view for current request only — gone on redirect. TempData: survives one redirect — stored in session or cookie. Use TempData for post-redirect-get pattern (success messages after form submit).
+
+Q39. What is Razor Pages?
+Answer: Razor Pages is a page-based model — each page has .cshtml + .cshtml.cs (PageModel) pair. OnGet/OnPost handlers. Simpler than MVC for CRUD-heavy pages. No controller/action separation — page is self-contained. Supports model binding, validation, DI.
+
+Q40. What is Tag Helpers in ASP.NET Core?
+Answer: Tag Helpers enhance HTML elements with server-side logic: <asp-for="Name">, <asp-controller="Orders">, <asp-action="Create">. More readable than HtmlHelper @Html.TextBoxFor(). Custom tag helpers implement TagHelper class. Replaces most HTML helper usage.
+
+Q41. What is the difference between Session and Distributed Session?
+Answer: Default in-memory session: single server only, lost on restart. Distributed session: IDistributedCache backed (Redis, SQL Server) — multi-server, persistent. builder.Services.AddStackExchangeRedisCache(). Required for multi-instance deployments.
+
+Q42. What is content security policy (CSP) in ASP.NET Core?
+Answer: CSP is an HTTP header restricting sources of scripts, styles, images. Mitigates XSS. Configure with middleware or NWebSec: app.UseCsp(opts => opts.DefaultSources(s => s.Self()).ScriptSources(s => s.Self())). Nonce-based CSP for inline scripts.
+
+Q43. What is the Forwarded Headers middleware?
+Answer: When behind a reverse proxy (nginx, IIS, Azure Front Door), the original client IP and scheme are in X-Forwarded-For and X-Forwarded-Proto headers. app.UseForwardedHeaders() reads them. Without it, Request.Scheme is http even for HTTPS, HttpContext.Connection.RemoteIpAddress is proxy IP.
+
+Q44. How do you implement API key authentication?
+Answer: Custom middleware or AuthenticationHandler. Check Authorization header or X-Api-Key query/header. Validate against stored keys (database or config). Hash keys (don't store plain text). Scope keys to services. Implement IAuthenticationHandler for proper integration with [Authorize].
+
+Q45. What is WebApplication.CreateSlimBuilder in ASP.NET Core 8?
+Answer: CreateSlimBuilder reduces memory and startup time for minimal APIs — fewer default services registered. Intended for containerized microservices. Excludes console logging, default health checks, and other rarely-needed defaults. Combine with source-generated JSON for minimal footprint.
+
+Q46. What is named options in ASP.NET Core?
+Answer: Named options allow multiple configuration instances of the same class: services.Configure<ConnectionOptions>("primary", ...).Configure<ConnectionOptions>("secondary", ...). Inject IOptionsFactory<ConnectionOptions>. Create(name) retrieves specific instance. Useful for multiple database connections.
+
+Q47. What is startup filters?
+Answer: IStartupFilter allows middleware to be added in the startup pipeline without modifying Configure(). Useful for library middleware that must run early. Implement IStartupFilter.Configure(Action<IApplicationBuilder> next) — add middleware before/after calling next(app).
+
+Q48. What is app.Environment in ASP.NET Core?
+Answer: IWebHostEnvironment (or IHostEnvironment) provides EnvironmentName, ContentRootPath, WebRootPath. Use app.Environment.IsDevelopment(), IsProduction(), IsStaging(). Set via ASPNETCORE_ENVIRONMENT env variable. Different config, error handling, logging per environment.
+
+Q49. What is Endpoint metadata in ASP.NET Core?
+Answer: Endpoints carry metadata: route pattern, controller/action info, [Authorize] attributes, [OutputCache], custom attributes. Access via HttpContext.GetEndpoint(). Middleware can read endpoint metadata to make decisions without knowing controller internals.
+
+Q50. What is dynamic controller routing?
+Answer: IActionDescriptorProvider and IApplicationModelConvention allow programmatic route and controller configuration. Add routes dynamically, change conventions application-wide. Area routing is a built-in grouping convention. Custom: implement IApplicationModelConvention to apply attribute globally.
+
+--------------------------------------------------------------------
+REST API QUESTIONS (30)
+--------------------------------------------------------------------
+
+Q1. What are HTTP methods and their semantics?
+Answer: GET (read, safe, idempotent), POST (create, not idempotent), PUT (full replace, idempotent), PATCH (partial update), DELETE (remove, idempotent). HEAD (like GET, no body). OPTIONS (CORS preflight, get allowed methods).
+
+Q2. What are idempotent HTTP methods?
+Answer: An operation is idempotent if calling it multiple times has the same effect as calling once. GET, PUT, DELETE, HEAD are idempotent. POST is NOT — calling POST twice creates two resources. PATCH is not guaranteed idempotent (depends on implementation).
+
+Q3. What are HTTP status codes?
+Answer: 1xx Informational. 2xx Success: 200 OK, 201 Created, 202 Accepted, 204 No Content. 3xx Redirect: 301 Moved Permanently, 302 Found, 304 Not Modified. 4xx Client Error: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 409 Conflict, 422 Unprocessable Entity, 429 Too Many Requests. 5xx Server Error: 500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable.
+
+Q4. What is REST and its constraints?
+Answer: REST (Representational State Transfer) constraints: Client-Server, Stateless (no session state on server), Cacheable, Uniform Interface, Layered System, Code on Demand (optional). Stateless means each request carries all needed info; enables horizontal scaling.
+
+Q5. What is the Richardson Maturity Model?
+Answer: Level 0: HTTP as tunnel (SOAP). Level 1: Resources (URIs). Level 2: HTTP verbs + status codes. Level 3: Hypermedia controls (HATEOAS). Most REST APIs are Level 2 in practice.
+
+Q6. What is API versioning best practice?
+Answer: Version in URL (/v1/orders) — most visible, simplest. Query string (?api-version=1.0) — less clean. Header (X-Api-Version) — cleaner URLs but less visible. Never version individual fields — version the resource representation. Deprecation notice before removal.
+
+Q7. What is OAuth 2.0?
+Answer: OAuth 2.0 is an authorization framework. Flows: Authorization Code (web apps), PKCE (SPAs, mobile), Client Credentials (server-to-server), Device Flow. Access tokens grant resource access. Scopes limit what access token can do. Use PKCE always for public clients.
+
+Q8. What is OpenID Connect?
+Answer: OpenID Connect (OIDC) is an identity layer on top of OAuth 2.0. Returns ID token (JWT with user info) in addition to access token. UserInfo endpoint for additional claims. Used for SSO. Claims: sub (user ID), email, name, roles.
+
+Q9. What is the difference between authorization and authentication in REST?
+Answer: Authentication: verify identity (who are you?). HTTP: Basic, Bearer token, API key, mTLS. Authorization: what are you allowed to do? OAuth scopes, RBAC roles, ABAC policies. API must do both: authenticate first, then authorize.
+
+Q10. What is HATEOAS?
+Answer: HATEOAS (Hypermedia As The Engine Of Application State): API responses include links to available actions. Client navigates API without hardcoded URLs. _links object in responses (HAL format). Rarely fully implemented; valuable for discoverability.
+
+Q11. What is the difference between PUT and PATCH?
+Answer: PUT replaces the entire resource — client sends full representation. PATCH partially updates — client sends only changed fields. PATCH risks concurrent update issues; use conditional requests (If-Match ETag) with PATCH. JSON Patch (RFC 6902) defines patch operations formally.
+
+Q12. What is ETags and conditional requests?
+Answer: ETag is a hash/version of resource. Server returns ETag: "v1abc". Client sends If-None-Match: "v1abc" — server returns 304 Not Modified if unchanged (caching). If-Match: "v1abc" on PUT/PATCH — fails with 412 if resource changed (optimistic concurrency).
+
+Q13. What is API rate limiting?
+Answer: Limit requests per client per time window (100 req/min). Headers: X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After (429 response). Algorithms: Fixed Window, Sliding Window, Token Bucket, Leaky Bucket. Identify clients by API key, IP, user ID.
+
+Q14. What is API pagination?
+Answer: Offset pagination: ?skip=0&take=20 — simple, inefficient for large offsets. Cursor-based: ?after=cursor — efficient, no inconsistencies during inserts. Page-based: ?page=1&perPage=20 — user-friendly. Always return total count and next/prev cursors/links.
+
+Q15. What is API idempotency keys?
+Answer: Client generates unique idempotency key (UUID) per request, sends in Idempotency-Key header. Server stores key + result. Duplicate request with same key returns cached result without re-executing. Critical for financial/payment APIs to prevent double charges.
+
+Q16. What is the difference between synchronous and asynchronous API patterns?
+Answer: Synchronous: client waits for response. Asynchronous: server returns 202 Accepted with job ID. Client polls status endpoint or receives webhook notification. Use async for long-running operations (report generation, bulk import, video processing).
+
+Q17. What is webhook?
+Answer: Webhook is an HTTP callback — server sends HTTP POST to client-registered URL when an event occurs. Subscribe: client registers URL. Publish: server sends event payload. Client must validate signature (HMAC). Retry on failure. Secret-signed POST is most secure approach.
+
+Q18. What is GraphQL vs REST?
+Answer: REST: multiple endpoints per resource. GraphQL: single endpoint, client specifies exact fields needed (no over/under fetching). GraphQL has queries (read), mutations (write), subscriptions (real-time). More flexible for clients, more complex server implementation.
+
+Q19. What is API gateway?
+Answer: API gateway is a single entry point for all API calls. Functions: routing, auth, rate limiting, load balancing, SSL termination, request/response transformation, logging. Examples: Azure API Management, AWS API Gateway, Kong, Nginx. Reduces client-side complexity.
+
+Q20. What is a microservice API design principle?
+Answer: API per service. Backward compatible changes only (no breaking changes). Use semantic versioning. Consumer-driven contract testing (Pact). Each service owns its API — no shared schema. Async communication for cross-service events.
+
+Q21. What is content type negotiation in APIs?
+Answer: Client sends Accept: application/json header. Server responds with Content-Type: application/json. Server can serve JSON and XML based on Accept header. application/vnd.company.v2+json — vendor media type for API versioning.
+
+Q22. What is API documentation best practice?
+Answer: OpenAPI 3.0 spec as source of truth. Generate from code (Swashbuckle) or code from spec (contract-first). Include: endpoint description, request/response schemas, error responses, example payloads, authentication requirements. Versioned docs. Postman collections.
+
+Q23. What is the difference between REST and SOAP?
+Answer: SOAP: XML-based, strict WSDL contract, built-in WS-Security/WS-Transaction, stateful possible, slower. REST: lightweight, JSON/XML, no strict contract (OpenAPI optional), stateless, cacheable, faster. SOAP still used in enterprise/financial integration; REST dominates new development.
+
+Q24. What is OData?
+Answer: OData (Open Data Protocol) extends REST with standardized query options: $filter, $select, $expand, $orderby, $top, $skip, $count. Clients can query without custom endpoints. Built-in with ASP.NET Core OData package. Powerful for data-heavy APIs but can expose too much.
+
+Q25. What is an API contract test?
+Answer: Contract test verifies that provider API meets consumer expectations. Pact framework: consumer defines expectations, provider validates against them. Prevents integration failures. Consumer-driven contract testing is the gold standard for microservice APIs.
+
+Q26. What is HTTP/2 and how does it improve APIs?
+Answer: HTTP/2 multiplexes multiple requests over single TCP connection (no head-of-line blocking). Server push sends resources proactively. Header compression (HPACK). Binary protocol. gRPC requires HTTP/2. REST benefits: reduced connection overhead, parallel requests.
+
+Q27. What is the difference between 401 and 403?
+Answer: 401 Unauthorized: not authenticated — provide credentials. WWW-Authenticate header indicates auth scheme. 403 Forbidden: authenticated but not authorized — no access regardless of credentials. 401 = wrong key; 403 = right key, wrong room.
+
+Q28. What is API security best practices?
+Answer: Use HTTPS always. Validate input (prevent injection). Rate limiting. CORS policy. Never expose internal errors. Use API keys or OAuth. Log all API calls. OWASP API Security Top 10: broken object level auth, broken auth, data exposure, lack of resources/rate limiting.
+
+Q29. What is request/response logging middleware?
+Answer: Log: method, URL, request headers/body (redact sensitive), response status, duration. Use correlation ID (X-Correlation-Id header) to trace across services. Structured logging (Serilog, ELK). Log to stdout in containers for platform to collect.
+
+Q30. What is API gateway vs BFF (Backend for Frontend)?
+Answer: API gateway is generic — all clients use same gateway. BFF is client-specific backend — mobile app, web app, partner each have own BFF aggregating and adapting multiple microservice calls. BFF reduces chatty client-server communication.
+
+--------------------------------------------------------------------
+ENTITY FRAMEWORK CORE QUESTIONS (30)
+--------------------------------------------------------------------
+
+Q1. What is ORM and how does EF Core work?
+Answer: ORM (Object-Relational Mapper) maps C# objects to database tables. EF Core: DbContext manages entity objects. DbSet<T> represents a table. LINQ queries translated to SQL. Change tracking detects modifications. SaveChanges() persists changes to DB.
+
+Q2. What is DbContext and its lifecycle?
+Answer: DbContext is the primary class in EF Core. Manages: database connection, entity tracking, query execution, transaction management. Should be scoped (one per request in web apps). Not thread-safe. Register with AddDbContext() for DI.
+
+Q3. What are the different ways to configure entities in EF Core?
+Answer: Data annotations: [Key], [Required], [MaxLength], [Table], [Column]. Fluent API (in OnModelCreating): more powerful, no pollution in entities. IEntityTypeConfiguration<T>: separate configuration class per entity — recommended for larger models.
+
+Q4. What is table splitting in EF Core?
+Answer: Table splitting maps multiple entity types to the same table — shared primary key. Useful for splitting a wide table into frequently-used and rarely-used columns. Both entities tracked independently, saved to same row.
+
+Q5. What is owned entity types?
+Answer: Owned entities are always used with owner — no separate DbSet, no identity. Configured with OwnsOne/OwnsMany. Mapped to same table (default) or separate table. Perfect for value objects in DDD: Order.ShippingAddress is an Address value object.
+
+Q6. What is a shadow property?
+Answer: Shadow properties exist in EF Core model but not in entity class. Defined in OnModelCreating with Property<T>(name). Useful for: audit fields (CreatedAt, UpdatedAt) without polluting entities, foreign keys not in entity class.
+
+Q7. What is query splitting in EF Core?
+Answer: Single query with multiple collections: EF generates a JOIN that can produce a data explosion (cartesian product). AsSplitQuery() generates separate queries per collection — avoids data explosion but multiple round trips. Configure globally with UseQuerySplittingBehavior.
+
+Q8. What is raw SQL in EF Core?
+Answer: FromSqlRaw() / FromSqlInterpolated() executes SQL and materializes into entities. ExecuteSqlRaw() / ExecuteSqlInterpolated() for non-query SQL. FromSqlInterpolated parameterizes automatically — prevents SQL injection. Combine with LINQ after FromSql.
+
+Q9. What is the difference between FirstOrDefault and SingleOrDefault?
+Answer: FirstOrDefault: returns first matching row, no error if multiple. SingleOrDefault: throws if more than one match — use when exactly one is expected. First/Single throw if no match; FirstOrDefault/SingleOrDefault return null/default.
+
+Q10. What is Include vs ThenInclude?
+Answer: Include loads first-level related entity: query.Include(o => o.Customer). ThenInclude loads further nested entities: .Include(o => o.Items).ThenInclude(i => i.Product). Each adds a JOIN (or separate query if AsSplitQuery).
+
+Q11. What is global query filter?
+Answer: modelBuilder.Entity<Order>().HasQueryFilter(o => !o.IsDeleted) — filter applied to all queries for that entity. Used for soft delete, multi-tenancy (TenantId filter). Override with IgnoreQueryFilters(). Great for transparent filtering.
+
+Q12. What is database seeding in EF Core?
+Answer: modelBuilder.Entity<Product>().HasData(new Product { Id = 1, Name = "Widget" }) — inserts on migration. For larger datasets: custom migration or a seeding service in startup. HasData requires primary key set.
+
+Q13. What are value converters in EF Core?
+Answer: Map CLR types to database types: store enum as string, encrypt a property, serialize list as JSON. modelBuilder.Entity<Order>().Property(o => o.Status).HasConversion<string>(). Custom: implement ValueConverter<TModel, TProvider>.
+
+Q14. What is EF Core interceptors?
+Answer: Interceptors hook into DbCommand, DbConnection, DbTransaction, SaveChanges. ISaveChangesInterceptor for audit logging. IDbCommandInterceptor for query logging/modification. Register with AddInterceptors(). Less intrusive than overriding SaveChanges.
+
+Q15. What is compiled queries in EF Core?
+Answer: EF.CompileQuery() compiles a LINQ query once and reuses the compiled form. Skips query translation overhead on subsequent calls. Significant performance improvement for frequently executed parameterized queries.
+
+Q16. What is the N+1 problem and how to fix it?
+Answer: N+1: loading parent entities (1 query), then accessing related data for each parent (N queries). Fix: eager loading with Include(). Or: explicit joins in SQL, projection with Select(), AsSplitQuery() for collections.
+
+Q17. What is database first vs code first?
+Answer: Code first: define C# classes → generate migrations → create DB. Full control over schema. Database first: scaffold from existing DB (Scaffold-DbContext). Generates entities and DbContext from DB. Better for legacy databases.
+
+Q18. What is the Unit of Work pattern with EF Core?
+Answer: DbContext already implements Unit of Work — tracks all changes, SaveChanges() commits all in one transaction. Explicit UoW pattern wraps DbContext in a custom UnitOfWork class with Commit()/Rollback(). Useful for explicit transaction control.
+
+Q19. What is execution strategy in EF Core?
+Answer: Execution strategy handles transient failures (connection drops, timeouts). optionsBuilder.UseSqlServer(conn, opts => opts.EnableRetryOnFailure()). Automatic retry with exponential backoff. Critical for cloud databases (Azure SQL). Custom: inherit ExecutionStrategy.
+
+Q20. What is bulk operations in EF Core?
+Answer: EF Core's SaveChanges processes entities one by one — slow for large batches. EF Core 7 introduced ExecuteUpdate/ExecuteDelete (direct SQL). For large inserts: EF Core Extensions (Bulk Extensions), SqlBulkCopy, or Dapper. Always benchmark.
+
+Q21. What is EF Core temporal tables?
+Answer: SQL Server temporal tables: IsSqlServerTemporalTable() in EF Core 6+. System-versioned — DB tracks all historical row versions with ValidFrom/ValidTo. Query history: TemporalAsOf(dateTime), TemporalAll(), TemporalFromTo(). Great for audit trails.
+
+Q22. What is table-per-hierarchy (TPH) vs table-per-type (TPT)?
+Answer: TPH: all hierarchy types in one table with discriminator column — efficient queries, nullable columns for subtype fields. TPT: each type has own table — clean schema, JOIN overhead. TPT supported in EF Core 5+. TPC (table-per-concrete-class) in EF Core 7+.
+
+Q23. What is projection in EF Core?
+Answer: Select() projects to a DTO rather than loading entire entity: query.Select(o => new OrderDto { Id = o.Id, CustomerName = o.Customer.Name }). Reduces data transfer. EF Core translates to SQL SELECT only needed columns. Always prefer projection for read operations.
+
+Q24. What is EF Core 8 JSON columns?
+Answer: EF Core 8 supports mapping owned entities/collections to JSON columns natively. OwnsOne(x => x.Address).ToJson(). Full LINQ query translation into JSON path queries. No serialization boilerplate. Database stores as JSON; EF maps automatically.
+
+Q25. What is optimistic vs pessimistic concurrency in EF Core?
+Answer: Optimistic: [ConcurrencyCheck] or IsRowVersion() + HasRowVersion(). EF adds WHERE rowversion = @original in UPDATE. Throws DbUpdateConcurrencyException if changed. Pessimistic: use explicit transactions with UPDLOCK hints or SET TRANSACTION ISOLATION LEVEL SERIALIZABLE.
+
+Q26. What is the difference between migrations and database initialization?
+Answer: Migrations: incremental, versioned schema changes — production-safe. Database.Migrate() in startup applies pending migrations. EnsureCreated(): creates schema without migrations — dev/test only, no migration history. Never mix both.
+
+Q27. What is a self-referencing entity?
+Answer: Entity referencing itself: Category with ParentId (FK to Category.Id). EF Core supports: HasOne(c => c.Parent).WithMany(c => c.Children).HasForeignKey(c => c.ParentId). Hierarchy queries may need recursive CTE in SQL.
+
+Q28. What is AsNoTrackingWithIdentityResolution?
+Answer: AsNoTracking() is fastest but may create duplicate entity instances for the same row. AsNoTrackingWithIdentityResolution() avoids duplicates (identity map) while still not tracking for change detection. Use when loading same entity from multiple navigation paths.
+
+Q29. What is EF Core's FromExpression for table-valued functions?
+Answer: Map SQL TVFs (table-valued functions) to LINQ-queryable methods. Define DbFunction attribute or HasDbFunction in modelBuilder. Call in LINQ: context.GetTopProducts(10).Where(p => p.Price > 100). Enables complex DB-side logic in LINQ.
+
+Q30. What is the difference between SaveChanges and ExecuteUpdate?
+Answer: SaveChanges: change-tracked ORM approach — load entity, modify, save. Round trips: 1 SELECT + 1 UPDATE. ExecuteUpdate (EF Core 7): direct bulk UPDATE without loading entities — faster for mass updates. context.Orders.Where(o => o.Status == Pending).ExecuteUpdate(s => s.SetProperty(o => o.Status, Processing)).
+
+
+==================================================================
